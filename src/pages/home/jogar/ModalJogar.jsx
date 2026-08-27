@@ -1,8 +1,10 @@
-import { Button, Modal } from "react-bootstrap";
 import { useState } from "react";
+import { Modal } from "react-bootstrap";
+import { Personagem } from "./components/Personagem";
+import { Jogar } from "./components/Jogar";
 
 export const ModalJogar = ({ show, setShow }) => {
-  const [personagem, setPersonagem] = useState("nirvana");
+  const [step, setStep] = useState(0);
   return (
     <Modal
       show={show}
@@ -15,52 +17,8 @@ export const ModalJogar = ({ show, setShow }) => {
       </Modal.Header>
 
       <Modal.Body>
-        <div className="opcao personagem-opcao">
-          <h3>SELECIONE O PERSONAGEM</h3>
-
-          <div className="personagens-container">
-
-            {/* NIRVANA */}
-            <div
-              className={`personagem ${
-                personagem === "nirvana" ? "personagem-selecionado" : ""
-              }`}
-              onClick={() => setPersonagem("nirvana")}
-            >
-              <div className="personagem-imagem">
-                {/* Imagem da Nirvana vai aqui */}
-              </div>
-
-              <span>NIRVANA</span>
-            </div>
-
-            {/* RODOLFO */}
-            <div
-              className={`personagem ${
-                personagem === "rodolfo" ? "personagem-selecionado" : ""
-              }`}
-              onClick={() => setPersonagem("rodolfo")}
-            >
-              <div className="personagem-imagem">
-                {/* Imagem do Rodolfo vai aqui */}
-              </div>
-
-              <span>RODOLFO</span>
-            </div>
-
-
-          </div>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              marginTop: '20px'
-            }}
-          >
-            <Button className="btn-pixel">Confirmar</Button>
-          </div>
-
-        </div>
+        {step === 0 && <Personagem setStep={setStep} />}
+        {step === 1 && <Jogar setShow={setShow} setStep={setStep}  />}
       </Modal.Body>
     </Modal>
   );
