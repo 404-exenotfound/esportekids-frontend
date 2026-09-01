@@ -1,15 +1,19 @@
 import { useState } from "react";
 import { ItemJogo } from "./ItemJogo";
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Button } from "react-bootstrap";
 
-export const Jogar = ({ setShow, setStep}) => {
+export const Jogar = ({ setShow, setStep }) => {
+  const navigate = useNavigate();
   const [jogo, setJogo] = useState("basquete");
 
   const onSubmit = () => {
-    Navigate(`/jogar/${jogo}`)
-    setShow(false)
-  }
+    setShow(false);
+    // As rotas são geradas a partir das pastas em ./pages (ver App.jsx),
+    // sempre em minúsculo — então "futebol" leva direto para /futebol.
+    navigate(`/${jogo.toLowerCase()}`);
+  };
+
   return (
     <div className="opcao personagem-opcao">
       <h3>SELECIONE O JOGO</h3>
