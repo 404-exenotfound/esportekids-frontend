@@ -1,8 +1,16 @@
 import { Button, Modal, Form } from "react-bootstrap";
-import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { setVolume, setDificuldade } from "../../../store/gameSlice";
+
+const DIFICULDADES = [
+  { valor: "facil", rotulo: "FÁCIL" },
+  { valor: "media", rotulo: "MÉDIO" },
+  { valor: "dificil", rotulo: "DIFÍCIL" },
+];
 
 export const ModalOpcoes = ({ show, setShow }) => {
-  const [volume, setVolume] = useState(70);
+  const { volume, dificuldade } = useSelector((state) => state.jogo);
+  const dispatch = useDispatch();
 
   return (
     <Modal
@@ -24,9 +32,8 @@ export const ModalOpcoes = ({ show, setShow }) => {
             <Form.Range
               min="0"
               max="100"
-              defaultValue="70"
               value={volume}
-              onChange={(e) => setVolume(e.target.value)}
+              onChange={(e) => dispatch(setVolume(Number(e.target.value)))}
               className="volume-range"
             />
 
@@ -39,17 +46,15 @@ export const ModalOpcoes = ({ show, setShow }) => {
           <h3>DIFICULDADE</h3>
 
           <div className="dificuldade-container">
-            <Button className="btn-dificuldade">
-              FÁCIL
-            </Button>
-
-            <Button className="btn-dificuldade">
-              MÉDIO
-            </Button>
-
-            <Button className="btn-dificuldade">
-              DIFÍCIL
-            </Button>
+            {DIFICULDADES.map(({ valor, rotulo }) => (
+              <Button
+                key={valor}
+                className={`btn-dificuldade ${dificuldade === valor ? "selecionado" : ""}`}
+                onClick={() => dispatch(setDificuldade(valor))}
+              >
+                {rotulo}
+              </Button>
+            ))}
           </div>
         </div>
       </Modal.Body>

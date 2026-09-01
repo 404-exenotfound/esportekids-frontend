@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 import { ZONA_CENTRO } from "../utils/zonas";
 import {
@@ -32,6 +33,9 @@ import { useTorcida } from "./useTorcida";
 // apenas consome o que sai daqui — ela não decide nada.
 export function useFutebol() {
   const navigate = useNavigate();
+
+  // Configuração escolhida nas Opções / na seleção de personagem.
+  const { dificuldade, personagem } = useSelector((state) => state.jogo);
 
   const [fase, setFase] = useState(FASES.INTRO);
   const [rodada, setRodada] = useState(1);
@@ -84,7 +88,7 @@ export function useFutebol() {
       // O clique no alvo é a interação que libera o áudio no navegador.
       garantirAudio();
 
-      const zonaSorteada = escolherZonaGoleiro(rodada, indiceZona);
+      const zonaSorteada = escolherZonaGoleiro(rodada, indiceZona, dificuldade);
       const defendeu = zonaSorteada === indiceZona;
 
       setBolaPegou(false);
@@ -139,7 +143,7 @@ export function useFutebol() {
 
       timers.current.push(revelarResultado, proximaRodada);
     },
-    [fase, rodada, garantirAudio, tocarTorcida]
+    [fase, rodada, dificuldade, garantirAudio, tocarTorcida]
   );
 
   const emAcao = fase === FASES.CHUTANDO || fase === FASES.RESULTADO;
@@ -154,7 +158,10 @@ export function useFutebol() {
     // Placar
     rodadaExibida: Math.min(rodada, TOTAL_RODADAS),
     placar,
-    dificuldade: dificuldadeDaRodada(rodada),
+    dificuldade: dificuldadeDaRodada(rodada, dificuldade),
+    // Ainda não há arte por personagem no campo — fica exposto aqui para
+    // quando o jogador do campo passar a mudar conforme a escolha.
+    personagem,
     // Uma casinha por rodada; as ainda não jogadas ficam vazias.
     bolinhas: Array.from({ length: TOTAL_RODADAS }, (_, i) => historico[i] ?? null),
     somLigado,

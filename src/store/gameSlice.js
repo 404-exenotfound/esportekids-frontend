@@ -1,33 +1,29 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = {
+export const initialStateJogo = {
   volume: 70,
-  personagem: "mario",
-  dificuldade: "normal",
+  dificuldade: "media",
+  personagem: "rodolfo",
 };
 
 const gameSlice = createSlice({
-  name: "game",
-  initialState,
+  name: "jogo",
+  initialState: initialStateJogo,
   reducers: {
     setVolume: (state, action) => {
       state.volume = action.payload;
     },
 
-    setPersonagem: (state, action) => {
-      state.personagem = action.payload;
-    },
-
     setDificuldade: (state, action) => {
       state.dificuldade = action.payload;
+    },
+
+    setPersonagem: (state, action) => {
+      state.personagem = action.payload;
     },
   },
 });
 
-export const {
-  setVolume,
-  setPersonagem,
-  setDificuldade,
-} = gameSlice.actions;
+export const { setVolume, setDificuldade, setPersonagem } = gameSlice.actions;
 
 export default gameSlice.reducer;

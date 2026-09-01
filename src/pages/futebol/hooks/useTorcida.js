@@ -1,11 +1,16 @@
 import { useCallback, useEffect, useRef } from "react";
+import { useSelector } from "react-redux";
 import { criarRuidoBuffer } from "../helpers/criarRuidoBuffer";
 
 // Torcida sintetizada via Web Audio API — sem arquivo de áudio.
 export function useTorcida(somLigado) {
+  // Volume global, definido nas Opções (0 a 100).
+  const volume = useSelector((state) => state.jogo.volume);
+
   const audioCtxRef = useRef(null);
   const masterGainRef = useRef(null);
   const somLigadoRef = useRef(somLigado);
+  const volumeRef = useRef(volume);
 
   // O som dispara de dentro de um setTimeout. Ler de uma ref garante que
   // vale o estado do botão no instante do disparo, e não o de quando o
@@ -13,6 +18,15 @@ export function useTorcida(somLigado) {
   useEffect(() => {
     somLigadoRef.current = somLigado;
   }, [somLigado]);
+
+  // Mexer no slider durante a partida muda o volume na hora — sem precisar
+  // recriar o contexto de áudio.
+  useEffect(() => {
+    volumeRef.current = volume;
+    if (masterGainRef.current) {
+      masterGainRef.current.gain.value = volume / 100;
+    }
+  }, [volume]);
 
   useEffect(
     () => () => {
@@ -33,7 +47,7 @@ export function useTorcida(somLigado) {
     if (!audioCtxRef.current) {
       audioCtxRef.current = new Ctx();
       masterGainRef.current = audioCtxRef.current.createGain();
-      masterGainRef.current.gain.value = 0.5;
+      masterGainRef.current.gain.value = volumeRef.current / 100;
       masterGainRef.current.connect(audioCtxRef.current.destination);
     }
     // Navegadores só liberam áudio após uma interação do usuário.
@@ -45,7 +59,7 @@ export function useTorcida(somLigado) {
 
   const tocarTorcida = useCallback(
     (tipo) => {
-      if (!somLigadoRef.current) return;
+      if (!somLigadoRef.current || volumeRef.current <= 0) return;
       const ctx = garantirAudio();
       if (!ctx) return;
 

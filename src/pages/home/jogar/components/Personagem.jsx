@@ -1,41 +1,36 @@
-import { useState } from "react";
 import { Button } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
+import { setPersonagem } from "../../../../store/gameSlice";
 
+const PERSONAGENS = [
+  { valor: "nirvana", rotulo: "NIRVANA" },
+  { valor: "rodolfo", rotulo: "RODOLFO" },
+];
 
-export const Personagem = ({setStep}) => {
-  const [personagem, setPersonagem] = useState("nirvana");
+export const Personagem = ({ setStep }) => {
+  const personagem = useSelector((state) => state.jogo.personagem);
+  const dispatch = useDispatch();
+
   return (
     <div className="opcao personagem-opcao">
       <h3>SELECIONE O PERSONAGEM</h3>
 
       <div className="personagens-container">
+        {PERSONAGENS.map(({ valor, rotulo }) => (
+          <div
+            key={valor}
+            className={`personagem ${personagem === valor ? "personagem-selecionado" : ""}`}
+            onClick={() => dispatch(setPersonagem(valor))}
+          >
+            <div className="personagem-imagem">
+              {/* Imagem do personagem vai aqui */}
+            </div>
 
-        <div
-          className={`personagem ${personagem === "nirvana" ? "personagem-selecionado" : ""
-            }`}
-          onClick={() => setPersonagem("nirvana")}
-        >
-          <div className="personagem-imagem">
-            {/* Imagem da Nirvana vai aqui */}
+            <span>{rotulo}</span>
           </div>
-
-          <span>NIRVANA</span>
-        </div>
-
-        <div
-          className={`personagem ${personagem === "rodolfo" ? "personagem-selecionado" : ""
-            }`}
-          onClick={() => setPersonagem("rodolfo")}
-        >
-          <div className="personagem-imagem">
-            {/* Imagem do Rodolfo vai aqui */}
-          </div>
-
-          <span>RODOLFO</span>
-        </div>
-
-
+        ))}
       </div>
+
       <div
         style={{
           display: 'flex',
