@@ -1,3 +1,5 @@
+
+
 .modal-pixel .modal-content {
   background: #f5f5dc;
   border: 6px solid #1f1f1f;
@@ -147,7 +149,7 @@
 
 .personagens-container {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 14px;
   width: 100%;
 }

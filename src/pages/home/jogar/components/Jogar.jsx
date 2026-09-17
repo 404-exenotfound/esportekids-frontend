@@ -23,6 +23,7 @@ export const Jogar = ({ setShow, setStep }) => {
         <ItemJogo jogo={jogo} setJogo={setJogo} nomeJogo="futebol" />
         <ItemJogo jogo={jogo} setJogo={setJogo} nomeJogo="atletismo" />
         <ItemJogo jogo={jogo} setJogo={setJogo} nomeJogo="pingPong" />
+        <ItemJogo jogo={jogo} setJogo={setJogo} nomeJogo="boliche" />
       </div>
       <div
         style={{
