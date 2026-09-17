@@ -18,9 +18,10 @@ export const Jogar = ({ setShow, setStep }) => {
     <div className="opcao personagem-opcao">
       <h3>SELECIONE O JOGO</h3>
 
-      <div className="personagens-container">
+      <div className="personagens-container jogos-container">
         <ItemJogo jogo={jogo} setJogo={setJogo} nomeJogo="basquete" />
         <ItemJogo jogo={jogo} setJogo={setJogo} nomeJogo="futebol" />
+        <ItemJogo jogo={jogo} setJogo={setJogo} nomeJogo="atletismo" />
         <ItemJogo jogo={jogo} setJogo={setJogo} nomeJogo="pingPong" />
       </div>
       <div

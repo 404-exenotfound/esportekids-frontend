@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { ButtonMario } from "./components/ButtonMario";
 import { ModalOpcoes } from "./opcoes/ModalOpcoes";
 import "./styles/index.css";
@@ -6,7 +7,17 @@ import { ModalJogar } from "./jogar/ModalJogar";
 
 const Home = () => {
   const [modalOpcoes, setModalOpcoes] = useState(false);
-  const [modalJogar, setModalJogar] = useState(false);
+  const [modalJogar, setModalJogar] = useState(() => (
+    new URLSearchParams(window.location.search).get("menu") === "jogar"
+  ));
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (new URLSearchParams(location.search).get("menu") !== "jogar") return;
+
+    navigate("/home", { replace: true });
+  }, [location.search, navigate]);
 
   return (
     <>

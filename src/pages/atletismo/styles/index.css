@@ -1,0 +1,258 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Baloo+2:wght@700;800&display=swap');
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+
+/* Paleta e tratamento visual alinhados ao PenaltiCampeao (Home + modais):
+   vermelho de ação, contorno preto grosso, fundo creme e sombras sólidas. */
+
+.atl-wrapper {
+  --vermelho: #e63946;
+  --vermelho-escuro: #8f1d2c;
+  --vermelho-hover: #c92f3b;
+  --preto: #1f1f1f;
+  --amarelo: #ffd166;
+  --creme: #f5f5dc;
+  --cinza: #d9d9d9;
+  --branco: #ffffff;
+
+  /* A parede da arena continua seguindo a paleta do atletismo, mas o resto
+     acompanha o sistema (creme, vermelho e contorno preto grosso). */
+  --parede-arena: #2e3ea8;
+
+  width: 100%;
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 20px 16px;
+  display: flex;
+  justify-content: center;
+  font-family: "Press Start 2P", monospace;
+  color: var(--preto);
+  box-sizing: border-box;
+  image-rendering: pixelated;
+}
+
+/* Card no mesmo tratamento do .pc-card do PenaltiCampeao */
+.atl-card {
+  width: 100%;
+  background: var(--creme);
+  border: 6px solid var(--preto);
+  border-radius: 0;
+  box-shadow: 8px 8px 0 #000;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Título como a faixa vermelha do cabeçalho dos modais/pc-titulo */
+.atl-titulo-barra {
+  background: var(--vermelho);
+  color: var(--branco);
+  border-bottom: 6px solid var(--preto);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px 16px;
+}
+
+.atl-titulo {
+  color: var(--branco);
+  font-size: 20px;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: 1px;
+  text-shadow: 3px 3px 0 var(--preto);
+}
+
+/* ---------- HUD (mesmo painel cinza do PenaltiCampeao) ---------- */
+
+.atl-painel-status {
+  background: var(--cinza);
+  border: 4px solid var(--preto);
+  box-shadow: 4px 4px 0 var(--preto);
+  margin: 20px 20px 10px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  font-family: "Press Start 2P", monospace;
+  font-size: 9px;
+  color: var(--preto);
+  gap: 8px;
+}
+
+.atl-status-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.atl-status-rotulo {
+  font-size: 9px;
+}
+
+.atl-status-valor {
+  color: var(--vermelho);
+  font-size: 13px;
+}
+
+.atl-heart {
+  font-size: 13px;
+  margin-left: 2px;
+}
+
+/* ---------- Área do jogo ---------- */
+
+.atl-stage {
+  position: relative;
+  width: auto;
+  height: clamp(300px, 46vh, 420px);
+  margin: 10px 20px;
+  overflow: hidden;
+  border: 5px solid var(--preto);
+  box-shadow: 5px 5px 0 var(--preto);
+  background: #000000;
+}
+
+.atl-stage-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.atl-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+}
+
+/* ---------- Overlays (intro / fim de jogo) ---------- */
+
+.atl-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(20, 14, 30, 0.92);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
+  gap: 14px;
+  image-rendering: pixelated;
+}
+
+.atl-overlay-titulo {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--amarelo);
+  margin: 0;
+  font-family: "Press Start 2P", monospace;
+  line-height: 1.6;
+}
+
+.atl-overlay-sub {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--branco);
+  margin: 0;
+  max-width: 440px;
+  font-family: "Press Start 2P", monospace;
+  line-height: 2;
+}
+
+.atl-box-creditos {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.atl-box-creditos-titulo {
+  font-size: 14px;
+  color: var(--amarelo);
+  font-family: "Press Start 2P", monospace;
+  margin: 6px 0 10px 0;
+  letter-spacing: 1px;
+}
+
+.atl-box-creditos-linha {
+  font-size: 15px;
+  color: var(--branco);
+  font-family: "Baloo 2", sans-serif;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* Botão no mesmo tratamento 3D do .pc-btn-principal */
+.atl-btn {
+  font-family: "Press Start 2P", monospace;
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--branco);
+  background: var(--vermelho);
+  border: 4px solid var(--preto);
+  border-radius: 4px;
+  padding: 14px 32px;
+  min-width: 200px;
+  cursor: pointer;
+  box-shadow: 0 6px 0 var(--vermelho-escuro), 0 10px 0 var(--preto);
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+  image-rendering: pixelated;
+}
+.atl-btn:hover {
+  background: var(--vermelho-hover);
+  transform: translateY(-4px);
+  box-shadow: 0 10px 0 var(--vermelho-escuro), 0 14px 0 var(--preto);
+}
+.atl-btn:active {
+  transform: translateY(6px);
+  box-shadow: 0 0 0 var(--vermelho-escuro), 0 2px 0 var(--preto);
+}
+
+/* ---------- Confetes ---------- */
+
+.atl-confetes {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.atl-confete {
+  position: absolute;
+  top: -10%;
+  width: 8px;
+  height: 8px;
+  animation-name: atl-fall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes atl-fall {
+  0% { transform: translateY(0) rotate(0deg); }
+  100% { transform: translateY(420px) rotate(360deg); }
+}
+
+/* ---------- Rodapé ---------- */
+
+.atl-rodape {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 10px 20px 16px;
+  text-align: center;
+  font-size: 9px;
+  line-height: 1.8;
+  color: var(--preto);
+}
+
+@media (max-width: 620px) {
+  .atl-titulo { font-size: 15px; }
+  .atl-painel-status { margin: 14px 14px 8px; }
+  .atl-stage { margin: 8px 14px; }
+  .atl-btn { font-size: 12px; min-width: 0; padding: 12px 22px; }
+}

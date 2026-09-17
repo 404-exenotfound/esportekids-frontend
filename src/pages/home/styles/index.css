@@ -31,7 +31,7 @@
 /* BODY */
 
 .modal-pixel .modal-body {
-  padding: 30px;
+  padding: 24px;
 }
 
 .opcao {
@@ -146,29 +146,38 @@
 }
 
 .personagens-container {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  width: 100%;
+}
+
+.selecao-personagem-container {
   display: flex;
   justify-content: center;
-  gap: 25px;
+  gap: 14px;
 }
 
 .personagem {
-  width: 140px;
+  width: 100%;
+  min-width: 0;
   text-align: center;
   cursor: pointer;
   user-select: none;
 }
 
 .personagem-imagem {
-  width: 140px;
-  height: 160px;
+  width: 100%;
+  aspect-ratio: 1 / 1.15;
+  height: auto;
 
   background: #d9d9d9;
 
-  border: 5px solid #1f1f1f;
+  border: 4px solid #1f1f1f;
 
-  box-shadow: 5px 5px 0 #1f1f1f;
+  box-shadow: 4px 4px 0 #1f1f1f;
 
-  margin-bottom: 15px;
+  margin-bottom: 12px;
 
   display: flex;
   align-items: center;
@@ -177,7 +186,22 @@
 
 .personagem span {
   font-family: "Press Start 2P", monospace;
-  font-size: 10px;
+  display: block;
+  min-height: 22px;
+  font-size: 8px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.selecao-personagem-container .personagem {
+  width: 110px;
+  flex: 0 0 110px;
+}
+
+.selecao-personagem-container .personagem-imagem {
+  width: 110px;
+  height: 120px;
+  aspect-ratio: auto;
 }
 
 /* PERSONAGEM SELECIONADO */
@@ -185,9 +209,9 @@
 .personagem-selecionado .personagem-imagem {
   background: #ffd166;
 
-  border: 5px solid #e63946;
+  border: 4px solid #e63946;
 
-  box-shadow: 5px 5px 0 #e63946;
+  box-shadow: 4px 4px 0 #e63946;
 }
 
 .personagem-selecionado span {

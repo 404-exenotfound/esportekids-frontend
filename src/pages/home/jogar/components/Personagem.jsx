@@ -15,7 +15,7 @@ export const Personagem = ({ setStep }) => {
     <div className="opcao personagem-opcao">
       <h3>SELECIONE O PERSONAGEM</h3>
 
-      <div className="personagens-container">
+      <div className="personagens-container selecao-personagem-container">
         {PERSONAGENS.map(({ valor, rotulo }) => (
           <div
             key={valor}
