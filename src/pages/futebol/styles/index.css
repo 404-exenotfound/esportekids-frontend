@@ -451,39 +451,49 @@
 
 .pc-botoes-fim {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 18px;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: space-between;
+  width: 100%;
   margin-top: 4px;
+}
+.pc-botoes-fim .pc-btn-principal,
+.pc-botoes-fim .pc-btn-secundario {
+  flex: 0 0 auto;
+  width: 220px;
+  font-size: 11px;
+  padding: 10px 16px;
 }
 
 /* ---------- Telas de intro e fim ---------- */
 
 .pc-tela {
   background: var(--creme);
-  padding: 34px 24px 40px;
+  padding: 14px 20px 16px;
   text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 10px;
   align-items: center;
-  justify-content: center;
+  justify-content: safe center;
+  max-height: min(65vh, calc(100svh - 160px));
+  overflow: hidden;
 }
 
 .pc-emoji-grande {
-  font-size: 48px;
+  font-size: 28px;
   line-height: 1;
 }
 
 .pc-estrelas {
-  font-size: 30px;
-  letter-spacing: 6px;
+  font-size: 20px;
+  letter-spacing: 4px;
 }
 
 .pc-texto-fim {
   font-family: "Press Start 2P", monospace;
-  font-size: 13px;
-  line-height: 1.8;
+  font-size: 12px;
+  line-height: 1.5;
   color: var(--preto);
   margin: 0;
 }
@@ -502,4 +512,16 @@
   .pc-hud { font-size: 8px; }
   .pc-btn-principal { font-size: 12px; min-width: 0; padding: 12px 22px; }
   .pc-btn-secundario { font-size: 10px; padding: 10px 14px; }
+  .pc-botoes-fim {
+    gap: 8px;
+  }
+  .pc-botoes-fim .pc-btn-principal,
+  .pc-botoes-fim .pc-btn-secundario {
+    flex: 1 1 0;
+    width: auto;
+    min-width: 0;
+    font-size: clamp(8px, 2.4vw, 11px);
+    padding: 10px 4px;
+    white-space: normal;
+  }
 }

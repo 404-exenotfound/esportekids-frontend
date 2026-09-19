@@ -17,36 +17,35 @@ const Atletismo = () => {
           <h1 className="atl-titulo">ATLETISMO</h1>
         </div>
 
-        {/* Barra de status (estrelas, vidas, nível de velocidade) */}
-        <Placar
-          estrelas={jogo.stars}
-          vidas={jogo.hearts}
-          rotulo={jogo.rotulo}
-          cor={jogo.cor}
-        />
-
-        <Arena canvasRef={jogo.canvasRef}>
-          {jogo.gameState === FASES.START && (
-            <TelaIntro onJogar={jogo.startGame} />
-          )}
-
-          {jogo.gameState === FASES.GAMEOVER && (
-            <TelaFimDeJogo
-              venceu={false}
+        {jogo.gameState === FASES.GAMEOVER || jogo.gameState === FASES.WIN ? (
+          <TelaFimDeJogo
+            venceu={jogo.gameState === FASES.WIN}
+            estrelas={jogo.stars}
+            onJogarNovamente={jogo.startGame}
+            onVoltar={jogo.voltarParaHome}
+          />
+        ) : (
+          <>
+            {/* Barra de status (estrelas, vidas, nível de velocidade) */}
+            <Placar
               estrelas={jogo.stars}
-              onJogarNovamente={jogo.startGame}
+              vidas={jogo.hearts}
+              rotulo={jogo.rotulo}
+              cor={jogo.cor}
             />
-          )}
 
-          {jogo.gameState === FASES.WIN && (
-            <TelaFimDeJogo venceu onProximoJogo={jogo.voltarParaHome} />
-          )}
-        </Arena>
+            <Arena canvasRef={jogo.canvasRef}>
+              {jogo.gameState === FASES.START && (
+                <TelaIntro onJogar={jogo.startGame} />
+              )}
+            </Arena>
 
-        {/* Rodapé de instrução */}
-        <div className="atl-rodape">
-          <p className="atl-rodape-texto">PULE COM A TECLA ESPAÇO</p>
-        </div>
+            {/* Rodapé de instrução */}
+            <div className="atl-rodape">
+              <p className="atl-rodape-texto">PULE COM A TECLA ESPAÇO</p>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

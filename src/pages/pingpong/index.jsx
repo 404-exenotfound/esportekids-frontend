@@ -29,51 +29,54 @@ const PingPong = () => {
           </h1>
         </div>
 
-        {/* Placar visível apenas quando a partida começou */}
-        {jogo.emJogo && (
-          <Placar
-            tentativaExibida={jogo.tentativaExibida}
+        {/* Tela final com o placar e os créditos (idêntica ao PenaltiCampeao) */}
+        {jogo.mostrarFimDeJogo && (
+          <TelaFimDeJogo
             pontos={jogo.pontos}
-            nivel={jogo.nivel}
-            bolinhas={jogo.bolinhas}
-            somLigado={jogo.somLigado}
-            onAlternarSom={jogo.alternarSom}
+            estrelas={jogo.estrelas}
+            emojiFinal={jogo.emojiFinal}
+            onJogarNovamente={jogo.iniciarJogo}
+            onVoltar={jogo.voltarParaHome}
           />
         )}
 
-        {/* Arena = canvas do jogo + camadas por cima */}
-        <Arena canvasRef={jogo.canvasRef}>
-          {/* Tela inicial (antes de começar / no fim de jogo) */}
-          {!jogo.emJogo && !jogo.mostrarFimDeJogo && (
-            <TelaIntro onJogar={jogo.iniciarJogo} />
-          )}
+        {/* Placar e Arena ficam ocultos na tela final */}
+        {!jogo.mostrarFimDeJogo && (
+          <>
+            {/* Placar visível apenas quando a partida começou */}
+            {jogo.emJogo && (
+              <Placar
+                tentativaExibida={jogo.tentativaExibida}
+                pontos={jogo.pontos}
+                nivel={jogo.nivel}
+                bolinhas={jogo.bolinhas}
+                somLigado={jogo.somLigado}
+                onAlternarSom={jogo.alternarSom}
+              />
+            )}
 
-          {/* Banner de ponto ou erro durante a partida */}
-          {jogo.mostrarBanner && (
-            <BannerResultado
-              tipo={jogo.bannerTipo}
-              frase={jogo.fraseResultado}
-              fraseTorcida={jogo.fraseTorcida}
-            />
-          )}
+            {/* Arena = canvas do jogo + camadas por cima */}
+            <Arena canvasRef={jogo.canvasRef}>
+              {/* Tela inicial (antes de começar) */}
+              {!jogo.emJogo && <TelaIntro onJogar={jogo.iniciarJogo} />}
 
-          {/* Confetes quando a tentativa terminou em PONTO */}
-          {jogo.bannerTipo === "ponto" && jogo.mostrarBanner && <Confete />}
+              {/* Banner de ponto ou erro durante a partida */}
+              {jogo.mostrarBanner && (
+                <BannerResultado
+                  tipo={jogo.bannerTipo}
+                  frase={jogo.fraseResultado}
+                  fraseTorcida={jogo.fraseTorcida}
+                />
+              )}
 
-          {/* Tela final com o placar e os créditos */}
-          {jogo.mostrarFimDeJogo && (
-            <TelaFimDeJogo
-              pontos={jogo.pontos}
-              estrelas={jogo.estrelas}
-              emojiFinal={jogo.emojiFinal}
-              onJogarNovamente={jogo.iniciarJogo}
-              onVoltar={jogo.voltarParaHome}
-            />
-          )}
-        </Arena>
+              {/* Confetes quando a tentativa terminou em PONTO */}
+              {jogo.bannerTipo === "ponto" && jogo.mostrarBanner && <Confete />}
+            </Arena>
 
-        {/* Rodapé com a dica/mensagem da fase atual */}
-        {jogo.emJogo && <p className="pp-rodape">{jogo.mensagemRodape}</p>}
+            {/* Rodapé com a dica/mensagem da fase atual */}
+            {jogo.emJogo && <p className="pp-rodape">{jogo.mensagemRodape}</p>}
+          </>
+        )}
       </div>
     </div>
   );

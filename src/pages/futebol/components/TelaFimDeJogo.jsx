@@ -1,4 +1,5 @@
 import { TOTAL_RODADAS } from "../utils/constantes";
+import { Creditos } from "../../../components/Creditos";
 
 export const TelaFimDeJogo = ({ placar, estrelas, emojiFinal, onJogarNovamente, onVoltar }) => (
   <div className="pc-tela">
@@ -15,12 +16,14 @@ export const TelaFimDeJogo = ({ placar, estrelas, emojiFinal, onJogarNovamente, 
       {"☆".repeat(3 - estrelas)}
     </div>
 
+    <Creditos />
+
     <div className="pc-botoes-fim">
-      <button className="pc-btn-principal" onClick={onJogarNovamente}>
-        JOGAR NOVAMENTE
-      </button>
       <button className="pc-btn-secundario" onClick={onVoltar}>
         VOLTAR AO INÍCIO
+      </button>
+      <button className="pc-btn-principal" onClick={onJogarNovamente}>
+        JOGAR NOVAMENTE
       </button>
     </div>
   </div>

@@ -8,8 +8,8 @@
 
 import { Confete } from "./Confete";
 
-export const Overlay = ({ children, confetti }) => (
-  <div className="pp-overlay">
+export const Overlay = ({ children, confetti, className }) => (
+  <div className={`pp-overlay${className ? ` ${className}` : ""}`}>
     {confetti && <Confete />}
     {children}
   </div>

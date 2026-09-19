@@ -186,6 +186,56 @@ html, body { margin: 0; padding: 0; }
   line-height: 1.6;
 }
 
+/* ---------- Tela de fim de jogo (idêntica ao PenaltiCampeao) ---------- */
+
+.atl-tela {
+  background: var(--creme);
+  padding: 14px 20px 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  justify-content: safe center;
+  max-height: min(65vh, calc(100svh - 160px));
+  overflow: hidden;
+}
+
+.atl-emoji-grande {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.atl-estrelas {
+  font-size: 20px;
+  letter-spacing: 4px;
+}
+
+.atl-texto-fim {
+  font-family: "Press Start 2P", monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--preto);
+  margin: 0;
+}
+
+.atl-botoes-fim {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.atl-botoes-fim .atl-btn-principal,
+.atl-botoes-fim .atl-btn-secundario {
+  flex: 0 0 auto;
+  width: 220px;
+  font-size: 11px;
+  padding: 10px 16px;
+}
+
 /* Botão no mesmo tratamento 3D do .pc-btn-principal */
 .atl-btn {
   font-family: "Press Start 2P", monospace;
@@ -210,6 +260,53 @@ html, body { margin: 0; padding: 0; }
 .atl-btn:active {
   transform: translateY(6px);
   box-shadow: 0 0 0 var(--vermelho-escuro), 0 2px 0 var(--preto);
+}
+
+/* Ação principal no mesmo tratamento 3D do .pc-btn-principal */
+.atl-btn-principal {
+  font-family: "Press Start 2P", monospace;
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--branco);
+  background: var(--vermelho);
+  border: 4px solid var(--preto);
+  border-radius: 4px;
+  padding: 14px 32px;
+  min-width: 200px;
+  cursor: pointer;
+  box-shadow: 0 6px 0 var(--vermelho-escuro), 0 10px 0 var(--preto);
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+.atl-btn-principal:hover {
+  background: var(--vermelho-hover);
+  transform: translateY(-4px);
+  box-shadow: 0 10px 0 var(--vermelho-escuro), 0 14px 0 var(--preto);
+}
+.atl-btn-principal:active {
+  transform: translateY(6px);
+  box-shadow: 0 0 0 var(--vermelho-escuro), 0 2px 0 var(--preto);
+}
+
+/* Ação secundária no mesmo tratamento do .pc-btn-secundario */
+.atl-btn-secundario {
+  font-family: "Press Start 2P", monospace;
+  font-size: 11px;
+  color: var(--preto);
+  background: var(--amarelo);
+  border: 4px solid var(--preto);
+  border-radius: 0;
+  padding: 12px 18px;
+  cursor: pointer;
+  box-shadow: 4px 4px 0 var(--preto);
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+.atl-btn-secundario:hover {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--preto);
+}
+.atl-btn-secundario:active {
+  transform: translate(4px, 4px);
+  box-shadow: 0 0 0 var(--preto);
 }
 
 /* ---------- Confetes ---------- */
@@ -255,4 +352,16 @@ html, body { margin: 0; padding: 0; }
   .atl-painel-status { margin: 14px 14px 8px; }
   .atl-stage { margin: 8px 14px; }
   .atl-btn { font-size: 12px; min-width: 0; padding: 12px 22px; }
+  .atl-botoes-fim {
+    gap: 8px;
+  }
+  .atl-botoes-fim .atl-btn-principal,
+  .atl-botoes-fim .atl-btn-secundario {
+    flex: 1 1 0;
+    width: auto;
+    min-width: 0;
+    font-size: clamp(8px, 2.4vw, 11px);
+    padding: 10px 4px;
+    white-space: normal;
+  }
 }

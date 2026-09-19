@@ -1,4 +1,5 @@
 import { TOTAL_RODADAS } from "../utils/constantes";
+import { Creditos } from "../../../components/Creditos";
 
 export const TelaFimDeJogo = ({
   cestas,
@@ -20,12 +21,14 @@ export const TelaFimDeJogo = ({
       {"⭐".repeat(estrelas)}
     </div>
 
+    <Creditos />
+
     <div className="bq-botoes-fim">
-      <button className="bq-btn-principal" onClick={onJogarNovamente}>
-        JOGAR NOVAMENTE
-      </button>
       <button className="bq-btn-secundario" onClick={onVoltar}>
         VOLTAR AO INÍCIO
+      </button>
+      <button className="bq-btn-principal" onClick={onJogarNovamente}>
+        JOGAR NOVAMENTE
       </button>
     </div>
   </div>
