@@ -1,17 +1,7 @@
-import atletismo from "../../../../assets/atletismo.jpeg";
-import basquete from "../../../../assets/basquete.jpeg";
-import boliche from "../../../../assets/boliche.jpeg";
-import futebol from "../../../../assets/futebol.jpeg";
-
-const imagensJogos = {
-  atletismo,
-  basquete,
-  boliche,
-  futebol,
-};
+import { capaDoJogo } from "../../../../utils/imagens";
 
 export const ItemJogo = ({ jogo, setJogo, nomeJogo }) => {
-  const imagem = imagensJogos[nomeJogo];
+  const imagem = capaDoJogo(nomeJogo);
 
   return (
     <div
@@ -23,6 +13,7 @@ export const ItemJogo = ({ jogo, setJogo, nomeJogo }) => {
           <img
             src={imagem}
             alt={nomeJogo}
+            loading="lazy"
             style={{ width: "100%", height: "100%", objectFit: "cover" }}
           />
         )}
