@@ -6,7 +6,7 @@
 // ============================================================================
 
 export function nivelDoMomento(pontos) {
-  if (pontos <= 3) return { rotulo: "FÁCIL", classe: "" };
-  if (pontos <= 7) return { rotulo: "MÉDIO", classe: "media" };
+  if (pontos <= 1) return { rotulo: "FÁCIL", classe: "" };
+  if (pontos <= 3) return { rotulo: "MÉDIO", classe: "media" };
   return { rotulo: "DIFÍCIL", classe: "dificil" };
 }

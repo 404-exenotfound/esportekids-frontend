@@ -13,7 +13,7 @@ export const GAME_HEIGHT = 400; // altura do canvas em pixels
 export const PIXEL = 4; // tamanho de cada "bloco" do desenho pixelado
 
 // --- Regras da partida ------------------------------------------------------
-export const TOTAL_TENTATIVAS = 11; // número de bolas (tentativas) por partida
+export const TOTAL_TENTATIVAS = 5; // número de bolas (tentativas) por partida
 
 // --- Fases (estados) do jogo ------------------------------------------------
 export const FASES = {

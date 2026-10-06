@@ -13,7 +13,7 @@ export function dificuldadeDaRodada(cestas) {
     RAIO_PRECISAO_MINIMO
   );
 
-  if (cestas <= 2) return { rotulo: "FÁCIL", classe: "", raio };
-  if (cestas <= 6) return { rotulo: "MÉDIO", classe: "media", raio };
+  if (cestas <= 1) return { rotulo: "FÁCIL", classe: "", raio };
+  if (cestas <= 3) return { rotulo: "MÉDIO", classe: "media", raio };
   return { rotulo: "DIFÍCIL", classe: "dificil", raio };
 }

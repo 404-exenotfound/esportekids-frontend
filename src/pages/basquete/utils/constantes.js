@@ -1,4 +1,4 @@
-export const TOTAL_RODADAS = 10;
+export const TOTAL_RODADAS = 5;
 
 // Fases do jogo, na ordem em que acontecem
 export const FASES = {
