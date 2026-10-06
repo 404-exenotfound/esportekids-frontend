@@ -1,0 +1,339 @@
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
+
+/* Paleta e estrutura alinhadas aos outros jogos (card creme, contorno preto
+   grosso, faixa vermelha no título e sombras sólidas). */
+.bq-wrapper {
+  --vermelho: #e63946;
+  --vermelho-escuro: #8f1d2c;
+  --vermelho-hover: #c92f3b;
+  --preto: #1f1f1f;
+  --amarelo: #ffd166;
+  --creme: #f5f5dc;
+  --cinza: #d9d9d9;
+  --branco: #ffffff;
+
+  width: 100%;
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 20px 16px;
+  display: flex;
+  justify-content: center;
+  font-family: "Press Start 2P", ui-monospace, monospace;
+  color: var(--preto);
+  box-sizing: border-box;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.bq-wrapper * {
+  box-sizing: border-box;
+}
+
+.bq-card {
+  width: 100%;
+  background: var(--creme);
+  border: 6px solid var(--preto);
+  border-radius: 0;
+  box-shadow: 8px 8px 0 #000;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- Cabeçalho ---------- */
+.bq-titulo-barra {
+  background: var(--vermelho);
+  color: var(--branco);
+  border-bottom: 6px solid var(--preto);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px 16px;
+}
+.bq-titulo {
+  color: var(--branco);
+  font-size: 20px;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: 1px;
+  text-shadow: 3px 3px 0 var(--preto);
+}
+.bq-titulo span {
+  color: var(--amarelo);
+}
+
+/* ---------- Palco (canvas) ---------- */
+.bq-stage {
+  position: relative;
+  margin: 20px 20px 10px;
+  overflow: hidden;
+  border: 5px solid var(--preto);
+  box-shadow: 5px 5px 0 var(--preto);
+  background: #000;
+}
+.bq-stage.bq-oculto {
+  display: none;
+}
+
+.bq-canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  touch-action: none;
+  cursor: grab;
+}
+.bq-canvas:active {
+  cursor: grabbing;
+}
+
+/* ---------- HUD ---------- */
+.bq-hud {
+  position: absolute;
+  top: 2.5%;
+  left: 2%;
+  right: 2%;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  pointer-events: none;
+}
+.bq-caixa {
+  background: #1b2340;
+  color: #fff;
+  padding: 0.8em 1em;
+  font-size: clamp(7px, 1.4vw, 13px);
+  display: flex;
+  flex-direction: column;
+  gap: 0.7em;
+  box-shadow: 0 -3px 0 0 #ffd34d, 0 3px 0 0 #ffd34d, -3px 0 0 0 #ffd34d, 3px 0 0 0 #ffd34d;
+}
+.bq-caixa b {
+  color: #ffd34d;
+  font-weight: normal;
+}
+.bq-rotulo {
+  color: #8ea2ff;
+  font-size: 0.75em;
+}
+.bq-bolas {
+  display: flex;
+  gap: 0.35em;
+}
+.bq-bolas i {
+  width: 0.9em;
+  height: 0.9em;
+  border-radius: 50%;
+  display: inline-block;
+}
+.bq-bolas i.cheia {
+  background: #ee7421;
+  box-shadow: 0 0 0 2px #2b1206;
+}
+.bq-bolas i.vazia {
+  background: #39446a;
+  box-shadow: 0 0 0 2px #1b2340;
+}
+.bq-tres {
+  color: #5be37d;
+  font-size: 0.7em;
+  margin-left: 0.4em;
+}
+
+.bq-combo {
+  position: absolute;
+  left: 2.5%;
+  top: 22%;
+  background: #e8412c;
+  color: #fff;
+  padding: 0.6em 0.9em;
+  font-size: clamp(8px, 1.5vw, 14px);
+  box-shadow: 0 0 0 3px #1b2340;
+  pointer-events: none;
+}
+
+/* ---------- aviso (CESTA!, ERROU!) ---------- */
+.bq-aviso {
+  position: absolute;
+  left: 50%;
+  top: 24%;
+  transform: translateX(-50%);
+  padding: 0.8em 1.2em;
+  font-size: clamp(11px, 2.6vw, 26px);
+  white-space: nowrap;
+  pointer-events: none;
+  color: #fff;
+  background: #1b2340;
+  box-shadow: 0 0 0 4px #ffd34d, 0 0 0 8px #1b2340;
+  animation: bq-pop 1.3s steps(10) forwards;
+}
+.bq-aviso.bom {
+  color: #ffd34d;
+}
+.bq-aviso.ruim {
+  color: #ff7a66;
+  box-shadow: 0 0 0 4px #e8412c, 0 0 0 8px #1b2340;
+}
+@keyframes bq-pop {
+  0% { transform: translateX(-50%) scale(0.3); opacity: 0; }
+  20% { transform: translateX(-50%) scale(1.15); opacity: 1; }
+  35% { transform: translateX(-50%) scale(1); }
+  80% { opacity: 1; }
+  100% { transform: translateX(-50%) translateY(-20px) scale(1); opacity: 0; }
+}
+
+/* ---------- Tela de abertura (por cima do palco) ---------- */
+.bq-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(20, 14, 30, 0.92);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: safe center;
+  text-align: center;
+  padding: 16px;
+  gap: 10px;
+  overflow: auto;
+}
+.bq-overlay-titulo {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--amarelo);
+  margin: 0;
+  line-height: 1.6;
+}
+.bq-overlay-sub {
+  font-size: 10px;
+  color: var(--branco);
+  margin: 0;
+  max-width: 480px;
+  line-height: 2;
+}
+
+/* ---------- Rodapé ---------- */
+.bq-rodape {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 10px 20px 16px;
+  text-align: center;
+}
+.bq-rodape-texto {
+  margin: 0;
+  font-size: 9px;
+  line-height: 1.8;
+  color: var(--preto);
+}
+
+/* ---------- Tela final ---------- */
+.bq-tela {
+  background: var(--creme);
+  padding: 14px 20px 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  justify-content: safe center;
+  max-height: min(65vh, calc(100svh - 160px));
+  overflow: hidden;
+}
+.bq-emoji-grande {
+  font-size: 28px;
+  line-height: 1;
+}
+.bq-estrelas {
+  font-size: 20px;
+  letter-spacing: 4px;
+}
+.bq-texto-fim {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--preto);
+  margin: 0;
+}
+.bq-botoes-fim {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 4px;
+}
+.bq-botoes-fim .bq-btn-principal,
+.bq-botoes-fim .bq-btn-secundario {
+  flex: 0 0 auto;
+  width: 220px;
+  font-size: 11px;
+  padding: 10px 16px;
+}
+
+/* ---------- Botões ---------- */
+.bq-btn,
+.bq-btn-principal {
+  font-family: "Press Start 2P", monospace;
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--branco);
+  background: var(--vermelho);
+  border: 4px solid var(--preto);
+  border-radius: 4px;
+  padding: 14px 32px;
+  min-width: 200px;
+  cursor: pointer;
+  box-shadow: 0 6px 0 var(--vermelho-escuro), 0 10px 0 var(--preto);
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+.bq-btn:hover,
+.bq-btn-principal:hover {
+  background: var(--vermelho-hover);
+  transform: translateY(-4px);
+  box-shadow: 0 10px 0 var(--vermelho-escuro), 0 14px 0 var(--preto);
+}
+.bq-btn:active,
+.bq-btn-principal:active {
+  transform: translateY(6px);
+  box-shadow: 0 0 0 var(--vermelho-escuro), 0 2px 0 var(--preto);
+}
+.bq-btn-secundario {
+  font-family: "Press Start 2P", monospace;
+  font-size: 11px;
+  color: var(--preto);
+  background: var(--amarelo);
+  border: 4px solid var(--preto);
+  border-radius: 0;
+  padding: 12px 18px;
+  cursor: pointer;
+  box-shadow: 4px 4px 0 var(--preto);
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+.bq-btn-secundario:hover {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--preto);
+}
+.bq-btn-secundario:active {
+  transform: translate(4px, 4px);
+  box-shadow: 0 0 0 var(--preto);
+}
+
+/* ---------- Telas pequenas ---------- */
+@media (max-width: 620px) {
+  .bq-titulo { font-size: 15px; }
+  .bq-stage { margin: 14px 14px 8px; }
+  .bq-overlay { padding: 8px; gap: 6px; }
+  .bq-overlay .bq-emoji-grande { font-size: 20px; }
+  .bq-overlay-titulo { font-size: 11px; }
+  .bq-overlay-sub { font-size: 7px; line-height: 1.7; }
+  .bq-btn { font-size: 11px; min-width: 0; padding: 9px 22px; }
+  .bq-botoes-fim { gap: 8px; }
+  .bq-botoes-fim .bq-btn-principal,
+  .bq-botoes-fim .bq-btn-secundario {
+    flex: 1 1 0;
+    width: auto;
+    min-width: 0;
+    font-size: clamp(8px, 2.4vw, 11px);
+    padding: 10px 4px;
+    white-space: normal;
+  }
+}
