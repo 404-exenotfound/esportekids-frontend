@@ -28,7 +28,7 @@
 }
 
 body{
-   background-image: url('./assets/background.jpg') !important;
+   background-image: url('https://esporteskids-149471050150-us-east-1-an.s3.us-east-1.amazonaws.com/public/background.jpg') !important;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
