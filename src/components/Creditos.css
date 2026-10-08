@@ -1,0 +1,73 @@
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&display=swap');
+
+.ck-box-creditos {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: #f5f5dc;
+  border: 4px solid #1f1f1f;
+  box-shadow: 4px 4px 0 #000;
+  padding: 10px 20px 14px;
+  max-width: 380px;
+  width: 100%;
+}
+
+.ck-box-creditos-titulo {
+  font-family: "Press Start 2P", monospace;
+  font-size: 11px;
+  color: #e63946;
+  margin: 0 0 4px;
+  letter-spacing: 1px;
+}
+
+.ck-creditos-linha {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 6px 10px;
+}
+
+.ck-creditos-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  min-width: 74px;
+}
+
+.ck-creditos-nome {
+  font-family: "Baloo 2", sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  color: #1f1f1f;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.ck-creditos-cargo {
+  font-family: "Baloo 2", sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  color: #6b6375;
+  margin: 0;
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+@media (max-width: 620px) {
+  .ck-box-creditos {
+    padding: 8px 12px 10px;
+  }
+  .ck-box-creditos-titulo {
+    font-size: 10px;
+  }
+  .ck-creditos-nome {
+    font-size: 11px;
+  }
+  .ck-creditos-cargo {
+    font-size: 8px;
+  }
+}
