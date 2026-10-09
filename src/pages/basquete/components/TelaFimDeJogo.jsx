@@ -3,10 +3,7 @@ import { Creditos } from "../../../components/Creditos";
 
 export const TelaFimDeJogo = ({
   cestas,
-<<<<<<< HEAD
   pontos,
-=======
->>>>>>> 693f9deb210c15ce8c6ac503394e6397897eb0cb
   estrelas,
   emojiFinal,
   onJogarNovamente,
@@ -19,7 +16,6 @@ export const TelaFimDeJogo = ({
       FIM DE JOGO!
       <br />
       VOCÊ FEZ {cestas} DE {TOTAL_RODADAS} CESTAS
-<<<<<<< HEAD
       <br />
       {pontos} PONTOS
     </p>
@@ -27,28 +23,15 @@ export const TelaFimDeJogo = ({
     <div className="bq-estrelas" aria-label={`${estrelas} de 3 estrelas`}>
       {"⭐".repeat(estrelas)}
       {"☆".repeat(3 - estrelas)}
-=======
-    </p>
-
-    <div className="bq-estrelas" aria-label={`${estrelas} estrelas`}>
-      {"⭐".repeat(estrelas)}
->>>>>>> 693f9deb210c15ce8c6ac503394e6397897eb0cb
     </div>
 
     <Creditos />
 
     <div className="bq-botoes-fim">
-<<<<<<< HEAD
       <button type="button" className="bq-btn-secundario" onClick={onVoltar}>
         VOLTAR AO INÍCIO
       </button>
       <button type="button" className="bq-btn-principal" onClick={onJogarNovamente}>
-=======
-      <button className="bq-btn-secundario" onClick={onVoltar}>
-        VOLTAR AO INÍCIO
-      </button>
-      <button className="bq-btn-principal" onClick={onJogarNovamente}>
->>>>>>> 693f9deb210c15ce8c6ac503394e6397897eb0cb
         JOGAR NOVAMENTE
       </button>
     </div>

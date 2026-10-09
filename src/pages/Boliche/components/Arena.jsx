@@ -2,21 +2,24 @@
 // O clique/toque aqui vale como a barra de espaço (pensado para tablet).
 
 import { GAME_HEIGHT, GAME_WIDTH } from "../utils/constantes";
+import EscalaProporcional from "../../../components/EscalaProporcional";
 
 export const Arena = ({ canvasRef, onAcao, children }) => (
   <div className="bol-stage">
-    <div
-      className="bol-stage-inner"
-      onPointerDown={onAcao}
-      role="presentation"
-    >
-      <canvas
-        ref={canvasRef}
-        width={GAME_WIDTH}
-        height={GAME_HEIGHT}
-        className="bol-canvas"
-      />
-      {children}
-    </div>
+    <EscalaProporcional largura={GAME_WIDTH} altura={GAME_HEIGHT}>
+      <div
+        className="bol-stage-inner"
+        onPointerDown={onAcao}
+        role="presentation"
+      >
+        <canvas
+          ref={canvasRef}
+          width={GAME_WIDTH}
+          height={GAME_HEIGHT}
+          className="bol-canvas"
+        />
+        {children}
+      </div>
+    </EscalaProporcional>
   </div>
 );

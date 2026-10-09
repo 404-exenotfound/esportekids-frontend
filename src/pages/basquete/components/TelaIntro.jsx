@@ -1,31 +1,85 @@
+import { useEffect, useRef, useState } from "react";
 import { TOTAL_RODADAS } from "../utils/constantes";
+import audioBasquete from "../../../assets/basquete.mp3";
 
-<<<<<<< HEAD
 // Tela de abertura: fica por cima do palco (canvas), no mesmo padrão dos outros jogos.
-export const TelaIntro = ({ onJogar }) => (
-  <div className="bq-overlay">
-    <div className="bq-emoji-grande">🏀</div>
-    <p className="bq-overlay-titulo">VAMOS JOGAR BASQUETE?</p>
-    <p className="bq-overlay-sub">
-      Puxe a bola para trás com o dedo ou o mouse, mire seguindo os pontinhos e solte para
-      arremessar! Você tem {TOTAL_RODADAS} arremessos. Quanto mais você puxa, mais forte é o
-      arremesso. A cada rodada a cesta muda de lugar e fica mais longe!
-    </p>
-    <button type="button" className="bq-btn" onClick={onJogar}>
-=======
-export const TelaIntro = ({ onJogar }) => (
-  <div className="bq-tela">
-    <div className="bq-emoji-grande">🏀</div>
-    <p className="bq-texto-fim">VAMOS JOGAR BASQUETE?</p>
-    <p className="bq-regra">
-      Clique na bolinha amarela dentro da cesta para acertar um arremesso!
-      Você tem {TOTAL_RODADAS} arremessos. Cada cesta vale 1 estrela e deixa a
-      cesta cada vez menor — e ela muda de lugar a cada cesta que você fizer!
-      Na última rodada a cesta anda, e você precisa acertar no momento certo!
-    </p>
-    <button className="bq-btn-principal" onClick={onJogar}>
->>>>>>> 693f9deb210c15ce8c6ac503394e6397897eb0cb
-      JOGAR
-    </button>
-  </div>
-);
+export const TelaIntro = ({ onJogar }) => {
+  const audioRef = useRef(null);
+  const [tocando, setTocando] = useState(false);
+
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
+    };
+  }, []);
+
+  const alternarAudio = async () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    if (!audio.paused) {
+      audio.pause();
+      return;
+    }
+
+    try {
+      await audio.play();
+    } catch (erro) {
+      setTocando(false);
+      console.error("Não foi possível reproduzir basquete.mp3:", erro);
+    }
+  };
+
+  const jogar = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+    setTocando(false);
+    onJogar();
+  };
+
+  return (
+    <div className="bq-overlay">
+      <div className="bq-emoji-grande">🏀</div>
+
+      <p className="bq-overlay-titulo">VAMOS JOGAR BASQUETE?</p>
+
+      <audio
+        ref={audioRef}
+        src={audioBasquete}
+        preload="none"
+        onPlay={() => setTocando(true)}
+        onPause={() => setTocando(false)}
+        onEnded={() => setTocando(false)}
+        onError={() => {
+          setTocando(false);
+          console.error("Erro ao carregar basquete.mp3.");
+        }}
+      />
+
+      <p className="bq-overlay-sub">
+        Puxe a bola para trás com o dedo ou o mouse, mire seguindo os pontinhos e solte para
+        arremessar! Você tem {TOTAL_RODADAS} arremessos. Quanto mais você puxa, mais forte é o
+        arremesso. A cada rodada a cesta muda de lugar e fica mais longe!
+      </p>
+
+      <button
+        type="button"
+        className="bq-btn-audio"
+        onClick={alternarAudio}
+        aria-label={tocando ? "Pausar instruções" : "Ouvir instruções"}
+      >
+        <span aria-hidden="true">{tocando ? "⏸" : "🔊"}</span>
+        {tocando ? "PAUSAR ÁUDIO" : "OUVIR INSTRUÇÕES"}
+      </button>
+
+      <button type="button" className="bq-btn" onClick={jogar}>
+        JOGAR
+      </button>
+    </div>
+  );
+};

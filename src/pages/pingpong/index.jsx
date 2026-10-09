@@ -14,15 +14,23 @@ import { Confete } from "./components/Confete";
 import { TelaIntro } from "./components/TelaIntro";
 import { TelaFimDeJogo } from "./components/TelaFimDeJogo";
 import { BotaoVoltar } from "../../educacional/components/BotaoVoltar";
+import BotaoTelaCheia from "../../components/BotaoTelaCheia";
 import { useDicasDoJogo } from "../../educacional/fases/useDicasDoJogo";
 import { DicaToast } from "../../educacional/fases/DicaToast";
 import { FimEducativo } from "../../educacional/fases/FimEducativo";
+import useTelaCheia from "../../hooks/useTelaCheia";
 import "./styles/index.css";
 
 const PingPong = () => {
   // Toda a lógica do jogo (estado, loop, sons) vive no hook
   const jogo = usePingpong();
   const edu = useDicasDoJogo("pingpong", jogo.pontos);
+  const {
+    emTelaCheia,
+    suportaTelaCheia,
+    ref: telaCheiaRef,
+    alternarTelaCheia,
+  } = useTelaCheia();
 
   return (
     <div className="pp-wrapper">
@@ -53,35 +61,45 @@ const PingPong = () => {
         {/* Placar e Arena ficam ocultos na tela final */}
         {!jogo.mostrarFimDeJogo && (
           <>
-            {/* Placar visível apenas quando a partida começou */}
-            {jogo.emJogo && (
-              <Placar
-                tentativaExibida={jogo.tentativaExibida}
-                pontos={jogo.pontos}
-                nivel={jogo.nivel}
-                bolinhas={jogo.bolinhas}
-                somLigado={jogo.somLigado}
-                onAlternarSom={jogo.alternarSom}
-              />
-            )}
-
-            {/* Arena = canvas do jogo + camadas por cima */}
-            <Arena canvasRef={jogo.canvasRef}>
-              {/* Tela inicial (antes de começar) */}
-              {!jogo.emJogo && <TelaIntro onJogar={jogo.iniciarJogo} />}
-
-              {/* Banner de ponto ou erro durante a partida */}
-              {jogo.mostrarBanner && (
-                <BannerResultado
-                  tipo={jogo.bannerTipo}
-                  frase={jogo.fraseResultado}
-                  fraseTorcida={jogo.fraseTorcida}
+            <div className="pp-palco" ref={telaCheiaRef}>
+              {/* Placar visível apenas quando a partida começou */}
+              {jogo.emJogo && (
+                <Placar
+                  tentativaExibida={jogo.tentativaExibida}
+                  pontos={jogo.pontos}
+                  nivel={jogo.nivel}
+                  bolinhas={jogo.bolinhas}
+                  somLigado={jogo.somLigado}
+                  onAlternarSom={jogo.alternarSom}
                 />
               )}
 
-              {/* Confetes quando a tentativa terminou em PONTO */}
-              {jogo.bannerTipo === "ponto" && jogo.mostrarBanner && <Confete />}
-            </Arena>
+              {/* Arena = canvas do jogo + camadas por cima */}
+              <Arena canvasRef={jogo.canvasRef}>
+                {/* Tela inicial (antes de começar) */}
+                {!jogo.emJogo && <TelaIntro onJogar={jogo.iniciarJogo} />}
+
+                {/* Banner de ponto ou erro durante a partida */}
+                {jogo.mostrarBanner && (
+                  <BannerResultado
+                    tipo={jogo.bannerTipo}
+                    frase={jogo.fraseResultado}
+                    fraseTorcida={jogo.fraseTorcida}
+                  />
+                )}
+
+                {/* Confetes quando a tentativa terminou em PONTO */}
+                {jogo.bannerTipo === "ponto" && jogo.mostrarBanner && <Confete />}
+              </Arena>
+
+              {suportaTelaCheia && (
+                <BotaoTelaCheia
+                  emTelaCheia={emTelaCheia}
+                  alternarTelaCheia={alternarTelaCheia}
+                  classe="pp-tela-cheia"
+                />
+              )}
+            </div>
 
             {/* Rodapé com a dica/mensagem da fase atual */}
             {jogo.emJogo && <p className="pp-rodape">{jogo.mensagemRodape}</p>}

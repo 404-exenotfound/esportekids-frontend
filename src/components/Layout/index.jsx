@@ -9,7 +9,7 @@ function Layout() {
 
       <main
         style={{
-          minHeight: "100vh",
+          minHeight: "100svh",
           width: "100%",
           display: "flex",
           justifyContent: "center",

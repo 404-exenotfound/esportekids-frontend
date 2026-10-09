@@ -2,7 +2,7 @@ import atletismo from "../../../../assets/atletismo2.jpeg";
 import basquete from "../../../../assets/basquete2.jpeg";
 import boliche from "../../../../assets/boliche2.jpeg";
 import futebol from "../../../../assets/futebol2.jpeg";
-import tenis from "../../../../assets/tenis.jpeg";
+import tenis from "../../../../assets/ping-pong.jpeg";
 
 const imagensJogos = {
   atletismo,

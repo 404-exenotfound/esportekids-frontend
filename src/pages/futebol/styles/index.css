@@ -20,11 +20,13 @@
   --ceu-claro: #a8c6ec;
 
   width: 100%;
-  max-width: 760px;
-  margin: 0 auto;
-  padding: 20px 16px;
+  max-width: none;
+  height: 100svh;
+  margin: 0;
+  padding: 0;
   display: flex;
   justify-content: center;
+  align-items: stretch;
   font-family: "Press Start 2P", monospace;
   color: var(--preto);
   box-sizing: border-box;
@@ -40,10 +42,13 @@
 /* Card no mesmo tratamento do .modal-pixel .modal-content */
 .pc-card {
   width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow-y: auto;
   background: var(--creme);
-  border: 6px solid var(--preto);
+  border: none;
   border-radius: 0;
-  box-shadow: 8px 8px 0 #000;
+  box-shadow: none;
   display: flex;
   flex-direction: column;
 }
@@ -148,9 +153,13 @@
 
 .pc-stage {
   position: relative;
-  width: auto;
-  height: clamp(300px, 46vh, 420px);
-  margin: 10px 20px;
+  width: 100%;
+  max-width: 1100px;
+  align-self: center;
+  flex: 1 1 0;
+  min-height: 0;
+  height: auto;
+  margin: 10px auto;
   overflow: hidden;
   border: 5px solid var(--preto);
   box-shadow: 5px 5px 0 var(--preto);
@@ -508,7 +517,7 @@
 @media (max-width: 620px) {
   .pc-titulo { font-size: 15px; }
   .pc-painel { margin: 14px 14px 8px; }
-  .pc-stage { margin: 8px 14px; }
+  .pc-stage { margin: 8px auto; width: calc(100% - 28px); max-width: none; }
   .pc-hud { font-size: 8px; }
   .pc-btn-principal { font-size: 12px; min-width: 0; padding: 12px 22px; }
   .pc-btn-secundario { font-size: 10px; padding: 10px 14px; }
@@ -523,5 +532,188 @@
     font-size: clamp(8px, 2.4vw, 11px);
     padding: 10px 4px;
     white-space: normal;
+  }
+}
+
+
+/* ---------- Tela de abertura no padrão visual do Basquete ---------- */
+.pc-tela-intro {
+  background: rgba(20, 14, 30, 0.92);
+  color: var(--branco);
+  padding: 16px;
+  gap: 10px;
+  align-items: center;
+  justify-content: safe center;
+  text-align: center;
+  overflow: auto;
+}
+
+.pc-tela-intro .pc-emoji-grande {
+  font-size: 28px;
+  line-height: 1.2;
+}
+
+.pc-tela-intro .pc-intro-titulo {
+  color: var(--amarelo);
+  font-size: 16px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.pc-tela-intro .pc-intro-regra {
+  color: var(--branco);
+  max-width: 480px;
+  font-size: 10px;
+  line-height: 2;
+  margin: 0;
+}
+
+.pc-btn-audio {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 4px auto 6px;
+  padding: 10px 14px;
+  background: #171b30;
+  color: #fff;
+  border: 3px solid #ffd166;
+  box-shadow: 3px 3px 0 #000;
+  font-family: "Press Start 2P", monospace;
+  font-weight: bold;
+  font-size: 9px;
+  cursor: pointer;
+}
+
+.pc-btn-audio:hover {
+  background: #242b48;
+  transform: translateY(-2px);
+}
+
+.pc-btn-audio:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 3px;
+}
+
+.pc-tela-intro .pc-btn-principal {
+  margin-top: 2px;
+}
+
+@media (max-width: 620px) {
+  .pc-tela-intro { padding: 10px; gap: 8px; }
+  .pc-tela-intro .pc-emoji-grande { font-size: 22px; }
+  .pc-tela-intro .pc-intro-titulo { font-size: 11px; }
+  .pc-tela-intro .pc-intro-regra { font-size: 7px; line-height: 1.8; }
+  .pc-btn-audio { font-size: 7px; padding: 9px 10px; }
+  .pc-tela-intro .pc-btn-principal { font-size: 10px; min-width: 0; padding: 10px 24px; }
+}
+
+
+/* Prévia do campo atrás da camada de instruções, como no Basquete. */
+.pc-intro-preview {
+  position: relative;
+  width: calc(100% - 40px);
+  max-width: 1100px;
+  margin: 20px auto 16px;
+  border: 5px solid var(--preto);
+  box-shadow: 5px 5px 0 var(--preto);
+  overflow: hidden;
+}
+
+.pc-intro-preview > .pc-stage {
+  width: 100%;
+  height: clamp(300px, 46vh, 420px);
+  margin: 0;
+  border: 0;
+  box-shadow: none;
+}
+
+.pc-intro-preview > .pc-tela-intro {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  background: rgba(20, 14, 30, 0.78);
+  color: var(--branco);
+  padding: 16px;
+  overflow: auto;
+}
+
+@media (max-width: 620px) {
+  .pc-intro-preview { margin: 14px auto 12px; width: calc(100% - 28px); }
+  .pc-intro-preview > .pc-stage { height: clamp(280px, 45vh, 360px); }
+  .pc-intro-preview > .pc-tela-intro { padding: 10px; }
+}
+
+/* ---------- Tela cheia ----------
+   Container que envolve o preview de intro (ou o Placar + Campo durante a
+   partida). Fora da tela cheia preenche o card; em tela cheia ocupa a
+   viewport inteira. */
+.pc-palco {
+  position: relative;
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.pc-palco:fullscreen,
+.pc-palco:-webkit-full-screen {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  background: var(--creme);
+  overflow: hidden;
+}
+/* Em tela cheia o campo pode crescer além do limite do card. */
+.pc-palco:fullscreen .pc-stage,
+.pc-palco:-webkit-full-screen .pc-stage {
+  max-width: min(1600px, calc(100% - 40px));
+}
+
+/* Botão TELA CHEIA (mesmo estilo pixel do VOLTAR) */
+.pc-tela-cheia {
+  position: fixed;
+  top: 12px;
+  left: 150px;
+  z-index: 1070;
+  background: var(--vermelho);
+  color: var(--branco);
+  border: 4px solid var(--preto);
+  border-radius: 0;
+  padding: 10px 14px;
+  cursor: pointer;
+  box-shadow: 4px 4px 0 var(--preto);
+  font: 400 11px "Press Start 2P", monospace;
+  text-shadow: 2px 2px 0 var(--preto);
+}
+.pc-tela-cheia:hover {
+  background: var(--vermelho-hover);
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--preto);
+}
+.pc-tela-cheia:focus-visible {
+  outline: 4px solid var(--amarelo);
+  outline-offset: 2px;
+}
+.pc-palco:fullscreen .pc-tela-cheia,
+.pc-palco:-webkit-full-screen .pc-tela-cheia {
+  position: absolute;
+  top: auto;
+  left: auto;
+  right: 12px;
+  bottom: 12px;
+}
+@media (max-width: 620px) {
+  .pc-tela-cheia {
+    top: 6px;
+    left: 136px;
+    padding: 8px 10px;
+    font-size: 9px;
+  }
+  .pc-palco:fullscreen .pc-intro-preview,
+  .pc-palco:-webkit-full-screen .pc-intro-preview {
+    margin: 20px auto;
   }
 }

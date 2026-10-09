@@ -21,11 +21,13 @@ html, body { margin: 0; padding: 0; }
   --parede-arena: #2e3ea8;
 
   width: 100%;
-  max-width: 820px;
-  margin: 0 auto;
-  padding: 20px 16px;
+  max-width: none;
+  height: 100svh;
+  margin: 0;
+  padding: 0;
   display: flex;
   justify-content: center;
+  align-items: stretch;
   font-family: "Press Start 2P", monospace;
   color: var(--preto);
   box-sizing: border-box;
@@ -35,10 +37,13 @@ html, body { margin: 0; padding: 0; }
 /* Card no mesmo tratamento do .pc-card do PenaltiCampeao */
 .atl-card {
   width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow-y: auto;
   background: var(--creme);
-  border: 6px solid var(--preto);
+  border: none;
   border-radius: 0;
-  box-shadow: 8px 8px 0 #000;
+  box-shadow: none;
   display: flex;
   flex-direction: column;
 }
@@ -105,8 +110,8 @@ html, body { margin: 0; padding: 0; }
 
 .atl-stage {
   position: relative;
-  width: auto;
-  height: clamp(300px, 46vh, 420px);
+  flex: 1 1 0;
+  min-height: 0;
   margin: 10px 20px;
   overflow: hidden;
   border: 5px solid var(--preto);
@@ -118,6 +123,8 @@ html, body { margin: 0; padding: 0; }
   position: relative;
   width: 100%;
   height: 100%;
+  min-width: 0;
+  min-height: 0;
 }
 
 .atl-canvas {
@@ -363,5 +370,101 @@ html, body { margin: 0; padding: 0; }
     font-size: clamp(8px, 2.4vw, 11px);
     padding: 10px 4px;
     white-space: normal;
+  }
+}
+
+/* Botão de áudio no mesmo padrão visual usado no Basquete */
+.atl-btn-audio {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 4px auto 6px;
+  padding: 10px 14px;
+  background: #171b30;
+  color: #fff;
+  border: 3px solid #ffd166;
+  box-shadow: 3px 3px 0 #000;
+  font-family: "Press Start 2P", monospace;
+  font-weight: bold;
+  font-size: 9px;
+  cursor: pointer;
+  image-rendering: pixelated;
+}
+
+.atl-btn-audio:hover {
+  background: #242b48;
+  transform: translateY(-2px);
+}
+
+.atl-btn-audio:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 3px;
+}
+
+@media (max-width: 620px) {
+  .atl-btn-audio {
+    font-size: 7px;
+    padding: 9px 10px;
+  }
+}
+
+/* ---------- Tela cheia ----------
+   Container que envolve o placar (status/HUD) e a Arena. */
+.atl-palco {
+  position: relative;
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.atl-palco:fullscreen,
+.atl-palco:-webkit-full-screen {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  background: var(--creme);
+  overflow: hidden;
+}
+
+/* Botão TELA CHEIA (mesmo estilo pixel do VOLTAR) */
+.atl-tela-cheia {
+  position: fixed;
+  top: 12px;
+  left: 150px;
+  z-index: 1070;
+  background: var(--vermelho);
+  color: var(--branco);
+  border: 4px solid var(--preto);
+  border-radius: 0;
+  padding: 10px 14px;
+  cursor: pointer;
+  box-shadow: 4px 4px 0 var(--preto);
+  font: 400 11px "Press Start 2P", monospace;
+  text-shadow: 2px 2px 0 var(--preto);
+}
+.atl-tela-cheia:hover {
+  background: var(--vermelho-hover);
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--preto);
+}
+.atl-tela-cheia:focus-visible {
+  outline: 4px solid var(--amarelo);
+  outline-offset: 2px;
+}
+.atl-palco:fullscreen .atl-tela-cheia,
+.atl-palco:-webkit-full-screen .atl-tela-cheia {
+  position: absolute;
+  top: auto;
+  left: auto;
+  right: 12px;
+  bottom: 12px;
+}
+@media (max-width: 620px) {
+  .atl-tela-cheia {
+    top: 6px;
+    left: 136px;
+    padding: 8px 10px;
+    font-size: 9px;
   }
 }

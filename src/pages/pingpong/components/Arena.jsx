@@ -8,17 +8,20 @@
 // ============================================================================
 
 import { GAME_HEIGHT, GAME_WIDTH } from "../utils/constantes";
+import EscalaProporcional from "../../../components/EscalaProporcional";
 
 export const Arena = ({ canvasRef, children }) => (
   <div className="pp-stage">
-    <div className="pp-stage-inner">
-      <canvas
-        ref={canvasRef}
-        width={GAME_WIDTH}
-        height={GAME_HEIGHT}
-        className="pp-canvas"
-      />
-      {children}
-    </div>
+    <EscalaProporcional largura={GAME_WIDTH} altura={GAME_HEIGHT}>
+      <div className="pp-stage-inner">
+        <canvas
+          ref={canvasRef}
+          width={GAME_WIDTH}
+          height={GAME_HEIGHT}
+          className="pp-canvas"
+        />
+        {children}
+      </div>
+    </EscalaProporcional>
   </div>
 );

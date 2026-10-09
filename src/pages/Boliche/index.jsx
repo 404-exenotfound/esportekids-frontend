@@ -10,9 +10,11 @@ import { BannerResultado } from "./components/BannerResultado";
 import { Confete } from "./components/Confete";
 import { ETAPAS } from "./utils/constantes";
 import { BotaoVoltar } from "../../educacional/components/BotaoVoltar";
+import BotaoTelaCheia from "../../components/BotaoTelaCheia";
 import { useDicasDoJogo } from "../../educacional/fases/useDicasDoJogo";
 import { DicaToast } from "../../educacional/fases/DicaToast";
 import { FimEducativo } from "../../educacional/fases/FimEducativo";
+import useTelaCheia from "../../hooks/useTelaCheia";
 import "./styles/index.css";
 
 const DICAS = {
@@ -25,6 +27,12 @@ const DICAS = {
 const Boliche = () => {
   const jogo = useBoliche();
   const edu = useDicasDoJogo("boliche", jogo.pontos);
+  const {
+    emTelaCheia,
+    suportaTelaCheia,
+    ref: telaCheiaRef,
+    alternarTelaCheia,
+  } = useTelaCheia();
 
   return (
     <div className="bol-wrapper">
@@ -51,33 +59,43 @@ const Boliche = () => {
           </FimEducativo>
         ) : (
           <>
-            {jogo.emJogo && (
-              <Placar
-                rodada={jogo.rodada}
-                bolaDaRodada={jogo.bolaDaRodada}
-                pontos={jogo.pontos}
-                pinosEmPe={jogo.pinosEmPe}
-                somLigado={jogo.somLigado}
-                onAlternarSom={jogo.alternarSom}
-              />
-            )}
-
-            <Arena canvasRef={jogo.canvasRef} onAcao={jogo.acao}>
-              {jogo.mostrarIntro && <TelaIntro onJogar={jogo.iniciarJogo} />}
-
-              {jogo.banner && (
-                <BannerResultado
-                  tipo={jogo.banner.tipo}
-                  frase={jogo.banner.frase}
-                  derrubados={jogo.banner.derrubados}
+            <div className="bol-palco" ref={telaCheiaRef}>
+              {jogo.emJogo && (
+                <Placar
+                  rodada={jogo.rodada}
+                  bolaDaRodada={jogo.bolaDaRodada}
+                  pontos={jogo.pontos}
+                  pinosEmPe={jogo.pinosEmPe}
+                  somLigado={jogo.somLigado}
+                  onAlternarSom={jogo.alternarSom}
                 />
               )}
 
-              {jogo.banner &&
-                (jogo.banner.tipo === "strike" || jogo.banner.tipo === "spare") && (
-                  <Confete />
+              <Arena canvasRef={jogo.canvasRef} onAcao={jogo.acao}>
+                {jogo.mostrarIntro && <TelaIntro onJogar={jogo.iniciarJogo} />}
+
+                {jogo.banner && (
+                  <BannerResultado
+                    tipo={jogo.banner.tipo}
+                    frase={jogo.banner.frase}
+                    derrubados={jogo.banner.derrubados}
+                  />
                 )}
-            </Arena>
+
+                {jogo.banner &&
+                  (jogo.banner.tipo === "strike" || jogo.banner.tipo === "spare") && (
+                    <Confete />
+                  )}
+              </Arena>
+
+              {suportaTelaCheia && (
+                <BotaoTelaCheia
+                  emTelaCheia={emTelaCheia}
+                  alternarTelaCheia={alternarTelaCheia}
+                  classe="bol-tela-cheia"
+                />
+              )}
+            </div>
 
             {jogo.emJogo && (
               <div className="bol-rodape">

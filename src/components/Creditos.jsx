@@ -15,7 +15,7 @@ const CREDITOS = [
     { nome: "Tiago Machado", cargo: "Desenvolvedor" },
   ],
   [
-    { nome: "João Ursino", cargo: "Professor" },
+    { nome: "João Cruz", cargo: "Professor" },
   ],
 ];
 
