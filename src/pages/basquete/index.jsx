@@ -13,24 +13,29 @@ import { FimEducativo } from "../../educacional/fases/FimEducativo";
 import "./styles/index.css";
 
 /* ================= CONSTANTES (ajuste a dificuldade aqui) ================= */
-const W = 480;
-const H = 280;
-const PISO_Y = 214; // topo da quadra
-const CHAO = 262; // linha onde a bola quica
+// Câmera "mais longe": mais largura de cenário nos lados (W) e mais céu
+// acima da ação (DESLOC_CAM, que empurra toda a cena pra baixo). É um
+// deslocamento/expansão puro — os ângulos e distâncias do arremesso não
+// mudam, só sobra mais cenário ao redor.
+const W = 520;
+const H = 308;
+const DESLOC_CAM = 28;
+const PISO_Y = 214 + DESLOC_CAM; // topo da quadra
+const CHAO = 262 + DESLOC_CAM; // linha onde a bola quica
 const RAIO = 8;
 const GRAV = 520; // gravidade (px/s²)
 const FORCA = 9.5; // velocidade = distância puxada * FORCA
 const PUXAO_MAX = 68; // máximo que dá pra puxar
 const ANG_MIN = (28 * Math.PI) / 180; // ângulo mínimo de saída (evita tiro rasteiro)
 const ANG_MAX = (80 * Math.PI) / 180;
-const ANCORA = { x: 80, y: 230 }; // posição da bola nas mãos
+const ANCORA = { x: 80, y: 230 + DESLOC_CAM }; // posição da bola nas mãos
 const ARO_L = 40; // largura do aro
 const M = 40; // pixels por metro
 const LINHA_3 = 6.75; // metros da linha de 3 pontos
 const TOTAL_BOLAS = 5;
 const PASSO = 1 / 240; // passo fixo da física
 const KID_X = 48;
-const KID_Y = 212;
+const KID_Y = 212 + DESLOC_CAM;
 
 /* ================= UTILITÁRIOS ================= */
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -69,13 +74,17 @@ function digito(c, n, x, y, s, cor) {
 }
 
 /* ================= SPRITE DO JOGADOR ================= */
+// Paleta com 3 tons por material (sombra/base/brilho), como nos sprites de
+// 16 bits: G/R/c são os brilhos de cabelo, camisa e boné.
 const PAL = {
-  H: "#3b2314", S: "#f4bf91", s: "#d99568", E: "#1b1b2f", J: "#e8412c", j: "#b02a1b",
-  W: "#fff7e0", P: "#2b50d8", p: "#1c36a0", L: "#f2f2f2", B: "#23232e", b: "#c9c9d6", C: "#ffd34d",
+  H: "#3b2314", G: "#5c3a21", S: "#f4bf91", s: "#d99568", E: "#1b1b2f",
+  J: "#e8412c", j: "#b02a1b", R: "#ff6b52",
+  W: "#fff7e0", P: "#2b50d8", p: "#1c36a0", L: "#f2f2f2", B: "#23232e", b: "#c9c9d6",
+  C: "#ffd34d", c: "#e0a83a",
 };
 const KID = [
-  "...HHHHH....", "..HHHHHHHH..", "..CCCCCCCC..", "..HSSSSSSS..", "..HSSSSESS..",
-  "..sSSSSSSS..", "...sSSSSSs..", ".....ss.....", "..JJJJJJJJ..", "..JJJWWWJJ..",
+  "...HHHHH....", "..GHHHHHHH..", "..cCCCCCCC..", "..HSSSSSSS..", "..HSSSSESS..",
+  "..sSSSSSSS..", "...sSSSSSs..", ".....ss.....", "..RJJJJJJJ..", "..JJJWWWJJ..",
   "..JJJJJWJJ..", "..JJJJWJJj..", "..jJJJWJJj..", "..jJJJJJJj..", "..PPPPPPPP..",
   "..PPPPPPPP..", "..PPPppPPP..", "..PPP..PPP..", "..sSs..sSs..", "..sSs..sSs..",
   "..LLL..LLL..", "..LLL..LLL..", ".BBBB..BBBB.", ".bbbb..bbbb.",
@@ -123,13 +132,24 @@ function desenharBola(c, cx, cy, ang) {
           Math.abs(Math.hypot(lx - RAIO * 1.5, ly) - RAIO * 1.5) < 0.9 ||
           Math.abs(Math.hypot(lx + RAIO * 1.5, ly) - RAIO * 1.5) < 0.9;
         const luz = (fx + fy) / (2 * RAIO);
-        cor = costura ? "#3a1707" : luz < -0.35 ? "#ff9d45" : luz > 0.4 ? "#c4551a" : "#ee7421";
+        cor = costura
+          ? "#3a1707"
+          : luz < -0.55
+          ? "#ffbd7a"
+          : luz < -0.35
+          ? "#ff9d45"
+          : luz > 0.55
+          ? "#a83f12"
+          : luz > 0.4
+          ? "#c4551a"
+          : "#ee7421";
       }
       c.fillStyle = cor;
       c.fillRect(cx + x, cy + y, 1, 1);
     }
   }
   rect(c, cx - 4, cy - 5, 2, 1, "#ffe2b8");
+  rect(c, cx + 3, cy + 4, 1, 1, "#7a3a12");
 }
 
 /* ================= CENÁRIO (pré-renderizado) ================= */
@@ -171,8 +191,22 @@ function criarFundo() {
   disco(a, 392, 48, 15, "#ffd23f");
   disco(a, 386, 42, 4, "#fff7cf");
 
-  // prédios (2 camadas)
-  const predios = (base, cor, janela, acesa, hmin, hmax) => {
+  // montanhas distantes (parallax extra, estilo 16 bits com camadas de profundidade)
+  let mx = -20;
+  while (mx < W) {
+    const mw = ri(60, 100);
+    const mh = ri(26, 46);
+    for (let i = 0; i < mw; i++) {
+      const perfil = Math.round(mh * Math.sin((i / mw) * Math.PI));
+      rect(a, mx + i, 150 + DESLOC_CAM - perfil, 1, perfil, "#7e97d4");
+    }
+    mx += mw - ri(10, 22);
+  }
+  for (let x = 0; x < W; x += 2) rect(a, x, 148 + DESLOC_CAM, 2, 2, "#95acdf");
+
+  // prédios (2 camadas, com lado sombreado para sensação de volume)
+  const HORIZONTE = 186 + DESLOC_CAM;
+  const predios = (base, cor, janela, acesa, hmin, hmax, sombraLado) => {
     let x = -6;
     while (x < W) {
       const w = ri(22, 42);
@@ -182,36 +216,37 @@ function criarFundo() {
       for (let yy = base - h + 6; yy < base - 6; yy += 8)
         for (let xx = x + 4; xx < x + w - 4; xx += 6)
           rect(a, xx, yy, 2, 3, r() < acesa ? "#ffe7a1" : janela);
+      rect(a, x + w - 3, base - h + 2, 3, h - 2, sombraLado);
       if (r() < 0.4) rect(a, x + (w >> 1), base - h - 8, 1, 8, cor);
       x += w + ri(0, 4);
     }
   };
-  predios(186, "#8fa8da", "#a8bde8", 0.05, 50, 100);
-  predios(186, "#6f87c2", "#566ca5", 0.22, 28, 64);
+  predios(HORIZONTE, "#8fa8da", "#a8bde8", 0.05, 50, 100, "rgba(20,30,70,.16)");
+  predios(HORIZONTE, "#6f87c2", "#566ca5", 0.22, 28, 64, "rgba(20,30,70,.2)");
 
   // árvores
   for (let x = 10; x < W; x += ri(34, 60)) {
     const h = ri(18, 28);
-    rect(a, x + 6, 186 - (h >> 1), 4, (h >> 1) + 4, "#5b3a1e");
-    disco(a, x + 8, 186 - h, 12, "#2b8a43");
-    disco(a, x + 5, 186 - h - 3, 8, "#3fae5a");
-    disco(a, x + 3, 186 - h - 5, 3, "#6fd07e");
+    rect(a, x + 6, HORIZONTE - (h >> 1), 4, (h >> 1) + 4, "#5b3a1e");
+    disco(a, x + 8, HORIZONTE - h, 12, "#2b8a43");
+    disco(a, x + 5, HORIZONTE - h - 3, 8, "#3fae5a");
+    disco(a, x + 3, HORIZONTE - h - 5, 3, "#6fd07e");
   }
 
   // arquibancada
-  rect(a, 0, 184, W, 22, "#3b4670");
-  for (let y = 184; y < 206; y += 7) {
+  rect(a, 0, 184 + DESLOC_CAM, W, 22, "#3b4670");
+  for (let y = 184 + DESLOC_CAM; y < 206 + DESLOC_CAM; y += 7) {
     rect(a, 0, y, W, 1, "#566399");
     rect(a, 0, y + 6, W, 1, "#2b3558");
   }
 
   // mureta com placas
-  rect(b, 0, 204, W, 10, "#1b2340");
+  rect(b, 0, 204 + DESLOC_CAM, W, 10, "#1b2340");
   const pc = ["#e8412c", "#ffd34d", "#2b50d8", "#2fa866"];
   for (let i = 0; i * 48 < W; i++) {
-    rect(b, i * 48 + 1, 206, 46, 6, pc[i % 4]);
-    rect(b, i * 48 + 1, 206, 46, 1, "rgba(255,255,255,.4)");
-    for (let k = 0; k < 5; k++) rect(b, i * 48 + 6 + k * 8, 208, 3, 2, "rgba(255,255,255,.7)");
+    rect(b, i * 48 + 1, 206 + DESLOC_CAM, 46, 6, pc[i % 4]);
+    rect(b, i * 48 + 1, 206 + DESLOC_CAM, 46, 1, "rgba(255,255,255,.4)");
+    for (let k = 0; k < 5; k++) rect(b, i * 48 + 6 + k * 8, 208 + DESLOC_CAM, 3, 2, "rgba(255,255,255,.7)");
   }
 
   // quadra de madeira (tábuas com perspectiva)
@@ -283,15 +318,20 @@ function desenharAroTras(c, a) {
   c.globalAlpha = 0.22;
   rect(c, px - 5, CHAO + 3, 16, 3, "#000");
   c.globalAlpha = 1;
-  // tabela
+  // tabela (com brilho diagonal de vidro, estilo 16 bits)
   rect(c, bx, y - 46, 5, 52, "#1b2340");
   rect(c, bx + 1, y - 45, 3, 50, "#e9f2ff");
   rect(c, bx + 1, y - 45, 1, 50, "#ffffff");
+  c.globalAlpha = 0.5;
+  rect(c, bx + 2, y - 40, 1, 14, "#bcd4ff");
+  rect(c, bx + 3, y - 38, 1, 10, "#bcd4ff");
+  c.globalAlpha = 1;
   rect(c, bx, y - 6, 5, 4, "#e8412c");
   // aro
   rect(c, ax, y - 1, ARO_L + 3, 4, "#8d2a0c");
   rect(c, ax, y - 1, ARO_L + 3, 3, "#d9481a");
   rect(c, ax + 2, y - 1, ARO_L - 2, 1, "#ff9a55");
+  rect(c, ax + 3, y - 1, ARO_L - 8, 1, "#ffd9ad");
   disco(c, ax, y + 1, 4, "#8d2a0c");
   disco(c, ax, y + 1, 3, "#ff6a2a");
   rect(c, ax - 1, y, 1, 1, "#ffb27a");
@@ -306,7 +346,8 @@ function desenharRede(c, a, j) {
     const xl = Math.round(a.x + 3 + 7 * t + sw);
     const xr = Math.round(a.x + ARO_L - 3 - 7 * t + sw);
     for (let x = xl; x <= xr; x++) {
-      if (x === xl || x === xr || (x + r) % 4 === 0 || (x - r + 400) % 4 === 0) rect(c, x, topo + r, 1, 1, "#fdfdff");
+      if (x === xl || x === xr || (x + r) % 4 === 0 || (x - r + 400) % 4 === 0)
+        rect(c, x, topo + r, 1, 1, x < (xl + xr) / 2 ? "#dfe6ff" : "#fdfdff");
     }
   }
 }
@@ -379,9 +420,9 @@ function sortearAro(j, inicio) {
   }
   m = Math.round(m * 20) / 20;
   j.mAnt = m;
-  const ymin = m > 7.5 ? 125 : 105;
+  const ymin = (m > 7.5 ? 125 : 105) + DESLOC_CAM;
   j.aro.alvoX = ANCORA.x + m * M;
-  j.aro.alvoY = ymin + Math.random() * (155 - ymin);
+  j.aro.alvoY = ymin + Math.random() * (155 + DESLOC_CAM - ymin);
   if (inicio) {
     j.aro.x = j.aro.alvoX;
     j.aro.y = j.aro.alvoY;
@@ -623,7 +664,7 @@ function desenhar(c, j, rec) {
 
   // braços acompanham a bola
   const sx = 64;
-  const sy = 231;
+  const sy = 231 + DESLOC_CAM;
   const dx = b.x - sx;
   const dy = b.y - sy;
   const L = Math.hypot(dx, dy) || 1;
@@ -666,7 +707,7 @@ function desenhar(c, j, rec) {
     }
     // barra de força
     const bx = 30;
-    const by = 182;
+    const by = 182 + DESLOC_CAM;
     rect(c, bx - 2, by - 2, 74, 12, "#1b2340");
     rect(c, bx, by, 70, 8, "#39446a");
     const cheios = Math.round(f * 14);

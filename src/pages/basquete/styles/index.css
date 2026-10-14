@@ -70,6 +70,14 @@
   position: relative;
   flex: 1 1 0;
   min-height: 0;
+  /* Em vez de esticar para preencher toda a largura disponível (o que
+     sobrava em barras pretas quando a tela era mais larga que o jogo), o
+     palco encolhe para a proporção exata do jogo e fica centralizado — o
+     que sobra nas laterais é o fundo creme do card, não preto. */
+  width: auto;
+  max-width: calc(100% - 40px);
+  aspect-ratio: 520 / 308;
+  align-self: center;
   margin: 20px 20px 10px;
   overflow: hidden;
   border: 5px solid var(--preto);
@@ -327,7 +335,7 @@
 /* ---------- Telas pequenas ---------- */
 @media (max-width: 620px) {
   .bq-titulo { font-size: 15px; }
-  .bq-stage { margin: 14px 14px 8px; }
+  .bq-stage { margin: 14px 14px 8px; max-width: calc(100% - 28px); }
   .bq-overlay { padding: 8px; gap: 6px; }
   .bq-overlay .bq-emoji-grande { font-size: 20px; }
   .bq-overlay-titulo { font-size: 11px; }
