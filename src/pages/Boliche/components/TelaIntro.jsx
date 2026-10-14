@@ -1,7 +1,5 @@
-
 import { useEffect, useRef, useState } from "react";
 import { TOTAL_RODADAS } from "../utils/constantes";
-import { Overlay } from "./Overlay";
 import audioBoliche from "../../../assets/boliche.mp3";
 
 export const TelaIntro = ({ onJogar }) => {
@@ -52,8 +50,10 @@ export const TelaIntro = ({ onJogar }) => {
   };
 
   return (
-    <Overlay>
+    <div className="bol-overlay">
       <audio ref={audioRef} src={audioBoliche} preload="none" />
+
+      <div className="bol-emoji-grande">🎳</div>
 
       <p className="bol-overlay-titulo">PRONTO PARA JOGAR?</p>
 
@@ -85,6 +85,6 @@ export const TelaIntro = ({ onJogar }) => {
       >
         COMEÇAR
       </button>
-    </Overlay>
+    </div>
   );
 };

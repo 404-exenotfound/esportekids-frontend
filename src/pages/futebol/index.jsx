@@ -301,7 +301,10 @@ function criarFundo() {
     rect(b, i * 44 + 1, MURETA_Y + 1, 42, 1, "rgba(255,255,255,.4)");
   }
 
-  // gramado em perspectiva (trapézio convergindo para a linha do gol)
+  // gramado em perspectiva (trapézio convergindo para a linha do gol); uma
+  // base sólida cobre toda a largura primeiro, pra não sobrar preto nas
+  // laterais onde o trapézio ainda não alcança a borda da tela.
+  rect(b, 0, GOL_TOPO, W, H - GOL_TOPO, "#3c8a1f");
   const faixaY = 4;
   for (let y = GOL_BASE; y < H; y += faixaY) {
     const prog = (y - GOL_BASE) / (H - GOL_BASE);

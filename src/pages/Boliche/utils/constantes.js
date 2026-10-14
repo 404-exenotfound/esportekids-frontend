@@ -67,24 +67,5 @@ export const ETAPAS = {
   RESULTADO: "resultado",
 };
 
-// --- Paleta (mesma linguagem visual dos outros minigames) --------------------
-export const CORES = {
-  madeira: "#c8873c",
-  madeiraClara: "#e0a75c",
-  madeiraEscura: "#a86a29",
-  canaleta: "#2b2b3d",
-  canaletaBorda: "#15151f",
-  fundo: "#1b1b2a",
-  parede: "#2e3ea8",
-  bola: "#e63946",
-  bolaEscura: "#8f1d2c",
-  bolaBrilho: "#ff8f99",
-  pino: "#ffffff",
-  pinoSombra: "#c9c9c9",
-  pinoFaixa: "#e63946",
-  preto: "#1f1f1f",
-  amarelo: "#ffd166",
-  branco: "#ffffff",
-};
-
-export const CORES_CONFETE = ["#FFC93C", "#06D6A0", "#4CC9F0", "#EF476F", "#FFFFFF"];
+// A paleta 16-bits (PAL) e os sprites ficam em index.jsx, junto com o
+// desenho — mesmo padrão do Basquete e do Futebol.
