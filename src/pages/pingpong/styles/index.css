@@ -81,196 +81,153 @@ html, body { margin: 0; padding: 0; }
 }
 
 
-/* ---------- HUD (painel de placar) ---------- */
-
-.pp-painel {
-  background: var(--cinza);
-  border: 4px solid var(--preto);
-  box-shadow: 4px 4px 0 var(--preto);
-  margin: 20px 20px 10px;
-  padding: 12px 14px;
-}
+/* ---------- HUD (sobre o canvas) ---------- */
 
 .pp-hud {
+  position: absolute;
+  top: 2.5%;
+  left: 2%;
+  right: 2%;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-
-  font-family: "Press Start 2P", monospace;
-  font-size: 9px;
-
-  color: var(--preto);
   gap: 8px;
+  pointer-events: none;
 }
-
-.pp-hud-item {
+.pp-caixa {
+  background: #1b2340;
+  color: #fff;
+  padding: 0.8em 1em;
+  font-size: clamp(7px, 1.4vw, 13px);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 6px;
+  gap: 0.7em;
+  box-shadow: 0 -3px 0 0 #ffd34d, 0 3px 0 0 #ffd34d, -3px 0 0 0 #ffd34d, 3px 0 0 0 #ffd34d;
 }
-
-.pp-hud-num {
-  color: var(--vermelho);
-  font-size: 13px;
+.pp-caixa b {
+  color: #ffd34d;
+  font-weight: normal;
 }
-
-.pp-hud-dificuldade {
-  color: var(--preto);
+.pp-caixa b.media { color: #ffb347; }
+.pp-caixa b.dificil { color: #ff6a5a; }
+.pp-rotulo {
+  color: #8ea2ff;
+  font-size: 0.75em;
 }
-
-.pp-hud-dificuldade.media {
-  color: #a67c00;
+.pp-numero-pequeno {
+  font-size: 0.7em;
 }
-
-.pp-hud-dificuldade.dificil {
-  color: var(--vermelho);
-}
-
-/* ---------- Botão do som ---------- */
-
-.pp-mudo-btn {
-  background: var(--branco);
-  border: 3px solid var(--preto);
-  border-radius: 0;
-
-  color: var(--preto);
-
-  font-size: 15px;
-  line-height: 1;
-
-  padding: 5px 7px;
-
-  cursor: pointer;
-
-  box-shadow: 3px 3px 0 var(--preto);
-}
-
-.pp-mudo-btn:hover {
-  background: var(--amarelo);
-
-  transform: translate(2px, 2px);
-
-  box-shadow: 1px 1px 0 var(--preto);
-}
-
-/* ---------- Indicadores das rodadas ---------- */
-
-.pp-bolinhas {
+.pp-bolas {
   display: flex;
-
-  gap: 6px;
-
-  margin-top: 12px;
-
-  justify-content: center;
+  gap: 0.3em;
+}
+.pp-bolas i {
+  width: 0.8em;
+  height: 0.8em;
+  border-radius: 50%;
+  display: inline-block;
+}
+.pp-bolas i.jogada-ponto {
+  background: #ffd34d;
+  box-shadow: 0 0 0 2px #8a5a00;
+}
+.pp-bolas i.jogada-erro {
+  background: #e8412c;
+  box-shadow: 0 0 0 2px #2b1206;
+}
+.pp-bolas i.vazia {
+  background: #39446a;
+  box-shadow: 0 0 0 2px #1b2340;
 }
 
-.pp-bolinha {
-  width: 12px;
-  height: 12px;
+.pp-mudo {
+  pointer-events: auto;
+  background: #1b2340;
+  color: #fff;
+  border: none;
+  box-shadow: 0 -3px 0 0 #ffd34d, 0 3px 0 0 #ffd34d, -3px 0 0 0 #ffd34d, 3px 0 0 0 #ffd34d;
+  padding: 0.7em 0.8em;
+  font-size: clamp(9px, 1.6vw, 15px);
+  line-height: 1;
+  cursor: pointer;
+  align-self: flex-start;
+}
+.pp-mudo:hover { background: #252d4b; }
 
-  background: var(--branco);
-
-  border: 3px solid var(--preto);
+.pp-combo {
+  position: absolute;
+  left: 2.5%;
+  top: 22%;
+  background: #e8412c;
+  color: #fff;
+  padding: 0.6em 0.9em;
+  font-size: clamp(8px, 1.5vw, 14px);
+  box-shadow: 0 0 0 3px #1b2340;
+  pointer-events: none;
 }
 
-/* Rodada em que o jogador marcou ponto */
-.pp-bolinha.jogada-ponto {
-  background: var(--verde);
-}
-
-/* Rodada em que o jogador errou */
-.pp-bolinha.jogada-erro {
-  background: var(--vermelho);
-}
-
-/* ---------- Área do jogo (Arena e canvas) ---------- */
+/* ---------- Área do jogo (canvas) ---------- */
 
 .pp-stage {
   position: relative;
   flex: 1 1 0;
   min-height: 0;
+  width: auto;
+  max-width: calc(100% - 40px);
+  aspect-ratio: 800 / 400;
+  align-self: center;
   margin: 10px 20px;
   overflow: hidden;
   border: 5px solid var(--preto);
   box-shadow: 5px 5px 0 var(--preto);
   background: #000000;
-  touch-action: none; /* evita rolar a página ao arrastar o dedo */
+  touch-action: none;
 }
-
-.pp-stage-inner {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  min-width: 0;
-  min-height: 0;
-}
+.pp-stage.pp-oculto { display: none; }
 
 .pp-canvas {
   display: block;
   width: 100%;
   height: 100%;
-  image-rendering: pixelated; /* desenho em blocos sem borrão */
+  image-rendering: pixelated;
   touch-action: none;
 }
 
-/* ---------- Banner de resultado (ponto / erro) ---------- */
+/* ---------- aviso (PONTO!, ERROU!) ---------- */
 
-.pp-banner {
+.pp-aviso {
   position: absolute;
-  top: 38%;
   left: 50%;
-  transform: translate(-50%, -50%);
-  background: var(--cinza);
-  color: var(--preto);
-  border: 5px solid var(--preto);
-  box-shadow: 5px 5px 0 var(--preto);
-  padding: 14px 18px;
-  font-size: 14px;
-  text-align: center;
-  z-index: 10; /* fica acima da tela do jogo */
-  animation: pp-pop 0.3s steps(4) forwards; /* "pop" de surgimento retrô */
+  top: 24%;
+  transform: translateX(-50%);
+  padding: 0.8em 1.2em;
+  font-size: clamp(11px, 2.4vw, 24px);
   white-space: nowrap;
+  pointer-events: none;
+  color: #fff;
+  background: #1b2340;
+  box-shadow: 0 0 0 4px #ffd34d, 0 0 0 8px #1b2340;
+  animation: pp-pop 1.3s steps(10) forwards;
+  text-align: center;
 }
-.pp-banner.ponto {
-  background: var(--amarelo); /* ponto = fundo amarelo, texto vermelho */
-  color: var(--vermelho);
+.pp-aviso.bom { color: #ffd34d; }
+.pp-aviso.ruim {
+  color: #ff7a66;
+  box-shadow: 0 0 0 4px #e8412c, 0 0 0 8px #1b2340;
 }
-.pp-banner-sub {
+.pp-aviso-sub {
   display: block;
-  font-size: 8px;
-  line-height: 1.8;
-  color: var(--preto);
-  margin-top: 10px;
+  margin-top: 0.5em;
+  font-size: 0.45em;
+  color: #fff;
+  white-space: normal;
 }
 @keyframes pp-pop {
-  0% { transform: translate(-50%, -50%) scale(0.4); opacity: 0; }
-  100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-}
-
-/* ---------- Confetes ---------- */
-
-.pp-confetes {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  pointer-events: none; /* não atrapalha o toque/jogo */
-}
-
-.pp-confete {
-  position: absolute;
-  top: -10%;
-  width: 8px;
-  height: 8px;
-  animation-name: pp-fall;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite; /* cai em loop enquanto o banner existe */
-}
-
-@keyframes pp-fall {
-  0% { transform: translateY(0) rotate(0deg); }
-  100% { transform: translateY(420px) rotate(360deg); } /* desce e gira */
+  0% { transform: translateX(-50%) scale(0.3); opacity: 0; }
+  20% { transform: translateX(-50%) scale(1.15); opacity: 1; }
+  35% { transform: translateX(-50%) scale(1); }
+  80% { opacity: 1; }
+  100% { transform: translateX(-50%) translateY(-20px) scale(1); opacity: 0; }
 }
 
 /* ---------- Overlays (intro / fim de jogo) ---------- */
@@ -441,9 +398,7 @@ html, body { margin: 0; padding: 0; }
 /* ---------- Ajustes para telas pequenas (celulares) ---------- */
 @media (max-width: 620px) {
   .pp-titulo { font-size: 15px; }
-  .pp-painel { margin: 14px 14px 8px; }
-  .pp-stage { margin: 8px 14px; }
-  .pp-hud { font-size: 8px; }
+  .pp-stage { margin: 8px 14px; max-width: calc(100% - 28px); }
   .pp-btn { font-size: 12px; min-width: 0; padding: 12px 22px; }
   .pp-btn-secundario { font-size: 10px; padding: 10px 14px; }
 }
@@ -491,22 +446,21 @@ html, body { margin: 0; padding: 0; }
 }
 
 /* ---------- Tela cheia ----------
-   Container que envolve o placar (HUD) e a Arena. Fora da tela cheia ele
-   preenche o card; em tela cheia ocupa a viewport inteira. */
-.pp-palco {
-  position: relative;
-  flex: 1 1 0;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-}
-.pp-palco:fullscreen,
-.pp-palco:-webkit-full-screen {
+   O palco vira a tela inteira; o jogo escala via EscalaProporcional
+   (contain), com fundo preto nas laterais. */
+.pp-stage:fullscreen,
+.pp-stage:-webkit-full-screen {
   width: 100vw;
   height: 100vh;
+  max-width: 100vw;
+  max-height: 100vh;
   margin: 0;
-  background: var(--creme);
+  border: 0;
+  box-shadow: none;
+  border-radius: 0;
+  display: block;
   overflow: hidden;
+  background: #000;
 }
 
 /* Botão TELA CHEIA (mesmo estilo pixel do VOLTAR) */
@@ -534,8 +488,8 @@ html, body { margin: 0; padding: 0; }
   outline: 4px solid var(--amarelo);
   outline-offset: 2px;
 }
-.pp-palco:fullscreen .pp-tela-cheia,
-.pp-palco:-webkit-full-screen .pp-tela-cheia {
+.pp-stage:fullscreen .pp-tela-cheia,
+.pp-stage:-webkit-full-screen .pp-tela-cheia {
   position: absolute;
   top: auto;
   left: auto;

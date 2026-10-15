@@ -83,7 +83,6 @@ const PAL = {
   madeira: "#a86a29",
   madeiraClara: "#c8873c",
   madeiraBrilho: "#e0a75c",
-  madeiraSheen: "#f3c984",
   // pista vizinha (sliver no topo, mais fria/distante)
   vizinhaEscura: "#5a4a6a",
   vizinhaClara: "#6e5a80",
@@ -97,11 +96,9 @@ const PAL = {
   paredeClara: "#4858c4",
   maquina: "#171b3a",
   maquinaClara: "#262c57",
-  // tapete da aproximação
-  tapete1: "#3d2150",
-  tapete2: "#552a66",
-  tapete3: "#6b3878",
-  tapeteAcento: "#c8873c",
+  // mesinhas da área de espectadores
+  mesa: "#6b4a2d",
+  mesaClara: "#8a6540",
   // pino
   pinoSombra: "#9a9a9a",
   pinoBase: "#d9d9d4",
@@ -127,6 +124,11 @@ const PAL = {
 };
 const CONFETE = [PAL.amarelo, PAL.verde, "#4cc9f0", "#ef476f", PAL.branco];
 
+// Pista vizinha decorativa, na margem de baixo (ver atualizarVizinha/desenhar).
+const VIZINHA_LANE_Y0 = 378;
+const VIZINHA_LANE_Y1 = 415;
+const VIZINHA_Y = Math.round((VIZINHA_LANE_Y0 + VIZINHA_LANE_Y1) / 2);
+
 /* ================= CENÁRIO (pré-renderizado, visto de cima) ================= */
 function criarFundo() {
   const cv = document.createElement("canvas");
@@ -142,17 +144,37 @@ function criarFundo() {
   const gutterTopo0 = PISTA_TOPO - CANALETA;
   const gutterBase1 = PISTA_BASE + CANALETA;
 
-  // ---------- topo: teto + sliver da pista vizinha + luzes ----------
-  rect(c, 0, 0, FUNDO_X, 10, "#0c0a14");
-  for (let x = 0; x < FUNDO_X; x += 2) rect(c, x, 10, 1, 1, "#1a1726");
-  rect(c, 0, 12, FUNDO_X, gutterTopo0 - 12 - 8, PAL.vizinhaClara);
-  for (let y = 12; y < gutterTopo0 - 8; y += 10) rect(c, 0, y, FUNDO_X, 1, PAL.vizinhaEscura);
-  rect(c, 0, gutterTopo0 - 8, FUNDO_X, 4, PAL.canaletaBorda);
-  rect(c, 0, gutterTopo0 - 4, FUNDO_X, 4, PAL.canaleta);
-  // luzes de teto (glow pontilhado, mesma técnica de dithering dos outros jogos)
-  for (let lx = 110; lx < FUNDO_X - 60; lx += 150) {
-    discoDitherizado(c, lx, 6, 16, PAL.luzClara);
-    disco(c, lx, 6, 5, PAL.luz);
+  // ---------- topo: área de espectadores com mesinhas ----------
+  rect(c, 0, 0, FUNDO_X, 8, "#0c0a14");
+  for (let x = 0; x < FUNDO_X; x += 2) rect(c, x, 8, 1, 1, "#1a1726");
+  rect(c, 0, 10, FUNDO_X, gutterTopo0 - 10 - 6, "#241f33");
+  for (let yy = 10; yy < gutterTopo0 - 6; yy += 9) rect(c, 0, yy, FUNDO_X, 1, "rgba(0,0,0,.18)");
+  rect(c, 0, gutterTopo0 - 6, FUNDO_X, 3, PAL.canaletaBorda);
+  rect(c, 0, gutterTopo0 - 3, FUNDO_X, 3, PAL.canaleta);
+  // luzinha de teto suave entre as mesas (glow pontilhado)
+  for (let lx = 70; lx < FUNDO_X - 40; lx += 150) {
+    discoDitherizado(c, lx, 7, 10, PAL.luzClara);
+  }
+  // mesinhas com gente sentada, vistas de cima
+  const mesaY = Math.round(10 + (gutterTopo0 - 6 - 10) / 2) + 1;
+  const peles = ["#f4bf91", "#d99568", "#a86a3d", "#7a4a2a"];
+  const roupas = ["#e8412c", "#ffd34d", "#2b50d8", "#2fa866", "#9b59d0", "#ff8fb1"];
+  const rp = rng(23);
+  const rpi = (min, max) => Math.floor(min + rp() * (max - min));
+  let mx = 96;
+  while (mx < FUNDO_X - 70) {
+    disco(c, mx, mesaY + 2, 13, "rgba(0,0,0,.28)");
+    disco(c, mx, mesaY, 13, PAL.mesa);
+    disco(c, mx, mesaY, 10, PAL.mesaClara);
+    const n = rpi(2, 4);
+    for (let p = 0; p < n; p++) {
+      const ang = (p / n) * Math.PI * 2 + rpi(0, 100) / 100;
+      const px = mx + Math.cos(ang) * 18;
+      const py = clamp(mesaY + Math.sin(ang) * 7, 13, gutterTopo0 - 10);
+      disco(c, px, py, 5, roupas[rpi(0, roupas.length)]);
+      disco(c, px, py - 1, 3, peles[rpi(0, peles.length)]);
+    }
+    mx += rpi(150, 190);
   }
 
   // ---------- canaletas da pista principal ----------
@@ -177,13 +199,7 @@ function criarFundo() {
     y += h;
     i++;
   }
-  // brilho de verniz: faixa dithered mais clara no meio da pista
   const centroY = (PISTA_TOPO + PISTA_BASE) / 2;
-  for (let yy = -16; yy <= 16; yy++) {
-    for (let x = LINHA_LANCAMENTO; x < FUNDO_X; x++) {
-      if (((x + yy) & 3) === 0) rect(c, x, centroY + yy, 1, 1, PAL.madeiraSheen);
-    }
-  }
   // veios longitudinais finos
   for (let k = 0; k < 40; k++) {
     const yy = ri(PISTA_TOPO + 2, PISTA_BASE - 2);
@@ -205,16 +221,19 @@ function criarFundo() {
   rect(c, LINHA_LANCAMENTO + 26, PISTA_TOPO, 4, PISTA_BASE - PISTA_TOPO, PAL.madeiraEscura);
   rect(c, LINHA_LANCAMENTO + 26, PISTA_TOPO, 1, PISTA_BASE - PISTA_TOPO, "rgba(255,255,255,.3)");
 
-  // ---------- tapete da aproximação (atrás da linha de falta) ----------
-  rect(c, 0, gutterBase1, FUNDO_X, GAME_HEIGHT - gutterBase1, PAL.tapete1);
-  const diamante = 22;
-  for (let ty = gutterBase1; ty < GAME_HEIGHT; ty += diamante)
-    for (let tx = 0; tx < FUNDO_X; tx += diamante) {
-      const par = (Math.floor(tx / diamante) + Math.floor((ty - gutterBase1) / diamante)) % 2 === 0;
-      rect(c, tx, ty, diamante, diamante, par ? PAL.tapete2 : PAL.tapete3);
-      disco(c, tx + diamante / 2, ty + diamante / 2, 3, PAL.tapeteAcento);
-    }
-  rect(c, 0, gutterBase1, FUNDO_X, 2, "rgba(0,0,0,.3)");
+  // ---------- pista vizinha de baixo (decorativa, bolas passam de vez em quando) ----------
+  rect(c, 0, gutterBase1, FUNDO_X, 3, "rgba(0,0,0,.3)");
+  rect(c, 0, VIZINHA_LANE_Y0 - 3, FUNDO_X, 3, PAL.canaletaBorda);
+  rect(c, 0, VIZINHA_LANE_Y0, FUNDO_X, 3, PAL.canaleta);
+  rect(c, 0, VIZINHA_LANE_Y1 - 3, FUNDO_X, 3, PAL.canaleta);
+  rect(c, 0, VIZINHA_LANE_Y1, FUNDO_X, 3, PAL.canaletaBorda);
+  rect(c, 0, VIZINHA_LANE_Y0 + 3, FUNDO_X, VIZINHA_LANE_Y1 - 3 - (VIZINHA_LANE_Y0 + 3), PAL.vizinhaClara);
+  for (let yy = VIZINHA_LANE_Y0 + 3; yy < VIZINHA_LANE_Y1 - 3; yy += 7) rect(c, 0, yy, FUNDO_X, 1, PAL.vizinhaEscura);
+  // pinos ao fundo daquela pista, só decoração (silhueta pequena e parada)
+  const pxFundo = FUNDO_X - 36;
+  [
+    [0, -10], [0, 10], [-11, -17], [-11, -3], [-11, 11], [-11, 17],
+  ].forEach(([dx, dy]) => disco(c, pxFundo + dx, VIZINHA_Y + dy, 3, "#e4e4e0"));
 
   // ---------- parede de fundo + máquina de pinos ----------
   rect(c, FUNDO_X, 0, GAME_WIDTH - FUNDO_X, GAME_HEIGHT, PAL.parede);
@@ -460,7 +479,24 @@ function novoJogo() {
     tempoBanner: 0,
     tempo: 0,
     parts: [],
+    vizinha: { bola: null, espera: 1200 + Math.random() * 2000 },
   };
+}
+
+// Ambiente da pista vizinha (margem de baixo): de vez em quando uma bola
+// atravessa, pura decoração — roda sempre, mesmo na tela de intro.
+function atualizarVizinha(d, dtMs) {
+  const v = d.vizinha;
+  if (v.bola) {
+    v.bola.x += v.bola.vx * (dtMs / 16.67);
+    if (v.bola.x > FUNDO_X - 30) {
+      v.bola = null;
+      v.espera = 2600 + Math.random() * 4500;
+    }
+  } else {
+    v.espera -= dtMs;
+    if (v.espera <= 0) v.bola = { x: -10, vx: 5.5 + Math.random() * 2.5 };
+  }
 }
 
 function particulas(j, x, y, n, cores, vel, g, vida, s = 3) {
@@ -606,6 +642,14 @@ function desenhar(c, d, fundo) {
   c.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
   c.drawImage(fundo, 0, 0);
 
+  if (d.vizinha.bola) {
+    const bx = d.vizinha.bola.x;
+    disco(c, bx, VIZINHA_Y + 1, 6, "rgba(0,0,0,.25)");
+    disco(c, bx, VIZINHA_Y, 6, PAL.bolaContorno);
+    disco(c, bx, VIZINHA_Y, 5, PAL.bolaBase);
+    rect(c, bx - 2, VIZINHA_Y - 2, 2, 2, PAL.bolaBrilho);
+  }
+
   for (const pino of d.pinos) if (pino.caido) desenharPino(c, pino, 9);
   for (const pino of d.pinos) if (!pino.caido) desenharPino(c, pino, 9);
 
@@ -719,6 +763,7 @@ const Boliche = () => {
       const dt = Math.min(tempo - ultimo, 40);
       ultimo = tempo;
       if (faseRef.current === "jogando") atualizar(d, dt, ev);
+      atualizarVizinha(d, dt);
       desenhar(c, d, fundo);
       raf = requestAnimationFrame(loop);
     };

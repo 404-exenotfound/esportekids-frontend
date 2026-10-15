@@ -1,18 +1,10 @@
-// ============================================================================
-// PingPong — página principal do minigame
-// ----------------------------------------------------------------------------
-// Monta a página completa: título, placar (durante o jogo), Arena com o canvas
-// e os overlays/banners conforme o estado, e o rodapé com a mensagem da fase.
-// Toda a lógica fica no hook usePingpong; aqui só fazemos a composição visual.
-// ============================================================================
-
 import { usePingpong } from "./hooks/usePingpong";
-import { Arena } from "./components/Arena";
+import EscalaProporcional from "../../components/EscalaProporcional";
 import { Placar } from "./components/Placar";
 import { BannerResultado } from "./components/BannerResultado";
-import { Confete } from "./components/Confete";
 import { TelaIntro } from "./components/TelaIntro";
 import { TelaFimDeJogo } from "./components/TelaFimDeJogo";
+import { GAME_HEIGHT, GAME_WIDTH } from "./utils/constantes";
 import { BotaoVoltar } from "../../educacional/components/BotaoVoltar";
 import BotaoTelaCheia from "../../components/BotaoTelaCheia";
 import { useDicasDoJogo } from "../../educacional/fases/useDicasDoJogo";
@@ -22,8 +14,7 @@ import useTelaCheia from "../../hooks/useTelaCheia";
 import "./styles/index.css";
 
 const PingPong = () => {
-  // Toda a lógica do jogo (estado, loop, sons) vive no hook
-  const jogo = usePingpong();
+  const { canvasRef, ...jogo } = usePingpong();
   const edu = useDicasDoJogo("pingpong", jogo.pontos);
   const {
     emTelaCheia,
@@ -36,14 +27,12 @@ const PingPong = () => {
     <div className="pp-wrapper">
       <BotaoVoltar />
       <div className="pp-card">
-        {/* Cabeçalho do card */}
         <div className="pp-titulo-barra">
           <h1 className="pp-titulo">
             PING-PONG <span>CAMPEÃO</span>
           </h1>
         </div>
 
-        {/* Tela final com o placar e os créditos (idêntica ao PenaltiCampeao) */}
         {!jogo.mostrarFimDeJogo && <DicaToast dica={edu.dicaVisivel} />}
 
         {jogo.mostrarFimDeJogo && (
@@ -58,53 +47,57 @@ const PingPong = () => {
           </FimEducativo>
         )}
 
-        {/* Placar e Arena ficam ocultos na tela final */}
-        {!jogo.mostrarFimDeJogo && (
-          <>
-            <div className="pp-palco" ref={telaCheiaRef}>
-              {/* Placar visível apenas quando a partida começou */}
-              {jogo.emJogo && (
-                <Placar
-                  tentativaExibida={jogo.tentativaExibida}
-                  pontos={jogo.pontos}
-                  nivel={jogo.nivel}
-                  bolinhas={jogo.bolinhas}
-                  somLigado={jogo.somLigado}
-                  onAlternarSom={jogo.alternarSom}
-                />
-              )}
+        {/* O palco (canvas) fica sempre montado: só é escondido no fim do
+            jogo, para o loop de desenho continuar ligado ao mesmo canvas
+            ao jogar de novo (antes, desmontar a Arena deixava o jogo
+            desenhando num canvas "fantasma" e a tela ficava preta). */}
+        <div
+          ref={telaCheiaRef}
+          className={`pp-stage${jogo.mostrarFimDeJogo ? " pp-oculto" : ""}`}
+        >
+          <EscalaProporcional largura={GAME_WIDTH} altura={GAME_HEIGHT}>
+            <canvas
+              ref={canvasRef}
+              width={GAME_WIDTH}
+              height={GAME_HEIGHT}
+              className="pp-canvas"
+            />
 
-              {/* Arena = canvas do jogo + camadas por cima */}
-              <Arena canvasRef={jogo.canvasRef}>
-                {/* Tela inicial (antes de começar) */}
-                {!jogo.emJogo && <TelaIntro onJogar={jogo.iniciarJogo} />}
+            {jogo.emJogo && (
+              <Placar
+                tentativaExibida={jogo.tentativaExibida}
+                pontos={jogo.pontos}
+                nivel={jogo.nivel}
+                bolinhas={jogo.bolinhas}
+                somLigado={jogo.somLigado}
+                onAlternarSom={jogo.alternarSom}
+              />
+            )}
+            {jogo.emJogo && jogo.rally >= 2 && (
+              <div className="pp-combo">🔥 x{jogo.rally}</div>
+            )}
 
-                {/* Banner de ponto ou erro durante a partida */}
-                {jogo.mostrarBanner && (
-                  <BannerResultado
-                    tipo={jogo.bannerTipo}
-                    frase={jogo.fraseResultado}
-                    fraseTorcida={jogo.fraseTorcida}
-                  />
-                )}
+            {!jogo.emJogo && <TelaIntro onJogar={jogo.iniciarJogo} />}
 
-                {/* Confetes quando a tentativa terminou em PONTO */}
-                {jogo.bannerTipo === "ponto" && jogo.mostrarBanner && <Confete />}
-              </Arena>
+            {jogo.mostrarBanner && (
+              <BannerResultado
+                tipo={jogo.bannerTipo}
+                frase={jogo.fraseResultado}
+                fraseTorcida={jogo.fraseTorcida}
+              />
+            )}
+          </EscalaProporcional>
 
-              {suportaTelaCheia && (
-                <BotaoTelaCheia
-                  emTelaCheia={emTelaCheia}
-                  alternarTelaCheia={alternarTelaCheia}
-                  classe="pp-tela-cheia"
-                />
-              )}
-            </div>
+          {suportaTelaCheia && (
+            <BotaoTelaCheia
+              emTelaCheia={emTelaCheia}
+              alternarTelaCheia={alternarTelaCheia}
+              classe="pp-tela-cheia"
+            />
+          )}
+        </div>
 
-            {/* Rodapé com a dica/mensagem da fase atual */}
-            {jogo.emJogo && <p className="pp-rodape">{jogo.mensagemRodape}</p>}
-          </>
-        )}
+        {jogo.emJogo && <p className="pp-rodape">{jogo.mensagemRodape}</p>}
       </div>
     </div>
   );

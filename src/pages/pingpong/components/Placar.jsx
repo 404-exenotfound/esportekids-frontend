@@ -1,117 +1,40 @@
 import { TOTAL_TENTATIVAS } from "../utils/constantes";
 
-export const Placar = ({
-  tentativaExibida,
-  pontos,
-  nivel,
-  bolinhas,
-  somLigado,
-  onAlternarSom,
-}) => {
-  // A primeira rodada começa visualmente em 1/5,
-  // assim como no minijogo Futebol.
-  const rodadaAtual = Math.min(
-    tentativaExibida + 1,
-    TOTAL_TENTATIVAS
-  );
+export const Placar = ({ tentativaExibida, pontos, nivel, bolinhas, somLigado, onAlternarSom }) => {
+  const rodadaAtual = Math.min(tentativaExibida + 1, TOTAL_TENTATIVAS);
 
   return (
-    <div className="pp-painel">
-
-      {/* ================================================================
-          INFORMAÇÕES PRINCIPAIS
-      ================================================================= */}
-
-      <div className="pp-hud">
-
-        {/* RODADA */}
-        <div className="pp-hud-item">
-          <span className="pp-hud-label">
-            RODADA
-          </span>
-
-          <span className="pp-hud-num">
-            {rodadaAtual}/{TOTAL_TENTATIVAS}
-          </span>
-        </div>
-
-
-        {/* GOLS */}
-        <div className="pp-hud-item">
-          <span className="pp-hud-label">
-            PONTOS
-          </span>
-
-          <span className="pp-hud-num">
-            {pontos}
-          </span>
-        </div>
-
-
-        {/* NÍVEL */}
-        <div className="pp-hud-item">
-          <span className="pp-hud-label">
-            NÍVEL
-          </span>
-
-          <span className="pp-hud-dificuldade">
-            {nivel?.rotulo ?? "FÁCIL"}
-          </span>
-        </div>
-
-
-        {/* SOM */}
-        <button
-          type="button"
-          className="pp-mudo-btn"
-          onClick={onAlternarSom}
-          title={
-            somLigado
-              ? "Desligar som"
-              : "Ligar som"
-          }
-          aria-label={
-            somLigado
-              ? "Desligar som"
-              : "Ligar som"
-          }
-        >
-          {somLigado ? "🔊" : "🔇"}
-        </button>
-
+    <div className="pp-hud">
+      <div className="pp-caixa">
+        <span className="pp-rotulo">RODADA</span>
+        <span className="pp-bolas">
+          {Array.from({ length: TOTAL_TENTATIVAS }, (_, i) => (
+            <i key={i} className={bolinhas?.[i] ? `jogada-${bolinhas[i]}` : "vazia"} />
+          ))}
+        </span>
+        <b className="pp-numero-pequeno">
+          {rodadaAtual}/{TOTAL_TENTATIVAS}
+        </b>
       </div>
 
-
-      {/* ================================================================
-          INDICADORES DAS 5 RODADAS
-      ================================================================= */}
-
-      <div className="pp-bolinhas">
-
-        {Array.from(
-          {
-            length: TOTAL_TENTATIVAS,
-          },
-          (_, index) => {
-
-            const resultado =
-              bolinhas?.[index];
-
-            return (
-              <span
-                key={index}
-                className={`pp-bolinha ${
-                  resultado
-                    ? `jogada-${resultado}`
-                    : ""
-                }`}
-              />
-            );
-          }
-        )}
-
+      <div className="pp-caixa">
+        <span className="pp-rotulo">PONTOS</span>
+        <b>{pontos}</b>
       </div>
 
+      <div className="pp-caixa">
+        <span className="pp-rotulo">NÍVEL</span>
+        <b className={nivel?.classe}>{nivel?.rotulo ?? "FÁCIL"}</b>
+      </div>
+
+      <button
+        type="button"
+        className="pp-mudo"
+        onClick={onAlternarSom}
+        aria-label={somLigado ? "Desligar som" : "Ligar som"}
+      >
+        {somLigado ? "🔊" : "🔇"}
+      </button>
     </div>
   );
 };

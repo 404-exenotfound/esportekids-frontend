@@ -59,7 +59,7 @@ export const TelaIntro = ({ onJogar }) => {
       <div className="pp-emoji-grande">🏓</div>
       <p className="pp-overlay-titulo">PRONTO PARA O PING-PONG?</p>
       <p className="pp-overlay-sub">
-        Mova o mouse (ou use as setas ↑↓ e W/S) para rebater a bola com a raquete.
+        Mova o mouse (ou use as setas ←→ e A/D) para rebater a bola com a raquete.
         <br />
         Você tem {TOTAL_TENTATIVAS} tentativas para pontuar — e a cada ponto o
         adversário fica um pouquinho mais esperto!

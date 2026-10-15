@@ -7,8 +7,8 @@
 // ============================================================================
 
 export const BannerResultado = ({ tipo, frase, fraseTorcida }) => (
-  <div className={`pp-banner ${tipo}`}>
+  <div className={`pp-aviso ${tipo === "ponto" ? "bom" : "ruim"}`}>
     {frase}
-    <span className="pp-banner-sub">{fraseTorcida}</span>
+    {fraseTorcida && <small className="pp-aviso-sub">{fraseTorcida}</small>}
   </div>
 );
