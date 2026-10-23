@@ -1,0 +1,225 @@
+/* ============================================================
+   EsporteKids — telas educativas (Aprender e Álbum)
+   Títulos em fonte pixel (identidade do jogo); TEXTOS em fonte
+   legível, porque parágrafos em pixel cansam a leitura.
+   ============================================================ */
+
+.edu-pagina {
+  --edu-texto: 18px;
+  width: 100%;
+  max-width: 980px;
+  box-sizing: border-box;
+  padding: 24px 16px 48px;
+  text-align: left;
+  align-self: flex-start;
+  font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+  color: #1f1f1f;
+}
+.edu-pagina.edu-grande { --edu-texto: 23px; }
+
+.edu-topo {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+  gap: 12px; margin-bottom: 20px;
+}
+.edu-titulo-pagina {
+  margin: 0; color: #fff; font-family: "Press Start 2P", monospace;
+  font-size: 24px; text-shadow: 4px 4px 0 #1f1f1f;
+}
+.edu-titulo-pixel {
+  font-family: "Press Start 2P", monospace; font-size: 13px; line-height: 1.6; margin: 0 0 14px;
+}
+
+/* Botões */
+.edu-btn {
+  background: #fff; color: #1f1f1f; border: 3px solid #1f1f1f; border-radius: 0;
+  padding: 10px 14px; font: 700 15px system-ui, sans-serif; cursor: pointer;
+  box-shadow: 3px 3px 0 #1f1f1f; text-decoration: none; display: inline-block;
+}
+.edu-btn:hover { transform: translate(2px, 2px); box-shadow: 1px 1px 0 #1f1f1f; }
+.edu-btn:focus-visible, .edu-opcao:focus-visible, .edu-aba:focus-visible, .edu-esporte:focus-visible {
+  outline: 4px solid #457b9d; outline-offset: 2px;
+}
+.edu-btn-ok { background: #2a9d8f; color: #fff; }
+.edu-btn-leitura { background: #ffd166; }
+.edu-btn-perigo { background: #e63946; color: #fff; }
+
+/* Cartões */
+.edu-card {
+  background: #f5f5dc; border: 5px solid #1f1f1f; box-shadow: 8px 8px 0 #000;
+  padding: 22px; margin-bottom: 22px;
+}
+.edu-centro { text-align: center; justify-content: center; }
+.edu-texto, .edu-lista, .edu-pergunta { font-size: var(--edu-texto); line-height: 1.55; margin: 0 0 12px; }
+.edu-lista { padding-left: 24px; }
+.edu-lista li { margin-bottom: 6px; }
+.edu-subtitulo { font-size: calc(var(--edu-texto) + 2px); margin: 18px 0 8px; font-weight: 800; }
+.edu-acoes { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+.edu-acoes.edu-centro { justify-content: center; }
+.edu-emoji-grande { font-size: 64px; margin: 4px 0; }
+.edu-curiosidade { background: #fff3b0; }
+
+.edu-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.edu-chip {
+  background: #fff; border: 3px solid #1f1f1f; padding: 6px 12px;
+  font-size: var(--edu-texto); font-weight: 600;
+}
+
+/* Seletor de esporte e abas */
+.edu-esportes { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
+.edu-esporte {
+  background: #f5f5dc; border: 4px solid #1f1f1f; padding: 10px 14px; cursor: pointer;
+  font: 800 16px system-ui, sans-serif; box-shadow: 4px 4px 0 #1f1f1f; border-radius: 0;
+}
+.edu-esporte.ativo { background: var(--cor, #e63946); color: #fff; text-shadow: 1px 1px 0 #1f1f1f; }
+.edu-abas { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.edu-aba {
+  background: #fff; border: 3px solid #1f1f1f; padding: 9px 12px; cursor: pointer;
+  font: 700 15px system-ui, sans-serif; border-radius: 0;
+}
+.edu-aba.ativa { background: #1f1f1f; color: #fff; }
+
+/* Quiz */
+.edu-progresso { font-size: 14px; color: #555; margin: 0 0 6px; }
+.edu-pergunta { font-weight: 800; font-size: calc(var(--edu-texto) + 3px); }
+.edu-opcoes { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; }
+.edu-opcao {
+  background: #fff; border: 4px solid #1f1f1f; border-radius: 0; padding: 14px; cursor: pointer;
+  font: 700 var(--edu-texto) system-ui, sans-serif; text-align: left;
+}
+.edu-opcao:hover:not(:disabled) { background: #ffe8a3; }
+.edu-opcao:disabled { cursor: default; }
+.edu-certa { background: #b7efc5 !important; border-color: #1b7a3a; }
+.edu-errada { background: #ffc2c7 !important; border-color: #b3202e; }
+.edu-feedback { margin-top: 14px; padding: 12px; border: 3px solid #1f1f1f; font-size: var(--edu-texto); }
+.edu-feedback-ok { background: #d8f7e0; }
+.edu-feedback-erro { background: #ffe0e3; }
+
+/* Estrelas */
+.edu-estrelas { font-size: 26px; letter-spacing: 2px; }
+.edu-estrela-on { color: #f4b400; text-shadow: 1px 1px 0 #1f1f1f; }
+.edu-estrela-off { color: #bbb; }
+
+/* Álbum */
+.edu-resumo { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+.edu-barra { flex: 1; min-width: 200px; height: 22px; background: #fff; border: 4px solid #1f1f1f; }
+.edu-barra > div { height: 100%; background: #2a9d8f; transition: width .4s; }
+.edu-grade-cartas { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 22px; margin-bottom: 22px; }
+.edu-carta {
+  background: #fffdf0; border: 5px solid #1f1f1f; box-shadow: 8px 8px 0 #000;
+  border-top: 14px solid var(--cor-carta); padding: 16px;
+}
+.edu-carta-bloqueada { filter: grayscale(.8); opacity: .85; }
+.edu-carta-topo { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.edu-carta-emoji { font-size: 44px; }
+.edu-carta-nome { margin: 0; font-family: "Press Start 2P", monospace; font-size: 14px; }
+.edu-selo { margin-left: auto; font-size: 32px; }
+.edu-carta-parte h4 { font-size: 16px; margin: 14px 0 4px; }
+.edu-carta-parte p, .edu-carta-parte li { font-size: 16px; line-height: 1.5; margin: 0 0 6px; }
+.edu-carta-parte ul { padding-left: 20px; margin: 0 0 6px; }
+.edu-trava { color: #777; font-style: italic; }
+.edu-equip { font-weight: 700; }
+
+.edu-conquistas { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+.edu-conquista { background: #fff; border: 3px solid #1f1f1f; padding: 12px; display: flex; gap: 10px; align-items: center; }
+.edu-conquista.bloqueada { opacity: .5; filter: grayscale(1); }
+.edu-conquista-emoji { font-size: 34px; }
+.edu-conquista strong { display: block; font-size: 16px; }
+.edu-conquista span { font-size: 14px; color: #444; }
+
+@media (max-width: 600px) {
+  .edu-titulo-pagina { font-size: 17px; }
+  .edu-card { padding: 16px; }
+}
+
+/* ============================================================
+   Fases: dica durante o jogo, quiz e aviso no fim do jogo
+   ============================================================ */
+.edu-toast {
+  position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%);
+  z-index: 1050; width: max-content; max-width: min(92vw, 640px);
+  display: flex; flex-direction: column; gap: 4px; text-align: left;
+  background: #fff3b0; color: #1f1f1f; border: 4px solid #1f1f1f; box-shadow: 5px 5px 0 #000;
+  padding: 12px 16px; font: 700 17px/1.4 system-ui, "Segoe UI", sans-serif;
+  pointer-events: none; animation: edu-sobe .3s ease-out;
+}
+.edu-toast strong { font-family: "Press Start 2P", monospace; font-size: 11px; }
+@keyframes edu-sobe {
+  from { opacity: 0; transform: translate(-50%, 16px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+.edu-fase {
+  --edu-texto: 18px; width: 100%; max-width: 680px; margin: 0 auto; box-sizing: border-box;
+  text-align: left; color: #1f1f1f; font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+}
+.edu-fase .edu-card { margin-bottom: 0; }
+.edu-nova { background: #e63946; color: #fff; font: 700 11px system-ui, sans-serif; padding: 2px 6px; margin-left: 4px; }
+.edu-aviso {
+  background: #d8f7e0; border: 4px solid #1f1f1f; box-shadow: 5px 5px 0 #000;
+  padding: 14px 16px; margin: 0 auto 16px; font-size: 17px; text-align: center;
+}
+.edu-aviso p { margin: 0 0 10px; }
+.edu-aviso .edu-btn { margin-top: 2px; }
+
+/* Botão de voltar dos minigames */
+.edu-voltar {
+  position: fixed; top: 12px; left: 12px; z-index: 1060;
+  background: #e63946; color: #fff; border: 4px solid #1f1f1f; border-radius: 0;
+  padding: 10px 14px; cursor: pointer; box-shadow: 4px 4px 0 #1f1f1f;
+  font: 400 11px "Press Start 2P", monospace; text-shadow: 2px 2px 0 #1f1f1f;
+}
+.edu-voltar:hover { background: #c92f3b; transform: translate(2px, 2px); box-shadow: 2px 2px 0 #1f1f1f; }
+.edu-voltar:focus-visible { outline: 4px solid #ffd166; outline-offset: 2px; }
+@media (max-width: 600px) { .edu-voltar { top: 6px; left: 6px; padding: 8px 10px; font-size: 9px; } }
+
+/* ============================================================
+   AJUSTE DE CONTRASTE — Aprender e Quiz do fim do jogo
+   (fica no FINAL do arquivo para sobrescrever as regras acima)
+   ============================================================ */
+
+/* Texto escuro sobre cartões claros, independente do modo escuro do navegador */
+.edu-card,
+.edu-fase,
+.edu-feedback,
+.edu-aviso { color: #1f1f1f; }
+
+/* Abas e seletor de esporte: antes não tinham cor e ficavam brancos sobre fundo claro */
+.edu-esporte,
+.edu-aba {
+  color: #1f1f1f !important;
+  text-shadow: none !important;
+}
+
+/* Esporte selecionado: texto branco sobre a cor do esporte */
+.edu-esporte.ativo {
+  color: #fff !important;
+  text-shadow: 1px 1px 0 #1f1f1f !important;
+}
+
+/* Aba selecionada: texto branco sobre fundo preto */
+.edu-aba.ativa { color: #fff !important; }
+
+/* Quiz: opções, inclusive depois de respondidas (botão desativado ficava cinza claro) */
+.edu-opcao,
+.edu-opcao:disabled {
+  color: #1f1f1f !important;
+  opacity: 1 !important;
+}
+.edu-certa { color: #0b3d1a !important; }
+.edu-errada { color: #6b0f1a !important; }
+
+/* Textos de apoio mais escuros */
+.edu-progresso { color: #333; font-weight: 600; }
+.edu-trava { color: #444; }
+.edu-conquista span { color: #333; }
+.edu-estrela-off { color: #8a8a8a; }
+
+/* Linha "Suas estrelas em..." (usa a classe edu-faixa em pages/aprender/index.jsx) */
+.edu-faixa {
+  width: fit-content;
+  max-width: 100%;
+  background: #f5f5dc;
+  color: #1f1f1f;
+  border: 3px solid #1f1f1f;
+  box-shadow: 3px 3px 0 #1f1f1f;
+  padding: 8px 12px;
+}
