@@ -149,6 +149,9 @@ const criarEstadoInicial = () => ({
   ultimoImpacto: 0,
   impactoX: 0,
   particulas: [],
+  servidor: "jogador",
+  lastHitTime: 0,
+  lastHitSide: null,
 });
 
 /* ================= UTILITÁRIOS DE DESENHO ================= */
@@ -580,7 +583,11 @@ export function usePingpong() {
 
   const canvasRef = useRef(null);
   const dataRef = useRef(null);
-  if (dataRef.current === null) dataRef.current = criarEstadoInicial();
+  if (dataRef.current === null) {
+    dataRef.current = criarEstadoInicial();
+    dataRef.current.lastHitTime = 0;
+    dataRef.current.lastHitSide = null;
+  }
 
   const { garantirAudio, tocarToque, tocarPonto, tocarErro } = useSons(somLigado);
 
@@ -590,10 +597,12 @@ export function usePingpong() {
   const iniciarJogo = useCallback(() => {
     garantirAudio();
     const d = criarEstadoInicial();
+    d.servidor = "jogador";
     d.fase = FASES.SERVINDO;
     d.serveRestante = TEMPO_SAQUE;
     d.ball.trajectory = TRAJETORIA.SERVE;
-    d.ball.z = AI_SIDE;
+    d.ball.z = PLAYER_SIDE;
+    d.ball.x = d.playerX;
     dataRef.current = d;
 
     setPontos(0);
@@ -695,6 +704,7 @@ export function usePingpong() {
         setFraseTorcida(sorteiaFrase(FRASES_TORCIDA_PONTO));
         tocarPonto();
         spawnImpactParticles(d, d.ball.x, CORES_CONFETE, 36);
+        d.servidor = "jogador";
       } else {
         d.historico = [...d.historico, "erro"];
         setHistorico(d.historico);
@@ -702,6 +712,7 @@ export function usePingpong() {
         setFraseTorcida(sorteiaFrase(FRASES_TORCIDA_ERRO));
         tocarErro();
         spawnImpactParticles(d, d.playerX, "#e63946");
+        d.servidor = "ia";
       }
 
       d.fase = ganhou ? FASES.PONTO : FASES.ERRO;
@@ -735,8 +746,9 @@ export function usePingpong() {
       d.ball.progress = 0;
     };
 
-    const rebaterJogador = (d) => {
+    const rebaterJogador = (d, now) => {
       if (!d.ball.canBeHit || d.ball.trajectory !== TRAJETORIA.QUICOU_JOGADOR) return;
+      if (d.lastHitSide === "player" && now - d.lastHitTime < 130) return;
 
       const distancia = Math.abs(d.ball.x - d.playerX);
       if (distancia > PLAYER_HIT_TOLERANCE) {
@@ -760,12 +772,16 @@ export function usePingpong() {
       d.ball.trajectory = TRAJETORIA.INDO_PARA_AI;
       d.ball.canBeHit = false;
       d.ball.progress = 0;
-      d.ball.z = PLAYER_SIDE;
-      d.ball.x = clamp(d.playerX + d.ball.vx * 0.22, -0.9, 0.9);
+      d.ball.z = PLAYER_SIDE + 0.01;
+      d.ball.x = clamp(d.playerX + offset * 0.12 + d.ball.vx * 0.28, -0.9, 0.9);
+      d.ball.trail = [];
+      d.lastHitSide = "player";
+      d.lastHitTime = now;
     };
 
-    const rebaterIa = (d) => {
+    const rebaterIa = (d, now) => {
       if (!d.ball.canBeHit || d.ball.trajectory !== TRAJETORIA.QUICOU_AI) return;
+      if (d.lastHitSide === "ai" && now - d.lastHitTime < 130) return;
 
       const distancia = Math.abs(d.ball.x - d.aiX);
       const tolerancia = AI_HIT_TOLERANCE + Math.max(0, 0.035 - d.pontos * 0.004);
@@ -789,8 +805,11 @@ export function usePingpong() {
       d.ball.trajectory = TRAJETORIA.INDO_PARA_JOGADOR;
       d.ball.canBeHit = false;
       d.ball.progress = 0;
-      d.ball.z = AI_SIDE;
-      d.ball.x = clamp(d.aiX + d.ball.vx * 0.22, -0.9, 0.9);
+      d.ball.z = AI_SIDE - 0.01;
+      d.ball.x = clamp(d.aiX + offset * 0.1 + d.ball.vx * 0.24, -0.9, 0.9);
+      d.ball.trail = [];
+      d.lastHitSide = "ai";
+      d.lastHitTime = now;
     };
 
     const atualizarBola = (d, dt) => {
@@ -832,6 +851,7 @@ export function usePingpong() {
       last = timestamp;
 
       const d = dataRef.current;
+      const now = timestamp;
       d.ultimoImpacto = Math.max(0, d.ultimoImpacto - dt * 1000);
       d.flashRestante = Math.max(0, d.flashRestante - dt * 1000);
       updateParticles(d, dt);
@@ -841,9 +861,17 @@ export function usePingpong() {
         moverIa(d, dt);
         d.serveTempoTotal += dt;
         d.serveRestante -= dt * 1000;
-        d.ball.progress = (Math.sin(d.serveTempoTotal * 5) + 1) / 2;
-        d.ball.z = AI_SIDE + d.ball.progress * 0.04;
+        if (d.servidor === "jogador") {
+          d.ball.x = d.playerX;
+          d.ball.progress = 0;
+          d.ball.z = PLAYER_SIDE;
+        } else {
+          d.ball.progress = (Math.sin(d.serveTempoTotal * 5) + 1) / 2;
+          d.ball.z = AI_SIDE + d.ball.progress * 0.04;
+          d.ball.x = d.aiX * 0.3;
+        }
         d.ball.canBeHit = false;
+        d.ball.trail = [];
 
         if (d.serveRestante <= 0) {
           d.flashRestante = 420;
@@ -851,9 +879,20 @@ export function usePingpong() {
           d.rally = 0;
           setRally(0);
           d.ball = criarBola();
-          d.ball.direction = -1;
-          d.ball.trajectory = TRAJETORIA.INDO_PARA_JOGADOR;
-          d.ball.z = AI_SIDE;
+          d.ball.trail = [];
+          d.lastHitSide = null;
+          d.lastHitTime = 0;
+          if (d.servidor === "jogador") {
+            d.ball.direction = 1;
+            d.ball.trajectory = TRAJETORIA.INDO_PARA_AI;
+            d.ball.z = PLAYER_SIDE;
+            d.ball.x = d.playerX;
+          } else {
+            d.ball.direction = -1;
+            d.ball.trajectory = TRAJETORIA.INDO_PARA_JOGADOR;
+            d.ball.z = AI_SIDE;
+            d.ball.x = d.aiX;
+          }
           d.ball.flightTime = 1.05;
           setFase(FASES.JOGANDO);
         }
@@ -865,11 +904,11 @@ export function usePingpong() {
         if (d.ball.canBeHit) {
           if (d.ball.trajectory === TRAJETORIA.QUICOU_JOGADOR) {
             const distancia = Math.abs(d.ball.x - d.playerX);
-            if (distancia <= PLAYER_HIT_TOLERANCE) rebaterJogador(d);
+            if (distancia <= PLAYER_HIT_TOLERANCE) rebaterJogador(d, now);
             else if (d.ball.progress > 0.58) resolverResultado(d, false);
           } else if (d.ball.trajectory === TRAJETORIA.QUICOU_AI) {
             const distancia = Math.abs(d.ball.x - d.aiX);
-            if (distancia <= AI_HIT_TOLERANCE + 0.055) rebaterIa(d);
+            if (distancia <= AI_HIT_TOLERANCE + 0.055) rebaterIa(d, now);
             else if (d.ball.progress > 0.6) resolverResultado(d, true);
           }
         }
@@ -887,7 +926,16 @@ export function usePingpong() {
             d.rally = 0;
             setRally(0);
             d.ball = criarBola();
-            d.ball.z = AI_SIDE;
+            d.ball.trail = [];
+            d.lastHitSide = null;
+            d.lastHitTime = 0;
+            if (d.servidor === "jogador") {
+              d.ball.z = PLAYER_SIDE;
+              d.ball.x = d.playerX;
+            } else {
+              d.ball.z = AI_SIDE;
+              d.ball.x = d.aiX;
+            }
             d.ball.trajectory = TRAJETORIA.SERVE;
             setFase(FASES.SERVINDO);
           }

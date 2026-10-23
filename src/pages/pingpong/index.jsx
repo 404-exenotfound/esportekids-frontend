@@ -21,7 +21,7 @@ const PingPong = () => {
     suportaTelaCheia,
     ref: telaCheiaRef,
     alternarTelaCheia,
-  } = useTelaCheia();
+  } = useTelaCheia(jogo.mostrarFimDeJogo);
 
   return (
     <div className="pp-wrapper">
@@ -32,8 +32,6 @@ const PingPong = () => {
             PING-PONG <span>CAMPEÃO</span>
           </h1>
         </div>
-
-        {!jogo.mostrarFimDeJogo && <DicaToast dica={edu.dicaVisivel} />}
 
         {jogo.mostrarFimDeJogo && (
           <FimEducativo esporte="pingpong" vistas={edu.vistas}>
@@ -55,6 +53,8 @@ const PingPong = () => {
           ref={telaCheiaRef}
           className={`pp-stage${jogo.mostrarFimDeJogo ? " pp-oculto" : ""}`}
         >
+          {!jogo.mostrarFimDeJogo && <DicaToast dica={edu.dicaVisivel} />}
+
           <EscalaProporcional largura={GAME_WIDTH} altura={GAME_HEIGHT}>
             <canvas
               ref={canvasRef}
