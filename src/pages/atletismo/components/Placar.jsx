@@ -11,46 +11,46 @@ export const Placar = ({
   temVento,
   potencia,
 }) => (
-  <div className="atl-painel-status">
-    <div className="atl-status-item">
-      <div className="atl-status-rotulo">FASE</div>
-      <div className="atl-status-valor">
-        {fase}/{totalFases}
+  <div className="atl-hud-wrap">
+    <div className="atl-hud">
+      <div className="atl-caixa">
+        <span className="atl-rotulo">FASE</span>
+        <b>
+          {fase}/{totalFases}
+        </b>
+        {nomeFase && <span className="atl-sub">{nomeFase}</span>}
       </div>
-      <div className="atl-status-sub">{nomeFase}</div>
-    </div>
-    <div className="atl-status-item">
-      <div className="atl-status-rotulo">🎯 META</div>
-      <div className="atl-status-valor">{fmt(meta)}</div>
-      <div className="atl-status-sub">caixa: 10m</div>
-    </div>
-    <div className="atl-status-item">
-      <div className="atl-status-rotulo">📏 ÚLTIMO SALTO</div>
-      <div className="atl-status-valor">{ultimo > 0 ? fmt(ultimo) : "—"}</div>
-      <div className="atl-status-sub">medido pelo juiz</div>
-    </div>
-    <div className="atl-status-item">
-      <div className="atl-status-rotulo">🏆 MELHOR SALTO</div>
-      <div className="atl-status-valor">{melhor > 0 ? fmt(melhor) : "—"}</div>
-      <div className="atl-status-sub">
-        {temVento
-          ? `vento ${vento > 0 ? "+" : ""}${String(vento).replace(".", ",")}`
-          : "sem vento"}
+      <div className="atl-caixa">
+        <span className="atl-rotulo">META</span>
+        <b>{fmt(meta)}</b>
       </div>
-    </div>
-    <div className="atl-status-item atl-status-potencia">
-      <div className="atl-status-rotulo">⚡ POTÊNCIA</div>
-      <div className="atl-potencia-barra" aria-label={`Potência ${potencia}%`}>
-        <div
-          className="atl-potencia-preenchimento"
-          style={{
-            width: `${potencia}%`,
-            background:
-              potencia < 40 ? "#EF476F" : potencia < 70 ? "#FFC93C" : "#06D6A0",
-          }}
-        />
+      <div className="atl-caixa">
+        <span className="atl-rotulo">ÚLTIMO SALTO</span>
+        <b>{ultimo > 0 ? fmt(ultimo) : "—"}</b>
       </div>
-      <div className="atl-status-sub">{potencia}%</div>
+      <div className="atl-caixa">
+        <span className="atl-rotulo">MELHOR SALTO</span>
+        <b>{melhor > 0 ? fmt(melhor) : "—"}</b>
+        {temVento && (
+          <span className="atl-sub">
+            VENTO {vento > 0 ? "+" : ""}{String(vento).replace(".", ",")}
+          </span>
+        )}
+      </div>
+      <div className="atl-caixa atl-caixa--pot">
+        <span className="atl-rotulo">POTÊNCIA</span>
+        <div className="atl-pot-bar" aria-label={`Potência ${potencia}%`}>
+          <div
+            className="atl-pot-fill"
+            style={{
+              width: `${potencia}%`,
+              background:
+                potencia < 40 ? "#e63946" : potencia < 70 ? "#ffd166" : "#06d6a0",
+            }}
+          />
+        </div>
+        <b>{potencia}%</b>
+      </div>
     </div>
   </div>
 );
