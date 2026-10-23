@@ -68,78 +68,37 @@ html, body { margin: 0; padding: 0; }
   text-shadow: 3px 3px 0 var(--preto);
 }
 
-/* ---------- HUD (padronizado com os outros minigames) ---------- */
+/* ---------- HUD (mesmo painel cinza do PenaltiCampeao) ---------- */
 
-.atl-hud-wrap {
-  margin: 10px 20px 16px;
-  pointer-events: none;
-}
-
-.atl-hud-wrap--dentro {
-  position: absolute;
-  left: 2%;
-  right: 2%;
-  bottom: 10px;
-  z-index: 6;
-  margin: 0;
-}
-
-.atl-hud {
+.atl-painel-status {
+  background: var(--cinza);
+  border: 4px solid var(--preto);
+  box-shadow: 4px 4px 0 var(--preto);
+  margin: 20px 20px 10px;
+  padding: 12px 14px;
   display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 10px;
-  flex-wrap: wrap;
-  pointer-events: none;
+  align-items: center;
+  justify-content: space-around;
+  font-family: "Press Start 2P", monospace;
+  font-size: 9px;
+  color: var(--preto);
+  gap: 8px;
 }
 
-.atl-caixa {
-  background: #1b2340;
-  color: #fff;
-  padding: 0.8em 1em;
-  font-size: clamp(7px, 1.4vw, 13px);
+.atl-status-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.7em;
-  box-shadow: 0 -3px 0 0 #ffd34d, 0 3px 0 0 #ffd34d, -3px 0 0 0 #ffd34d, 3px 0 0 0 #ffd34d;
-  text-align: center;
-  min-width: 150px;
-  pointer-events: none;
+  gap: 6px;
 }
 
-.atl-caixa b {
-  color: #ffd34d;
-  font-weight: normal;
-  font-size: clamp(9px, 1.6vw, 14px);
+.atl-status-rotulo {
+  font-size: 9px;
 }
 
-.atl-rotulo {
-  color: #8ea2ff;
-  font-size: 0.75em;
-}
-
-.atl-sub {
-  color: #fff;
-  font-size: 0.7em;
-  opacity: 0.9;
-}
-
-.atl-caixa--pot {
-  gap: 0.6em;
-}
-
-.atl-pot-bar {
-  width: clamp(90px, 10vw, 120px);
-  height: 10px;
-  background: #39446a;
-  box-shadow: 0 0 0 2px #1b2340;
-  overflow: hidden;
-}
-
-.atl-pot-fill {
-  height: 100%;
-  transition: width 0.12s linear;
+.atl-status-valor {
+  color: var(--vermelho);
+  font-size: 13px;
 }
 
 .atl-heart {
@@ -397,14 +356,7 @@ html, body { margin: 0; padding: 0; }
 
 @media (max-width: 620px) {
   .atl-titulo { font-size: 15px; }
-  .atl-hud-wrap { margin: 10px 14px 12px; }
-  .atl-hud-wrap--dentro { left: 4%; right: 4%; bottom: 8px; margin: 0; }
-  .atl-hud { gap: 6px; }
-  .atl-caixa { flex: 0 1 140px; min-width: 0; padding: 0.7em 0.8em; font-size: clamp(6px, 2vw, 9px); }
-  .atl-caixa b { font-size: clamp(8px, 2.6vw, 11px); }
-  .atl-rotulo { font-size: 0.7em; }
-  .atl-sub { font-size: 0.6em; }
-  .atl-pot-bar { width: 80px; height: 9px; }
+  .atl-painel-status { margin: 14px 14px 8px; }
   .atl-stage { margin: 8px 14px; }
   .atl-btn { font-size: 12px; min-width: 0; padding: 12px 22px; }
   .atl-botoes-fim {
@@ -520,10 +472,15 @@ html, body { margin: 0; padding: 0; }
 /* ---------- Salto em Distância: placar, botão de ação e placa do juiz ---------- */
 
 .atl-status-sub { font-size: 8px; opacity: 0.85; }
+.atl-potencia-barra {
+  width: 92px; height: 12px; background: #fff;
+  border: 3px solid var(--preto); overflow: hidden;
+}
+.atl-potencia-preenchimento { height: 100%; transition: width 0.12s linear; }
 
 .atl-acao-wrap {
-  position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%);
-  display: flex; flex-direction: column; align-items: center; gap: 5px;
+  position: absolute; right: 12px; left: auto; bottom: 12px; transform: none;
+  display: flex; flex-direction: column; align-items: flex-end; gap: 5px;
   z-index: 5;
 }
 .atl-btn-acao {
@@ -557,7 +514,7 @@ html, body { margin: 0; padding: 0; }
 .atl-resultado-meta { font-family: "Baloo 2", sans-serif; font-weight: 700; font-size: 12px; margin: 0; color: #444; }
 
 @media (max-width: 620px) {
-  .atl-hud { flex-wrap: wrap; }
+  .atl-painel-status { flex-wrap: wrap; }
   .atl-btn-acao { font-size: 11px; min-width: 190px; padding: 14px 18px; }
   .atl-resultado-distancia { font-size: 20px; }
 }

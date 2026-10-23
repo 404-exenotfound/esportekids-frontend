@@ -37,8 +37,6 @@ const Atletismo = () => {
           <h1 className="atl-titulo">SALTO EM DISTÂNCIA</h1>
         </div>
 
-        {!terminou && <DicaToast dica={edu.dicaVisivel} />}
-
         {terminou ? (
           <FimEducativo esporte="atletismo" vistas={edu.vistas}>
             <TelaFimDeJogo
@@ -50,36 +48,45 @@ const Atletismo = () => {
         ) : (
           <>
             <div className="atl-palco" ref={telaCheiaRef}>
-                <Arena canvasRef={jogo.canvasRef}>
-                  {jogo.gameState === FASES.START && (
-                    <TelaIntro onJogar={jogo.startGame} />
-                  )}
-                  {jogo.gameState === FASES.PLAYING && jogo.etapa === "resultado" && (
-                    <ResultadoSalto resultado={jogo.resultado} />
-                  )}
-                  {jogo.gameState === FASES.PLAYING && (
-                    <BotaoAcao
-                      rotulo={jogo.rotuloBotao}
-                      etapa={jogo.etapa}
-                      emZonaDeSalto={jogo.emZonaDeSalto}
-                      onAcao={jogo.acaoPrincipal}
-                    />
-                  )}
-                </Arena>
+              {/* Dentro do palco (= elemento da tela cheia) para a
+                  informação/dica aparecer também no modo tela cheia */}
+              <DicaToast dica={edu.dicaVisivel} />
 
-                {!terminou && (
-                  <Placar
-                    fase={jogo.fase}
-                    totalFases={jogo.totalFases}
-                    nomeFase={jogo.nomeFase}
-                    meta={jogo.meta}
-                    ultimo={jogo.ultimo}
-                    melhor={jogo.melhor}
-                    vento={jogo.vento}
-                    temVento={jogo.temVento}
-                    potencia={jogo.potencia}
+              {/* Barra de status (fase, meta, último e melhor salto, potência) */}
+              <Placar
+                fase={jogo.fase}
+                totalFases={jogo.totalFases}
+                nomeFase={jogo.nomeFase}
+                meta={jogo.meta}
+                ultimo={jogo.ultimo}
+                melhor={jogo.melhor}
+                vento={jogo.vento}
+                temVento={jogo.temVento}
+                potencia={jogo.potencia}
+              />
+
+              <Arena canvasRef={jogo.canvasRef}>
+                {jogo.gameState === FASES.START && (
+                  <TelaIntro onJogar={jogo.startGame} />
+                )}
+                {jogo.gameState === FASES.PLAYING && jogo.etapa === "resultado" && (
+                  <ResultadoSalto resultado={jogo.resultado} />
+                )}
+                {jogo.gameState === FASES.PLAYING && (
+                  <BotaoAcao
+                    rotulo={jogo.rotuloBotao}
+                    etapa={jogo.etapa}
+                    emZonaDeSalto={jogo.emZonaDeSalto}
+                    onAcao={jogo.acaoPrincipal}
                   />
                 )}
+              </Arena>
+
+              {/* Rodapé de instrução dentro do palco: visível na tela
+                  cheia e sem ficar embaixo do botão de ação */}
+              <div className="atl-rodape">
+                <p className="atl-rodape-texto">{jogo.instrucao}</p>
+              </div>
 
               {suportaTelaCheia && (
                 <BotaoTelaCheia
@@ -88,11 +95,6 @@ const Atletismo = () => {
                   classe="atl-tela-cheia"
                 />
               )}
-            </div>
-
-            {/* Rodapé de instrução (muda conforme o momento do salto) */}
-            <div className="atl-rodape">
-              <p className="atl-rodape-texto">{jogo.instrucao}</p>
             </div>
           </>
         )}

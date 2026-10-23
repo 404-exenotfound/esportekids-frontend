@@ -1,4 +1,4 @@
-# Salto em Distância — o que mudou (v3)
+# Salto em Distância — o que mudou (v7)
 
 Jogo 2D sobre **Salto em Distância**, com a **paisagem e o personagem no padrão do Basquete Campeão**: céu em faixas com dithering, sol, montanhas, prédios com janelas acesas, árvores, arquibancada com torcida animada, mureta com placas coloridas — e o atleta de boné amarelo, camisa vermelha com número branco e shorts azul (matriz de sprite + braços/pernas por pose, igual ao basquete).
 
@@ -41,3 +41,20 @@ Jogo 2D sobre **Salto em Distância**, com a **paisagem e o personagem no padrã
 - `utils/constantes.js` — `FASES_SALTO` com metas, caixa de 10 m e dificuldades.
 
 - **v3 — pés no chão:** o ciclo de corrida virou 3 tempos (apoio/passagem/apoio) com um pé sempre plantado na linha do chão (y+72) e a sola do tênis terminando exatamente no ponto do pé.
+
+- **v4 — altura e chão:** personagem de volta aos **60 px** originais (sprite do basquete em escala 2,5) e a linha dos pés desceu para a **linha pontilhada no centro da pista** (`GROUND_Y = 344`, pista começa em `TOPO_PISTA = 312`): atleta, tábua branca/linha vermelha, juiz e caixa de areia ficam sobre essa linha.
+
+- **v5 — personagem, botão e tela cheia:** (1) personagem restaurado ao desenho
+  original do jogo (grade 10x15, 40x60 px) com poses do salto; (2) botão de ação
+  foi para o canto inferior direito da arena e perdeu o textinho duplicado — não
+  cobre mais a mensagem "aperte ESPAÇO" do rodapé; (3) `DicaToast` (informações/
+  dicas) e o rodapé de instrução foram movidos para DENTRO do `.atl-palco`, que é
+  o elemento que entra em tela cheia — fora dele o navegador não exibe esses
+  elementos no fullscreen, por isso a informação não aparecia nesse modo.
+
+- **v6 — personagem igual ao basquete:** sprite completo em grade 12x20 com
+  escala inteira de 3 px (36x60 px, altura original): boné amarelo, cabelo
+  marrom com brilho, camisa vermelha com número branco, shorts azul, meia
+  branca e tênis preto — com poses parada/corrida/impulso/voo/pouso/comemoração.
+
+- **v7 — só a pista:** personagem idêntico ao da v6 (nenhum pixel alterado). A linha pontilhada da raia foi alinhada para passar exatamente sob a sola do tênis (termina em `GROUND_Y`), do jeito que estava na v5 — nada de pé flutuando acima da linha.

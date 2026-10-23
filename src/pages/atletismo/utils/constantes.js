@@ -1,9 +1,10 @@
 export const GAME_WIDTH = 800;
 export const GAME_HEIGHT = 400;
 export const PIXEL = 4; // unidade base do pixel art
-export const GROUND_Y = GAME_HEIGHT - 88;
-export const PLAYER_W = 36; // sprite padrão basquete: 12 células x 3px
-export const PLAYER_H = 72; // 24 células x 3px
+export const TOPO_PISTA = GAME_HEIGHT - 88; // topo da pista (onde ela começa)
+export const GROUND_Y = GAME_HEIGHT - 56; // linha dos pés: linha pontilhada, centro da pista
+export const PLAYER_W = 36; // sprite basquete: 12 células x 3px
+export const PLAYER_H = 60; // 15 blocos x 4px (altura original)
 export const TOTAL_FASES = 5;
 
 // Fases do jogo (tela), na ordem em que acontecem — NÃO alterar:

@@ -275,7 +275,7 @@ export function useAtletismo() {
           d.runFrameTimer += dtMs * (0.6 + d.potencia / 60);
           if (d.runFrameTimer > 95) {
             d.runFrameTimer = 0;
-            d.runFrame = (d.runFrame + 1) % 3;
+            d.runFrame = d.runFrame === 0 ? 1 : 0;
           }
 
           const peX = d.atletaX + PLAYER_W - 6;

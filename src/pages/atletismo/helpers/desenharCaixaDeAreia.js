@@ -45,7 +45,7 @@ export function desenharCaixaDeAreia(ctx, camX, metaMetros, marcaPousoX, etapa) 
     if (mx < -20 || mx > 820) continue;
     rect(ctx, mx - 1, chao, 2, 38, m % 5 === 0 ? "#B22234" : "rgba(139,90,43,0.55)");
     ctx.fillStyle = "#7A4A12";
-    ctx.fillText(`${m}m`, mx, chao + 52);
+    ctx.fillText(`${m}m`, mx, chao + 50);
   }
 
   // Bandeirinha da META desta fase

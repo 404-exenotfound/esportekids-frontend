@@ -17,7 +17,6 @@ export const BotaoAcao = ({ rotulo, etapa, emZonaDeSalto, onAcao }) => {
       >
         {rotulo}
       </button>
-      <span className="atl-acao-dica">ou aperte ESPAÇO</span>
     </div>
   );
 };
