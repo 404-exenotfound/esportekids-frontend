@@ -50,35 +50,36 @@ const Atletismo = () => {
         ) : (
           <>
             <div className="atl-palco" ref={telaCheiaRef}>
-              {/* Barra de status (fase, meta, último e melhor salto, potência) */}
-              <Placar
-                fase={jogo.fase}
-                totalFases={jogo.totalFases}
-                nomeFase={jogo.nomeFase}
-                meta={jogo.meta}
-                ultimo={jogo.ultimo}
-                melhor={jogo.melhor}
-                vento={jogo.vento}
-                temVento={jogo.temVento}
-                potencia={jogo.potencia}
-              />
+                <Arena canvasRef={jogo.canvasRef}>
+                  {jogo.gameState === FASES.START && (
+                    <TelaIntro onJogar={jogo.startGame} />
+                  )}
+                  {jogo.gameState === FASES.PLAYING && jogo.etapa === "resultado" && (
+                    <ResultadoSalto resultado={jogo.resultado} />
+                  )}
+                  {jogo.gameState === FASES.PLAYING && (
+                    <BotaoAcao
+                      rotulo={jogo.rotuloBotao}
+                      etapa={jogo.etapa}
+                      emZonaDeSalto={jogo.emZonaDeSalto}
+                      onAcao={jogo.acaoPrincipal}
+                    />
+                  )}
+                </Arena>
 
-              <Arena canvasRef={jogo.canvasRef}>
-                {jogo.gameState === FASES.START && (
-                  <TelaIntro onJogar={jogo.startGame} />
-                )}
-                {jogo.gameState === FASES.PLAYING && jogo.etapa === "resultado" && (
-                  <ResultadoSalto resultado={jogo.resultado} />
-                )}
-                {jogo.gameState === FASES.PLAYING && (
-                  <BotaoAcao
-                    rotulo={jogo.rotuloBotao}
-                    etapa={jogo.etapa}
-                    emZonaDeSalto={jogo.emZonaDeSalto}
-                    onAcao={jogo.acaoPrincipal}
+                {!terminou && (
+                  <Placar
+                    fase={jogo.fase}
+                    totalFases={jogo.totalFases}
+                    nomeFase={jogo.nomeFase}
+                    meta={jogo.meta}
+                    ultimo={jogo.ultimo}
+                    melhor={jogo.melhor}
+                    vento={jogo.vento}
+                    temVento={jogo.temVento}
+                    potencia={jogo.potencia}
                   />
                 )}
-              </Arena>
 
               {suportaTelaCheia && (
                 <BotaoTelaCheia

@@ -11,7 +11,7 @@ export const Placar = ({
   temVento,
   potencia,
 }) => (
-  <div className="atl-hud-wrap">
+  <div className="atl-hud-wrap atl-hud-wrap--baixo">
     <div className="atl-hud">
       <div className="atl-caixa">
         <span className="atl-rotulo">FASE</span>

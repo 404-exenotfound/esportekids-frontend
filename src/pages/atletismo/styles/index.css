@@ -71,14 +71,20 @@ html, body { margin: 0; padding: 0; }
 /* ---------- HUD (padronizado com os outros minigames) ---------- */
 
 .atl-hud-wrap {
-  margin: 16px 20px 10px;
+  margin: 10px 20px 16px;
+  pointer-events: none;
+}
+
+.atl-hud-wrap--baixo {
+  position: relative;
+  z-index: 4;
 }
 
 .atl-hud {
   display: flex;
   align-items: flex-start;
-  justify-content: space-between;
-  gap: 8px;
+  justify-content: center;
+  gap: 10px;
   flex-wrap: wrap;
   pointer-events: none;
 }
@@ -95,6 +101,7 @@ html, body { margin: 0; padding: 0; }
   box-shadow: 0 -3px 0 0 #ffd34d, 0 3px 0 0 #ffd34d, -3px 0 0 0 #ffd34d, 3px 0 0 0 #ffd34d;
   text-align: center;
   min-width: 150px;
+  pointer-events: none;
 }
 
 .atl-caixa b {
@@ -386,9 +393,9 @@ html, body { margin: 0; padding: 0; }
 
 @media (max-width: 620px) {
   .atl-titulo { font-size: 15px; }
-  .atl-hud-wrap { margin: 14px 14px 8px; }
+  .atl-hud-wrap { margin: 10px 14px 12px; }
   .atl-hud { gap: 6px; }
-  .atl-caixa { flex: 1 1 140px; min-width: 0; padding: 0.7em 0.8em; font-size: clamp(6px, 2vw, 9px); }
+  .atl-caixa { flex: 0 1 140px; min-width: 0; padding: 0.7em 0.8em; font-size: clamp(6px, 2vw, 9px); }
   .atl-caixa b { font-size: clamp(8px, 2.6vw, 11px); }
   .atl-rotulo { font-size: 0.7em; }
   .atl-sub { font-size: 0.6em; }
