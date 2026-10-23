@@ -28,10 +28,17 @@
 }
 
 body{
+<<<<<<< HEAD
   background-image: url('./assets/logo_cruzeiro_do_sul.png'), url('./assets/background.jpg') !important;
   background-size: auto 150px, cover;
   background-position: top center, center;
   background-repeat: no-repeat, no-repeat;
+=======
+   background-image: url('./assets/background.jpg') !important;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+>>>>>>> 0188cc4640ce79423a37cbcf83f521023054c1ad
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
