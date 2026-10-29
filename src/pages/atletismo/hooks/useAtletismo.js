@@ -236,6 +236,9 @@ export function useAtletismo() {
   useEffect(() => {
     const onKeyDown = (e) => {
       if (e.code !== "Space" && e.code !== "ArrowUp") return;
+      // Fim de jogo (quiz/resultado na tela): ESPAÇO não deve reiniciar o jogo
+      // nem impedir o uso normal dos botões do quiz.
+      if (gameState !== FASES.PLAYING && gameState !== FASES.START) return;
       e.preventDefault();
       if (e.repeat) return;
       if (gameState === FASES.PLAYING) acaoPrincipal();

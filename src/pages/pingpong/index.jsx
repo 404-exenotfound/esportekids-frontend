@@ -34,7 +34,7 @@ const PingPong = () => {
         </div>
 
         {jogo.mostrarFimDeJogo && (
-          <FimEducativo esporte="pingpong" vistas={edu.vistas}>
+          <FimEducativo esporte="pingpong" vistas={edu.vistas} pontosDoJogo={jogo.pontos}>
             <TelaFimDeJogo
               pontos={jogo.pontos}
               estrelas={jogo.estrelas}
@@ -53,7 +53,7 @@ const PingPong = () => {
           ref={telaCheiaRef}
           className={`pp-stage${jogo.mostrarFimDeJogo ? " pp-oculto" : ""}`}
         >
-          {!jogo.mostrarFimDeJogo && <DicaToast dica={edu.dicaVisivel} />}
+          <DicaToast dica={edu.dicaVisivel} />
 
           <EscalaProporcional largura={GAME_WIDTH} altura={GAME_HEIGHT}>
             <canvas

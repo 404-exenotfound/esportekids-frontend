@@ -762,7 +762,7 @@ export default function Basquete({ aoTerminar }) {
     suportaTelaCheia,
     ref: telaCheiaRef,
     alternarTelaCheia,
-  } = useTelaCheia();
+  } = useTelaCheia(fase === "fim");
 
   const sync = useCallback(() => {
     const j = jogoRef.current;
@@ -890,10 +890,8 @@ export default function Basquete({ aoTerminar }) {
           </h1>
         </div>
 
-        {!mostrarFim && <DicaToast dica={edu.dicaVisivel} />}
-
         {mostrarFim && (
-          <FimEducativo esporte="basquete" vistas={edu.vistas}>
+          <FimEducativo esporte="basquete" vistas={edu.vistas} pontosDoJogo={final.acertos}>
             <TelaFimDeJogo
               cestas={final.acertos}
               pontos={final.pontos}
@@ -911,6 +909,9 @@ export default function Basquete({ aoTerminar }) {
           ref={telaCheiaRef}
           className={`bq-stage${mostrarFim ? " bq-oculto" : ""}`}
         >
+          {/* Dentro do palco (= elemento da tela cheia) para a dica aparecer também em tela cheia */}
+          <DicaToast dica={edu.dicaVisivel} />
+
           <EscalaProporcional largura={W} altura={H}>
             <canvas
               ref={cvRef}

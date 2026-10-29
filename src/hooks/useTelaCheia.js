@@ -3,7 +3,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 // Tela cheia via Fullscreen API com fallback webkit (Safari).
 // Retorna o estado, se o navegador suporta, a ref do container do jogo e a
 // função para alternar (o atalho de tecla "F" também funciona).
-export default function useTelaCheia() {
+// "terminou": quando vira true (fim do minigame) e a tela está cheia, sai da
+// tela cheia sozinho. Sem isso, o quiz/fim de jogo (que ficam fora do palco)
+// ficavam escondidos atrás da tela cheia e o jogo parecia travado.
+export default function useTelaCheia(terminou = false) {
   const [emTelaCheia, setEmTelaCheia] = useState(false);
   const ref = useRef(null);
 
@@ -56,6 +59,13 @@ export default function useTelaCheia() {
       document.removeEventListener("webkitfullscreenchange", atualizar);
     };
   }, []);
+
+  // Fim do minigame: sai da tela cheia para mostrar dicas/quiz/resultado
+  useEffect(() => {
+    if (terminou && (document.fullscreenElement || document.webkitFullscreenElement)) {
+      sair();
+    }
+  }, [terminou, sair]);
 
   // Atalho: tecla F alterna a tela cheia
   useEffect(() => {

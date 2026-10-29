@@ -1,43 +1,16 @@
-import { useEffect, useRef, useState } from "react";
 import { FASES_SALTO } from "../utils/constantes";
 import { Overlay } from "./Overlay";
+import useNarracao from "../../../hooks/useNarracao";
 import audioAtletismo from "../../../assets/atletismo.mp3";
 
 export const TelaIntro = ({ onJogar }) => {
-  const audioRef = useRef(null);
-  const [tocando, setTocando] = useState(false);
-
-  useEffect(() => {
-    return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.currentTime = 0;
-      }
-    };
-  }, []);
-
-  const alternarAudio = async () => {
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    if (!audio.paused) {
-      audio.pause();
-      return;
-    }
-
-    try {
-      await audio.play();
-    } catch (erro) {
-      console.error("Erro ao reproduzir o áudio do atletismo:", erro);
-    }
-  };
+  const { tocando, alternar: alternarAudio, parar } = useNarracao(
+    `Pronto para saltar? Toque espaço sem parar para correr bem rápido. Na tábua, toque para saltar, sem pisar depois da linha vermelha, senão é falta! No ar, toque para esticar as pernas e cair longe na areia. Passe da bandeirinha meta nas ${FASES_SALTO.length} fases para vencer. A caixa de areia tem 10 metros!`,
+    audioAtletismo
+  );
 
   const iniciarJogo = () => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-    }
-    setTocando(false);
+    parar();
     onJogar();
   };
 
@@ -64,19 +37,6 @@ export const TelaIntro = ({ onJogar }) => {
         <span aria-hidden="true">{tocando ? "⏸" : "🔊"}</span>
         {tocando ? "PAUSAR ÁUDIO" : "OUVIR INSTRUÇÕES"}
       </button>
-
-      <audio
-        ref={audioRef}
-        src={audioAtletismo}
-        preload="none"
-        onPlay={() => setTocando(true)}
-        onPause={() => setTocando(false)}
-        onEnded={() => setTocando(false)}
-        onError={() => {
-          setTocando(false);
-          console.error("Não foi possível carregar atletismo.mp3.");
-        }}
-      />
 
       <button className="atl-btn" onClick={iniciarJogo}>
         COMEÇAR

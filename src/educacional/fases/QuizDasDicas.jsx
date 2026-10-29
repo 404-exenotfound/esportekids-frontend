@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { MINIMO_PARA_LIBERAR } from "./dicasFases";
 import { BotaoLeitura } from "../components/BotaoLeitura";
 
 // Quiz do fim do jogo: 1 pergunta por dica. Chama onTerminar(acertos) no final.
@@ -31,7 +30,7 @@ export const QuizDasDicas = ({ perguntas, onTerminar }) => {
     <div className="edu-card">
       <p className="edu-titulo-pixel">❓ QUIZ DAS DICAS</p>
       <p className="edu-progresso">
-        Pergunta {indice + 1} de {perguntas.length} · acerte {MINIMO_PARA_LIBERAR} para liberar o próximo jogo
+        Pergunta {indice + 1} de {perguntas.length}
       </p>
       <p className="edu-pergunta">{pergunta.p}</p>
 

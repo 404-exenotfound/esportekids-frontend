@@ -48,7 +48,7 @@ Jogo 2D sobre **Salto em Distância**, com a **paisagem e o personagem no padrã
   original do jogo (grade 10x15, 40x60 px) com poses do salto; (2) botão de ação
   foi para o canto inferior direito da arena e perdeu o textinho duplicado — não
   cobre mais a mensagem "aperte ESPAÇO" do rodapé; (3) `DicaToast` (informações/
-  dicas) e o rodapé de instrução foram movidos para DENTRO do `.atl-palco`, que é
+  dicas) e o rodapé de instrução foram movidos para DENTRO do `.atl-stage`, que é
   o elemento que entra em tela cheia — fora dele o navegador não exibe esses
   elementos no fullscreen, por isso a informação não aparecia nesse modo.
 

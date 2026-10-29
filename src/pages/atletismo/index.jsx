@@ -14,6 +14,8 @@ import { FimEducativo } from "../../educacional/fases/FimEducativo";
 import useTelaCheia from "../../hooks/useTelaCheia";
 import "./styles/index.css";
 
+// Mesma estrutura dos outros minigames (Pênalti, Basquete, Ping-Pong, Boliche):
+// wrapper > card > faixa de título > palco (canvas + HUD dentro) > rodapé.
 const Atletismo = () => {
   const jogo = useAtletismo();
   // NÃO ALTERAR a chave "atletismo": é ela que liga este jogo às
@@ -26,37 +28,43 @@ const Atletismo = () => {
     suportaTelaCheia,
     ref: telaCheiaRef,
     alternarTelaCheia,
-  } = useTelaCheia();
+  } = useTelaCheia(terminou);
 
   return (
     <div className="atl-wrapper">
       <BotaoVoltar />
       <div className="atl-card">
-        {/* Barra de título */}
+        {/* Faixa de título (mesmo padrão dos outros jogos) */}
         <div className="atl-titulo-barra">
-          <h1 className="atl-titulo">SALTO EM DISTÂNCIA</h1>
+          <h1 className="atl-titulo">
+            SALTO EM <span>DISTÂNCIA</span>
+          </h1>
         </div>
 
-        {terminou ? (
-          <FimEducativo esporte="atletismo" vistas={edu.vistas}>
+        {terminou && (
+          <FimEducativo esporte="atletismo" vistas={edu.vistas} pontosDoJogo={jogo.progresso}>
             <TelaFimDeJogo
               melhor={jogo.melhor}
               onJogarNovamente={jogo.startGame}
               onVoltar={jogo.voltarParaHome}
             />
           </FimEducativo>
-        ) : (
-          <>
-            <div className="atl-palco" ref={telaCheiaRef}>
-              {/* Dentro do palco (= elemento da tela cheia) para a
-                  informação/dica aparecer também no modo tela cheia */}
-              <DicaToast dica={edu.dicaVisivel} />
+        )}
 
-              {/* Barra de status (fase, meta, último e melhor salto, potência) */}
+        {/* O palco (canvas) fica sempre montado: só é escondido no fim do jogo,
+            como nos outros minigames. É ele o elemento da tela cheia. */}
+        <div
+          ref={telaCheiaRef}
+          className={`atl-stage${terminou ? " atl-oculto" : ""}`}
+        >
+          {/* Dentro do palco (= elemento da tela cheia) para a dica aparecer também em tela cheia */}
+          <DicaToast dica={edu.dicaVisivel} />
+
+          <Arena canvasRef={jogo.canvasRef}>
+            {jogo.gameState !== FASES.START && (
               <Placar
                 fase={jogo.fase}
                 totalFases={jogo.totalFases}
-                nomeFase={jogo.nomeFase}
                 meta={jogo.meta}
                 ultimo={jogo.ultimo}
                 melhor={jogo.melhor}
@@ -64,39 +72,36 @@ const Atletismo = () => {
                 temVento={jogo.temVento}
                 potencia={jogo.potencia}
               />
+            )}
+            {jogo.gameState === FASES.START && (
+              <TelaIntro onJogar={jogo.startGame} />
+            )}
+            {jogo.gameState === FASES.PLAYING && jogo.etapa === "resultado" && (
+              <ResultadoSalto resultado={jogo.resultado} />
+            )}
+            {jogo.gameState === FASES.PLAYING && (
+              <BotaoAcao
+                rotulo={jogo.rotuloBotao}
+                etapa={jogo.etapa}
+                emZonaDeSalto={jogo.emZonaDeSalto}
+                onAcao={jogo.acaoPrincipal}
+              />
+            )}
+          </Arena>
 
-              <Arena canvasRef={jogo.canvasRef}>
-                {jogo.gameState === FASES.START && (
-                  <TelaIntro onJogar={jogo.startGame} />
-                )}
-                {jogo.gameState === FASES.PLAYING && jogo.etapa === "resultado" && (
-                  <ResultadoSalto resultado={jogo.resultado} />
-                )}
-                {jogo.gameState === FASES.PLAYING && (
-                  <BotaoAcao
-                    rotulo={jogo.rotuloBotao}
-                    etapa={jogo.etapa}
-                    emZonaDeSalto={jogo.emZonaDeSalto}
-                    onAcao={jogo.acaoPrincipal}
-                  />
-                )}
-              </Arena>
+          {suportaTelaCheia && (
+            <BotaoTelaCheia
+              emTelaCheia={emTelaCheia}
+              alternarTelaCheia={alternarTelaCheia}
+              classe="atl-tela-cheia"
+            />
+          )}
+        </div>
 
-              {/* Rodapé de instrução dentro do palco: visível na tela
-                  cheia e sem ficar embaixo do botão de ação */}
-              <div className="atl-rodape">
-                <p className="atl-rodape-texto">{jogo.instrucao}</p>
-              </div>
-
-              {suportaTelaCheia && (
-                <BotaoTelaCheia
-                  emTelaCheia={emTelaCheia}
-                  alternarTelaCheia={alternarTelaCheia}
-                  classe="atl-tela-cheia"
-                />
-              )}
-            </div>
-          </>
+        {jogo.gameState === FASES.PLAYING && (
+          <div className="atl-rodape">
+            <p className="atl-rodape-texto">{jogo.instrucao}</p>
+          </div>
         )}
       </div>
     </div>

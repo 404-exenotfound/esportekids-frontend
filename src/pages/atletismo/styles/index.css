@@ -68,42 +68,41 @@ html, body { margin: 0; padding: 0; }
   text-shadow: 3px 3px 0 var(--preto);
 }
 
-/* ---------- HUD (mesmo painel cinza do PenaltiCampeao) ---------- */
-
-.atl-painel-status {
-  background: var(--cinza);
-  border: 4px solid var(--preto);
-  box-shadow: 4px 4px 0 var(--preto);
-  margin: 20px 20px 10px;
-  padding: 12px 14px;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  font-family: "Press Start 2P", monospace;
-  font-size: 9px;
-  color: var(--preto);
-  gap: 8px;
+.atl-titulo span {
+  color: var(--amarelo);
 }
 
-.atl-status-item {
+/* ---------- HUD (caixinhas azuis dentro do palco, igual aos outros jogos) ---------- */
+
+.atl-hud {
+  position: absolute;
+  top: 2.5%;
+  left: 2%;
+  right: 2%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  pointer-events: none;
+  z-index: 3;
+}
+.atl-caixa {
+  background: #1b2340;
+  color: #fff;
+  padding: 0.8em 1em;
+  font-size: clamp(7px, 1.4vw, 13px);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 6px;
+  gap: 0.7em;
+  box-shadow: 0 -3px 0 0 #ffd34d, 0 3px 0 0 #ffd34d, -3px 0 0 0 #ffd34d, 3px 0 0 0 #ffd34d;
 }
-
-.atl-status-rotulo {
-  font-size: 9px;
+.atl-caixa b {
+  color: #ffd34d;
+  font-weight: normal;
 }
-
-.atl-status-valor {
-  color: var(--vermelho);
-  font-size: 13px;
-}
-
-.atl-heart {
-  font-size: 13px;
-  margin-left: 2px;
+.atl-rotulo {
+  color: #8ea2ff;
+  font-size: 0.75em;
 }
 
 /* ---------- Área do jogo ---------- */
@@ -112,20 +111,18 @@ html, body { margin: 0; padding: 0; }
   position: relative;
   flex: 1 1 0;
   min-height: 0;
+  width: auto;
+  max-width: calc(100% - 40px);
+  aspect-ratio: 800 / 400;
+  align-self: center;
   margin: 10px 20px;
   overflow: hidden;
   border: 5px solid var(--preto);
   box-shadow: 5px 5px 0 var(--preto);
   background: #000000;
+  touch-action: none;
 }
-
-.atl-stage-inner {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  min-width: 0;
-  min-height: 0;
-}
+.atl-stage.atl-oculto { display: none; }
 
 .atl-canvas {
   display: block;
@@ -342,6 +339,7 @@ html, body { margin: 0; padding: 0; }
 
 /* ---------- Rodapé ---------- */
 
+.atl-rodape-texto { margin: 0; }
 .atl-rodape {
   display: flex;
   align-items: center;
@@ -356,8 +354,7 @@ html, body { margin: 0; padding: 0; }
 
 @media (max-width: 620px) {
   .atl-titulo { font-size: 15px; }
-  .atl-painel-status { margin: 14px 14px 8px; }
-  .atl-stage { margin: 8px 14px; }
+  .atl-stage { margin: 8px 14px; max-width: calc(100% - 28px); }
   .atl-btn { font-size: 12px; min-width: 0; padding: 12px 22px; }
   .atl-botoes-fim {
     gap: 8px;
@@ -410,21 +407,20 @@ html, body { margin: 0; padding: 0; }
 }
 
 /* ---------- Tela cheia ----------
-   Container que envolve o placar (status/HUD) e a Arena. */
-.atl-palco {
-  position: relative;
-  flex: 1 1 0;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-}
-.atl-palco:fullscreen,
-.atl-palco:-webkit-full-screen {
+   O próprio palco (.atl-stage) é o elemento da tela cheia, como nos outros jogos. */
+.atl-stage:fullscreen,
+.atl-stage:-webkit-full-screen {
   width: 100vw;
   height: 100vh;
+  max-width: 100vw;
+  max-height: 100vh;
   margin: 0;
-  background: var(--creme);
+  border: 0;
+  box-shadow: none;
+  border-radius: 0;
+  display: block;
   overflow: hidden;
+  background: #000;
 }
 
 /* Botão TELA CHEIA (mesmo estilo pixel do VOLTAR) */
@@ -452,8 +448,8 @@ html, body { margin: 0; padding: 0; }
   outline: 4px solid var(--amarelo);
   outline-offset: 2px;
 }
-.atl-palco:fullscreen .atl-tela-cheia,
-.atl-palco:-webkit-full-screen .atl-tela-cheia {
+.atl-stage:fullscreen .atl-tela-cheia,
+.atl-stage:-webkit-full-screen .atl-tela-cheia {
   position: absolute;
   top: auto;
   left: auto;
@@ -473,8 +469,8 @@ html, body { margin: 0; padding: 0; }
 
 .atl-status-sub { font-size: 8px; opacity: 0.85; }
 .atl-potencia-barra {
-  width: 92px; height: 12px; background: #fff;
-  border: 3px solid var(--preto); overflow: hidden;
+  width: 7em; height: 1em; background: #fff;
+  border: 2px solid var(--preto); overflow: hidden;
 }
 .atl-potencia-preenchimento { height: 100%; transition: width 0.12s linear; }
 
@@ -514,7 +510,13 @@ html, body { margin: 0; padding: 0; }
 .atl-resultado-meta { font-family: "Baloo 2", sans-serif; font-weight: 700; font-size: 12px; margin: 0; color: #444; }
 
 @media (max-width: 620px) {
-  .atl-painel-status { flex-wrap: wrap; }
   .atl-btn-acao { font-size: 11px; min-width: 190px; padding: 14px 18px; }
   .atl-resultado-distancia { font-size: 20px; }
+}
+
+/* Em tela cheia o botão SAIR DA TELA CHEIA fica no canto inferior direito:
+   sobe o botão de ação para os dois não se sobreporem. */
+.atl-stage:fullscreen .atl-acao-wrap,
+.atl-stage:-webkit-full-screen .atl-acao-wrap {
+  bottom: 70px;
 }

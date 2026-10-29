@@ -791,7 +791,7 @@ const Futebol = () => {
     suportaTelaCheia,
     ref: telaCheiaRef,
     alternarTelaCheia,
-  } = useTelaCheia();
+  } = useTelaCheia(fase === "fim");
 
   const sync = useCallback(() => {
     const j = jogoRef.current;
@@ -906,10 +906,8 @@ const Futebol = () => {
           </h1>
         </div>
 
-        {!mostrarFim && <DicaToast dica={edu.dicaVisivel} />}
-
         {mostrarFim && (
-          <FimEducativo esporte="futebol" vistas={edu.vistas}>
+          <FimEducativo esporte="futebol" vistas={edu.vistas} pontosDoJogo={final.placar}>
             <TelaFimDeJogo
               placar={final.placar}
               estrelas={final.estrelas}
@@ -924,6 +922,9 @@ const Futebol = () => {
           ref={telaCheiaRef}
           className={`pc-stage${mostrarFim ? " pc-oculto" : ""}`}
         >
+          {/* Dentro do palco (= elemento da tela cheia) para a dica aparecer também em tela cheia */}
+          <DicaToast dica={edu.dicaVisivel} />
+
           <EscalaProporcional largura={W} altura={H}>
             <canvas
               ref={cvRef}

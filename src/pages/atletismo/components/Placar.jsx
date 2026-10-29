@@ -1,9 +1,9 @@
 const fmt = (m) => m.toFixed(2).replace(".", ",") + "m";
 
+// HUD dentro do palco, no mesmo formato das caixinhas azuis dos outros jogos.
 export const Placar = ({
   fase,
   totalFases,
-  nomeFase,
   meta,
   ultimo,
   melhor,
@@ -11,36 +11,37 @@ export const Placar = ({
   temVento,
   potencia,
 }) => (
-  <div className="atl-painel-status">
-    <div className="atl-status-item">
-      <div className="atl-status-rotulo">FASE</div>
-      <div className="atl-status-valor">
+  <div className="atl-hud">
+    <div className="atl-caixa">
+      <span className="atl-rotulo">FASE</span>
+      <b>
         {fase}/{totalFases}
+      </b>
+    </div>
+    <div className="atl-caixa">
+      <span className="atl-rotulo">🎯 META</span>
+      <b>{fmt(meta)}</b>
+    </div>
+    <div className="atl-caixa">
+      <span className="atl-rotulo">ÚLTIMO</span>
+      <b>{ultimo > 0 ? fmt(ultimo) : "—"}</b>
+    </div>
+    <div className="atl-caixa">
+      <span className="atl-rotulo">🏆 MELHOR</span>
+      <b>{melhor > 0 ? fmt(melhor) : "—"}</b>
+    </div>
+    {temVento && (
+      <div className="atl-caixa">
+        <span className="atl-rotulo">VENTO</span>
+        <b>
+          {vento > 0 ? "+" : ""}
+          {String(vento).replace(".", ",")}
+        </b>
       </div>
-      <div className="atl-status-sub">{nomeFase}</div>
-    </div>
-    <div className="atl-status-item">
-      <div className="atl-status-rotulo">🎯 META</div>
-      <div className="atl-status-valor">{fmt(meta)}</div>
-      <div className="atl-status-sub">caixa: 10m</div>
-    </div>
-    <div className="atl-status-item">
-      <div className="atl-status-rotulo">📏 ÚLTIMO SALTO</div>
-      <div className="atl-status-valor">{ultimo > 0 ? fmt(ultimo) : "—"}</div>
-      <div className="atl-status-sub">medido pelo juiz</div>
-    </div>
-    <div className="atl-status-item">
-      <div className="atl-status-rotulo">🏆 MELHOR SALTO</div>
-      <div className="atl-status-valor">{melhor > 0 ? fmt(melhor) : "—"}</div>
-      <div className="atl-status-sub">
-        {temVento
-          ? `vento ${vento > 0 ? "+" : ""}${String(vento).replace(".", ",")}`
-          : "sem vento"}
-      </div>
-    </div>
-    <div className="atl-status-item atl-status-potencia">
-      <div className="atl-status-rotulo">⚡ POTÊNCIA</div>
-      <div className="atl-potencia-barra" aria-label={`Potência ${potencia}%`}>
+    )}
+    <div className="atl-caixa" aria-label={`Potência ${potencia}%`}>
+      <span className="atl-rotulo">⚡ POTÊNCIA</span>
+      <div className="atl-potencia-barra">
         <div
           className="atl-potencia-preenchimento"
           style={{
@@ -50,7 +51,6 @@ export const Placar = ({
           }}
         />
       </div>
-      <div className="atl-status-sub">{potencia}%</div>
     </div>
   </div>
 );

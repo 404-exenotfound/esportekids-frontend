@@ -157,6 +157,7 @@
   background: #d8f7e0; border: 4px solid #1f1f1f; box-shadow: 5px 5px 0 #000;
   padding: 14px 16px; margin: 0 auto 16px; font-size: 17px; text-align: center;
 }
+.edu-aviso-bloqueado { background: #ffe3e3; }
 .edu-aviso p { margin: 0 0 10px; }
 .edu-aviso .edu-btn { margin-top: 2px; }
 

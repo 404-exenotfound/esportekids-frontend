@@ -701,7 +701,7 @@ const Boliche = () => {
     suportaTelaCheia,
     ref: telaCheiaRef,
     alternarTelaCheia,
-  } = useTelaCheia();
+  } = useTelaCheia(fase === "fim");
 
   const sync = useCallback(() => {
     const d = dRef.current;
@@ -816,10 +816,8 @@ const Boliche = () => {
           </h1>
         </div>
 
-        {!mostrarFim && <DicaToast dica={edu.dicaVisivel} />}
-
         {mostrarFim && (
-          <FimEducativo esporte="boliche" vistas={edu.vistas}>
+          <FimEducativo esporte="boliche" vistas={edu.vistas} pontosDoJogo={final.pontos}>
             <TelaFimDeJogo
               pontos={final.pontos}
               estrelas={final.estrelas}
@@ -831,6 +829,9 @@ const Boliche = () => {
         )}
 
         <div ref={telaCheiaRef} className={`bol-stage${mostrarFim ? " bol-oculto" : ""}`}>
+          {/* Dentro do palco (= elemento da tela cheia) para a dica aparecer também em tela cheia */}
+          <DicaToast dica={edu.dicaVisivel} />
+
           <EscalaProporcional largura={GAME_WIDTH} altura={GAME_HEIGHT}>
             <canvas
               ref={cvRef}
