@@ -1,12 +1,18 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { ButtonMario } from "./components/ButtonMario";
 import { ModalOpcoes } from "./opcoes/ModalOpcoes";
 import "./styles/index.css";
 import { ModalJogar } from "./jogar/ModalJogar";
+import { ModalLogin } from "./login/ModalLogin";
+import { useSair } from "../../api/useAuth";
 
 const Home = () => {
   const [modalOpcoes, setModalOpcoes] = useState(false);
+  const [modalLogin, setModalLogin] = useState(false);
+  const usuario = useSelector((s) => s.user);
+  const sair = useSair();
   const [modalJogar, setModalJogar] = useState(() => (
     new URLSearchParams(window.location.search).get("menu") === "jogar"
   ));
@@ -44,11 +50,17 @@ const Home = () => {
         <ButtonMario text="Aprender" onClick={() => navigate("/aprender")} />
         <ButtonMario text="Álbum" onClick={() => navigate("/album")} />
         <ButtonMario text="Opções" onClick={() => setModalOpcoes(true)} />
-        <ButtonMario text="Ranking" />
+        <ButtonMario text="Ranking" onClick={() => navigate("/ranking")} />
+        {usuario.token ? (
+          <ButtonMario text={`Sair (${usuario.nome})`} onClick={sair} />
+        ) : (
+          <ButtonMario text="Entrar" onClick={() => setModalLogin(true)} />
+        )}
       </div>
 
       <ModalOpcoes show={modalOpcoes} setShow={setModalOpcoes} />
       <ModalJogar show={modalJogar} setShow={setModalJogar} />
+      <ModalLogin show={modalLogin} setShow={setModalLogin} />
     </>
   );
 };

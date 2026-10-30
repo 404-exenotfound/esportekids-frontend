@@ -1,11 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
-import userReducer from "./userSlice";
+import userReducer, { initialStateUser } from "./userSlice";
 import gameReducer, { initialStateJogo } from "./gameSlice";
 import progressoReducer, { initialStateProgresso } from "./progressoSlice";
 
-// Slices que sobrevivem ao F5. O "user" continua em memória: é dado de
-// sessão, e não faz sentido reaparecer sozinho num próximo acesso.
+// Slices que sobrevivem ao F5. O "user" guarda o token do login; quando ele
+// expira (1h), a primeira chamada à API recebe 401 e desloga (ver api/client.js).
 const PERSISTIDOS = {
+  user: { chave: "user", inicial: initialStateUser },
   jogo: { chave: "jogo", inicial: initialStateJogo },
   progresso: { chave: "progresso", inicial: initialStateProgresso },
 };

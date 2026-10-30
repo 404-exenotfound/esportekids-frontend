@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { ESPORTES } from "../data/esportes";
 import { registrarResultado } from "../../store/progressoSlice";
+import { useSalvarResultado } from "../../api/usePartidas";
 import { Estrelas } from "./Estrelas";
 import { BotaoLeitura } from "./BotaoLeitura";
 
@@ -12,6 +13,7 @@ export const Quiz = ({ esporte, tipo = "quiz", onFinalizar }) => {
   const dados = ESPORTES[esporte];
   const perguntas = dados[tipo];
   const dispatch = useDispatch();
+  const { salvar } = useSalvarResultado();
 
   const [indice, setIndice] = useState(0);
   const [escolha, setEscolha] = useState(null);
@@ -34,6 +36,7 @@ export const Quiz = ({ esporte, tipo = "quiz", onFinalizar }) => {
       return;
     }
     dispatch(registrarResultado({ esporte, tipo, acertos }));
+    salvar({ esporte, acertos, total: perguntas.length });
     setFim(true);
     onFinalizar?.(acertos);
   };
