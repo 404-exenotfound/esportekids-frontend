@@ -3,7 +3,7 @@ import "./Creditos.css";
 const CREDITOS = [
   [
     { nome: "José Rodrigo", cargo: "Scrum Master" },
-    { nome: "Matheus Caetano", cargo: "Product Owner" },
+    { nome: "Mateus Caetano", cargo: "Product Owner" },
     { nome: "André Ribeiro", cargo: "Quality Assurance" },
   ],
   [
