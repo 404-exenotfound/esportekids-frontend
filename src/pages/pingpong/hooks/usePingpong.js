@@ -73,6 +73,14 @@ const TRAJETORIA = {
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const lerp = (a, b, t) => a + (b - a) * t;
 
+const limitarVxPelaMesa = (x, vx, tempo) => {
+  const limite = 0.9;
+  const finalX = x + vx * tempo;
+  if (finalX > limite) return (limite - x) / tempo;
+  if (finalX < -limite) return (-limite - x) / tempo;
+  return vx;
+};
+
 const tableWidthAt = (z) => lerp(TABLE.farRight - TABLE.farLeft, TABLE.nearRight - TABLE.nearLeft, z);
 const tableCenterAt = (z) => lerp((TABLE.farLeft + TABLE.farRight) / 2, (TABLE.nearLeft + TABLE.nearRight) / 2, z);
 const tableYAt = (z) => lerp(TABLE.farY, TABLE.nearY, z);
@@ -751,7 +759,7 @@ export function usePingpong() {
       d.ball.bounceCount += 1;
       d.ball.progress = 0;
       d.ball.flightTime = Math.max(0.74, d.ball.flightTime * 0.96);
-      d.ball.x = clamp(d.ball.x + d.ball.vx * 0.12, -0.9, 0.9);
+      d.ball.x = clamp(d.ball.x, -0.9, 0.9);
       d.ball.canBeHit = true;
       d.ball.direction = -1;
       d.ball.z = AI_SIDE;
@@ -763,7 +771,7 @@ export function usePingpong() {
       d.ball.bounceCount += 1;
       d.ball.progress = 0;
       d.ball.flightTime = Math.max(0.74, d.ball.flightTime * 0.96);
-      d.ball.x = clamp(d.ball.x + d.ball.vx * 0.12, -0.9, 0.9);
+      d.ball.x = clamp(d.ball.x, -0.9, 0.9);
       d.ball.canBeHit = true;
       d.ball.direction = 1;
       d.ball.z = PLAYER_SIDE;
@@ -781,10 +789,15 @@ export function usePingpong() {
       }
 
       const offset = clamp((d.ball.x - d.playerX) / PLAYER_HIT_TOLERANCE, -1, 1);
-      const direcaoLateral = offset * 0.28;
-      d.ball.vx = clamp(d.ball.vx * 0.45 + direcaoLateral, -0.34, 0.34);
+      const direcaoLateral = offset * 0.75;
+      const tempo = Math.max(0.76, d.ball.flightTime * 0.94);
+      d.ball.vx = limitarVxPelaMesa(
+        d.ball.x,
+        clamp(d.ball.vx * 0.5 + direcaoLateral, -1.2, 1.2),
+        tempo
+      );
       d.ball.spin = clamp(d.ball.spin * 0.35 + offset * 0.18, -0.34, 0.34);
-      d.ball.flightTime = Math.max(0.76, d.ball.flightTime * 0.94);
+      d.ball.flightTime = tempo;
       d.ultimoImpacto = 180;
       d.impactoX = d.playerX;
       d.rally += 1;
@@ -797,7 +810,7 @@ export function usePingpong() {
       d.ball.canBeHit = false;
       d.ball.progress = 0;
       d.ball.z = PLAYER_SIDE + 0.01;
-      d.ball.x = clamp(d.playerX + offset * 0.12 + d.ball.vx * 0.28, -0.9, 0.9);
+      d.ball.x = clamp(d.ball.x, -0.9, 0.9);
       d.ball.trail = [];
       d.lastHitSide = "player";
       d.lastHitTime = now;
@@ -825,8 +838,12 @@ export function usePingpong() {
       const alvoX = Math.random() < CHANCE_IA_JOGAR_LONGE
         ? -ladoDoJogador * (0.25 + Math.random() * 0.5)
         : Math.random() * 1.2 - 0.6;
-      const saidaX = clamp(d.aiX + offset * 0.1, -0.9, 0.9);
-      d.ball.vx = clamp((alvoX - saidaX) / (d.ball.flightTime + 0.12), -0.5, 0.5);
+      const saidaX = clamp(d.ball.x, -0.9, 0.9);
+      d.ball.vx = limitarVxPelaMesa(
+        saidaX,
+        clamp((alvoX - saidaX) / (d.ball.flightTime + 0.12), -1.8, 1.8),
+        d.ball.flightTime
+      );
       d.ultimoImpacto = 140;
       d.impactoX = d.aiX;
       d.rally += 1;
@@ -900,7 +917,7 @@ export function usePingpong() {
         } else {
           d.ball.progress = (Math.sin(d.serveTempoTotal * 5) + 1) / 2;
           d.ball.z = AI_SIDE + d.ball.progress * 0.04;
-          d.ball.x = d.aiX * 0.3;
+          d.ball.x = d.aiX;
         }
         d.ball.canBeHit = false;
         d.ball.trail = [];
