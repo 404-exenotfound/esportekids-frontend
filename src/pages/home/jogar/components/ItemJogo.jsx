@@ -12,18 +12,32 @@ const imagensJogos = {
   pingPong: tenis,
 };
 
-export const ItemJogo = ({ jogo, setJogo, nomeJogo, bloqueado = false, dica = "" }) => {
+export const ItemJogo = ({
+  jogo,
+  setJogo,
+  nomeJogo,
+  bloqueado = false,
+  dica = "",
+}) => {
   const imagem = imagensJogos[nomeJogo];
 
   return (
     <div
-      className={`personagem ${jogo === nomeJogo ? "personagem-selecionado" : ""}`}
+      className={`personagem ${
+        jogo === nomeJogo ? "personagem-selecionado" : ""
+      }`}
       onClick={() => !bloqueado && setJogo(nomeJogo)}
       title={bloqueado ? dica : undefined}
       aria-disabled={bloqueado}
       style={{
         position: "relative",
-        ...(bloqueado ? { cursor: "not-allowed", opacity: 0.55, filter: "grayscale(1)" } : {}),
+        ...(bloqueado
+          ? {
+              cursor: "not-allowed",
+              opacity: 0.55,
+              filter: "grayscale(1)",
+            }
+          : {}),
       }}
     >
       <div className="personagem-imagem">
@@ -31,7 +45,12 @@ export const ItemJogo = ({ jogo, setJogo, nomeJogo, bloqueado = false, dica = ""
           <img
             src={imagem}
             alt={nomeJogo}
-            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            loading="lazy"
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+            }}
           />
         )}
       </div>
@@ -39,7 +58,13 @@ export const ItemJogo = ({ jogo, setJogo, nomeJogo, bloqueado = false, dica = ""
       {bloqueado && (
         <div
           aria-hidden="true"
-          style={{ position: "absolute", top: "22%", left: 0, right: 0, fontSize: "28px" }}
+          style={{
+            position: "absolute",
+            top: "22%",
+            left: 0,
+            right: 0,
+            fontSize: "28px",
+          }}
         >
           🔒
         </div>
@@ -47,5 +72,5 @@ export const ItemJogo = ({ jogo, setJogo, nomeJogo, bloqueado = false, dica = ""
 
       <span>{nomeJogo}</span>
     </div>
-  )
-}
+  );
+};
