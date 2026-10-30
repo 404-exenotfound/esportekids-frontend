@@ -19,7 +19,6 @@ import {
   FRASES_TORCIDA_DEFESA,
   FRASES_TORCIDA_GOL,
 } from "./utils/frases";
-import { BotaoVoltar } from "../../educacional/components/BotaoVoltar";
 import { useDicasDoJogo } from "../../educacional/fases/useDicasDoJogo";
 import { DicaToast } from "../../educacional/fases/DicaToast";
 import { FimEducativo } from "../../educacional/fases/FimEducativo";
@@ -898,7 +897,6 @@ const Futebol = () => {
 
   return (
     <div className="pc-wrapper">
-      <BotaoVoltar />
       <div className="pc-card">
         <div className="pc-titulo-barra">
           <h1 className="pc-titulo">

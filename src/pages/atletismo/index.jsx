@@ -6,7 +6,6 @@ import { TelaFimDeJogo } from "./components/TelaFimDeJogo";
 import { BotaoAcao } from "./components/BotaoAcao";
 import { ResultadoSalto } from "./components/ResultadoSalto";
 import { FASES } from "./utils/constantes";
-import { BotaoVoltar } from "../../educacional/components/BotaoVoltar";
 import BotaoTelaCheia from "../../components/BotaoTelaCheia";
 import { useDicasDoJogo } from "../../educacional/fases/useDicasDoJogo";
 import { DicaToast } from "../../educacional/fases/DicaToast";
@@ -32,7 +31,6 @@ const Atletismo = () => {
 
   return (
     <div className="atl-wrapper">
-      <BotaoVoltar />
       <div className="atl-card">
         {/* Faixa de título (mesmo padrão dos outros jogos) */}
         <div className="atl-titulo-barra">

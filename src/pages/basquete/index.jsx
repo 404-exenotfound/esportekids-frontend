@@ -6,7 +6,6 @@ import useTelaCheia from "../../hooks/useTelaCheia";
 import { TelaIntro } from "./components/TelaIntro";
 import { TelaFimDeJogo } from "./components/TelaFimDeJogo";
 import { emojiDoResultadoFinal } from "./helpers/emojiDoResultadoFinal";
-import { BotaoVoltar } from "../../educacional/components/BotaoVoltar";
 import { useDicasDoJogo } from "../../educacional/fases/useDicasDoJogo";
 import { DicaToast } from "../../educacional/fases/DicaToast";
 import { FimEducativo } from "../../educacional/fases/FimEducativo";
@@ -881,7 +880,6 @@ export default function Basquete({ aoTerminar }) {
 
   return (
     <div className="bq-wrapper">
-      <BotaoVoltar />
       <div className="bq-card">
         {/* Cabeçalho do card (mesmo padrão dos outros jogos) */}
         <div className="bq-titulo-barra">

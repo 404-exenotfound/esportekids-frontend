@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { ESPORTES } from "../data/esportes";
@@ -11,10 +11,11 @@ import { useSalvarResultado } from "../../api/salvarResultado";
 import "../styles/educacional.css";
 
 // Fluxo do fim de cada jogo:
-//   1) DESEMPENHO NO MINIGAME decide tudo: com MINIMO_PARA_LIBERAR pontos ou
-//      mais a criança acessa o quiz e o próximo jogo é liberado; com menos,
-//      o quiz fica bloqueado e ela precisa jogar o minigame de novo.
-//   2) Quem passou vê: revisão das dicas -> quiz -> resultado -> tela de fim.
+//   1) DESEMPENHO NO MINIGAME: com MINIMO_PARA_LIBERAR pontos ou mais a criança
+//      acessa o quiz; com menos, o quiz fica bloqueado e ela precisa jogar o
+//      minigame de novo.
+//   2) O quiz é OBRIGATÓRIO: só concluí-lo com a nota mínima libera o próximo
+//      jogo. Quem passou vê: revisão das dicas -> quiz -> resultado -> tela de fim.
 // A tela de fim de jogo ORIGINAL é recebida em "children" e continua
 // funcionando como antes. Ao jogar de novo este componente sai da tela e, no
 // próximo fim, começa do zero.
@@ -39,14 +40,11 @@ export const FimEducativo = ({ esporte, vistas, pontosDoJogo = 0, children }) =>
   const salvarResultado = useSalvarResultado();
   const materia = materias?.find((m) => m.nome === ESPORTES[esporte].nome);
 
-  // Bom desempenho no minigame libera o próximo jogo (o quiz não bloqueia mais)
-  useEffect(() => {
-    if (passouNoJogo && proximo) dispatch(desbloquearJogo(proximo));
-  }, [passouNoJogo, proximo, dispatch]);
-
+  // O próximo jogo só é liberado depois de concluir o quiz com a nota mínima.
   const terminarQuiz = (n) => {
     setAcertos(n);
     setEtapa("resultado");
+    if (n >= MINIMO_PARA_LIBERAR && proximo) dispatch(desbloquearJogo(proximo));
     if (materia) {
       salvarResultado.mutate({ materia_id: materia.id, acertos: n, total_perguntas: dicas.length });
     }
@@ -78,7 +76,7 @@ export const FimEducativo = ({ esporte, vistas, pontosDoJogo = 0, children }) =>
   }
 
   if (etapa === "concluido") {
-    const liberou = passouNoJogo || jaLiberado;
+    const liberou = jaLiberado;
     return (
       <>
         <div className="edu-fase edu-aviso">

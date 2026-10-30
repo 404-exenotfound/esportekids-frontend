@@ -5,7 +5,6 @@ import { BannerResultado } from "./components/BannerResultado";
 import { TelaIntro } from "./components/TelaIntro";
 import { TelaFimDeJogo } from "./components/TelaFimDeJogo";
 import { GAME_HEIGHT, GAME_WIDTH } from "./utils/constantes";
-import { BotaoVoltar } from "../../educacional/components/BotaoVoltar";
 import BotaoTelaCheia from "../../components/BotaoTelaCheia";
 import { useDicasDoJogo } from "../../educacional/fases/useDicasDoJogo";
 import { DicaToast } from "../../educacional/fases/DicaToast";
@@ -25,7 +24,6 @@ const PingPong = () => {
 
   return (
     <div className="pp-wrapper">
-      <BotaoVoltar />
       <div className="pp-card">
         <div className="pp-titulo-barra">
           <h1 className="pp-titulo">

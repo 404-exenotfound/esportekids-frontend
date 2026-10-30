@@ -34,7 +34,6 @@ import {
   VELOCIDADE_EXTRA,
   CANALETA,
 } from "./utils/constantes";
-import { BotaoVoltar } from "../../educacional/components/BotaoVoltar";
 import { useDicasDoJogo } from "../../educacional/fases/useDicasDoJogo";
 import { DicaToast } from "../../educacional/fases/DicaToast";
 import { FimEducativo } from "../../educacional/fases/FimEducativo";
@@ -808,7 +807,6 @@ const Boliche = () => {
 
   return (
     <div className="bol-wrapper">
-      <BotaoVoltar />
       <div className="bol-card">
         <div className="bol-titulo-barra">
           <h1 className="bol-titulo">
