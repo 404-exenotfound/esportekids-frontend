@@ -704,7 +704,7 @@ export function usePingpong() {
     const moverIa = (d, dt) => {
       const indoParaIa =
         d.ball.trajectory === TRAJETORIA.INDO_PARA_AI || d.ball.trajectory === TRAJETORIA.QUICOU_AI;
-      let alvo = d.ball.direction < 0 ? d.ball.x : d.ball.x * 0.45;
+      let alvo = indoParaIa ? d.ball.x : d.ball.x * 0.45;
       // Quando vai errar, a IA "lê" a bola errado e chega atrasada
       if (indoParaIa && d.iaVaiErrar) alvo = d.ball.x - Math.sign(d.ball.x || 1) * 0.6;
       const erro = 0.035 + (d.pontos >= 3 ? 0.025 : 0.055);
@@ -712,7 +712,7 @@ export function usePingpong() {
       const velocidade = 1.15 + d.pontos * 0.05;
       const maxMove = velocidade * dt;
       const delta = clamp(alvo - d.aiX, -maxMove, maxMove);
-      d.aiX = clamp(d.aiX + delta, -0.8, 0.8);
+      d.aiX = clamp(d.aiX + delta, -0.88, 0.88);
     };
 
     const resolverResultado = (d, ganhou) => {
