@@ -1,17 +1,28 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useQueryClient } from "@tanstack/react-query";
+import { resetUser } from "../../store/userSlice";
 import { ButtonMario } from "./components/ButtonMario";
-import { ModalOpcoes } from "./opcoes/ModalOpcoes";
 import "./styles/index.css";
 import { ModalJogar } from "./jogar/ModalJogar";
 
 const Home = () => {
-  const [modalOpcoes, setModalOpcoes] = useState(false);
   const [modalJogar, setModalJogar] = useState(() => (
     new URLSearchParams(window.location.search).get("menu") === "jogar"
   ));
   const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const queryClient = useQueryClient();
+  const nome = useSelector((state) => state.user.nome);
+
+  const sair = () => {
+    dispatch(resetUser());
+    // Ranking/histórico em cache são do usuário que saiu
+    queryClient.clear();
+    navigate("/login", { replace: true });
+  };
 
   useEffect(() => {
     if (new URLSearchParams(location.search).get("menu") !== "jogar") return;
@@ -29,6 +40,18 @@ const Home = () => {
           gap: "20px",
         }}
       >
+        <p
+          style={{
+            margin: 0,
+            color: "#fff",
+            fontFamily: '"Press Start 2P", monospace',
+            fontSize: "14px",
+            lineHeight: 1.6,
+            textShadow: "3px 3px 0 #1f1f1f",
+          }}
+        >
+          Olá, {nome}!
+        </p>
         <h1
           style={{
             margin: "0 0 15px 0",
@@ -43,11 +66,10 @@ const Home = () => {
         <ButtonMario text="Jogar" onClick={() => setModalJogar(true)} />
         <ButtonMario text="Aprender" onClick={() => navigate("/aprender")} />
         <ButtonMario text="Álbum" onClick={() => navigate("/album")} />
-        <ButtonMario text="Opções" onClick={() => setModalOpcoes(true)} />
-        <ButtonMario text="Ranking" />
+        <ButtonMario text="Ranking" onClick={() => navigate("/ranking")} />
+        <ButtonMario text="Sair" onClick={sair} />
       </div>
 
-      <ModalOpcoes show={modalOpcoes} setShow={setModalOpcoes} />
       <ModalJogar show={modalJogar} setShow={setModalJogar} />
     </>
   );

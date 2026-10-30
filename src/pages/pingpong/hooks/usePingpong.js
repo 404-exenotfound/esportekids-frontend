@@ -51,6 +51,17 @@ const BASE_FLIGHT_TIME = 1.08;
 const PLAYER_HIT_TOLERANCE = 0.19;
 const AI_HIT_TOLERANCE = 0.27;
 
+// Chance de a IA errar a próxima bola. Bola reta (rebatida no meio da
+// raquete) é fácil; bola angulada (na ponta da raquete) passa mais.
+// Fica um pouco mais difícil a cada ponto.
+const CHANCE_ERRO_IA_BASE = 0.12;
+const CHANCE_ERRO_IA_POR_ANGULO = 0.45;
+const CHANCE_ERRO_IA_POR_PONTO = 0.03;
+const CHANCE_ERRO_IA_MINIMA = 0.08;
+// Quanto da devolução da IA vai para o lado oposto ao jogador
+// (o resto cai em lugar aleatório). Ficar parado num canto não funciona.
+const CHANCE_IA_JOGAR_LONGE = 0.75;
+
 const TRAJETORIA = {
   INDO_PARA_AI: "indo_para_ai",
   QUICOU_AI: "quicou_ai",
@@ -681,8 +692,21 @@ export function usePingpong() {
       d.playerX = clamp(d.playerX, -0.88, 0.88);
     };
 
+    // Decide na hora da rebatida se a IA vai errar a bola que está indo
+    const sortearErroIa = (d, angulo) => {
+      const chance = Math.max(
+        CHANCE_ERRO_IA_MINIMA,
+        CHANCE_ERRO_IA_BASE + angulo * CHANCE_ERRO_IA_POR_ANGULO - d.pontos * CHANCE_ERRO_IA_POR_PONTO
+      );
+      d.iaVaiErrar = Math.random() < chance;
+    };
+
     const moverIa = (d, dt) => {
+      const indoParaIa =
+        d.ball.trajectory === TRAJETORIA.INDO_PARA_AI || d.ball.trajectory === TRAJETORIA.QUICOU_AI;
       let alvo = d.ball.direction < 0 ? d.ball.x : d.ball.x * 0.45;
+      // Quando vai errar, a IA "lê" a bola errado e chega atrasada
+      if (indoParaIa && d.iaVaiErrar) alvo = d.ball.x - Math.sign(d.ball.x || 1) * 0.6;
       const erro = 0.035 + (d.pontos >= 3 ? 0.025 : 0.055);
       alvo += Math.sin(d.rally * 1.7 + d.serveTempoTotal) * erro;
       const velocidade = 1.15 + d.pontos * 0.05;
@@ -777,6 +801,7 @@ export function usePingpong() {
       d.ball.trail = [];
       d.lastHitSide = "player";
       d.lastHitTime = now;
+      sortearErroIa(d, Math.abs(offset));
     };
 
     const rebaterIa = (d, now) => {
@@ -791,10 +816,17 @@ export function usePingpong() {
       }
 
       const offset = clamp((d.ball.x - d.aiX) / tolerancia, -1, 1);
-      const direcao = offset * 0.16;
-      d.ball.vx = clamp(d.ball.vx * 0.35 + direcao, -0.24, 0.24);
       d.ball.spin = clamp(d.ball.spin * 0.3 + offset * 0.08, -0.2, 0.2);
       d.ball.flightTime = Math.max(0.82, d.ball.flightTime * 0.99);
+
+      // Mira longe do jogador (na maioria das vezes), para ele ter que se
+      // mexer. vx é calculado para a bola chegar perto desse ponto.
+      const ladoDoJogador = Math.sign(d.playerX) || (Math.random() < 0.5 ? -1 : 1);
+      const alvoX = Math.random() < CHANCE_IA_JOGAR_LONGE
+        ? -ladoDoJogador * (0.25 + Math.random() * 0.5)
+        : Math.random() * 1.2 - 0.6;
+      const saidaX = clamp(d.aiX + offset * 0.1, -0.9, 0.9);
+      d.ball.vx = clamp((alvoX - saidaX) / (d.ball.flightTime + 0.12), -0.5, 0.5);
       d.ultimoImpacto = 140;
       d.impactoX = d.aiX;
       d.rally += 1;
@@ -806,7 +838,7 @@ export function usePingpong() {
       d.ball.canBeHit = false;
       d.ball.progress = 0;
       d.ball.z = AI_SIDE - 0.01;
-      d.ball.x = clamp(d.aiX + offset * 0.1 + d.ball.vx * 0.24, -0.9, 0.9);
+      d.ball.x = saidaX;
       d.ball.trail = [];
       d.lastHitSide = "ai";
       d.lastHitTime = now;
@@ -882,11 +914,14 @@ export function usePingpong() {
           d.ball.trail = [];
           d.lastHitSide = null;
           d.lastHitTime = 0;
+          d.iaVaiErrar = false;
           if (d.servidor === "jogador") {
             d.ball.direction = 1;
             d.ball.trajectory = TRAJETORIA.INDO_PARA_AI;
             d.ball.z = PLAYER_SIDE;
             d.ball.x = d.playerX;
+            // Saque é bola reta: chance base de a IA errar
+            sortearErroIa(d, 0);
           } else {
             d.ball.direction = -1;
             d.ball.trajectory = TRAJETORIA.INDO_PARA_JOGADOR;
@@ -907,8 +942,11 @@ export function usePingpong() {
             if (distancia <= PLAYER_HIT_TOLERANCE) rebaterJogador(d, now);
             else if (d.ball.progress > 0.58) resolverResultado(d, false);
           } else if (d.ball.trajectory === TRAJETORIA.QUICOU_AI) {
+            // Mesma tolerância de rebaterIa: antes o alcance aqui era maior
+            // e a IA "errava" sozinha ao chegar no canto (bug do canto).
             const distancia = Math.abs(d.ball.x - d.aiX);
-            if (distancia <= AI_HIT_TOLERANCE + 0.055) rebaterIa(d, now);
+            const tolerancia = AI_HIT_TOLERANCE + Math.max(0, 0.035 - d.pontos * 0.004);
+            if (!d.iaVaiErrar && distancia <= tolerancia) rebaterIa(d, now);
             else if (d.ball.progress > 0.6) resolverResultado(d, true);
           }
         }

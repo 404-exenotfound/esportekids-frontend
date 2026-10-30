@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 import { ESPORTES } from "../../../../educacional/data/esportes";
 import { MINIMO_PARA_LIBERAR, ORDEM_JOGOS, jogoAnterior } from "../../../../educacional/fases/dicasFases";
 
-export const Jogar = ({ setShow, setStep }) => {
+export const Jogar = ({ setShow }) => {
   const navigate = useNavigate();
   const [jogo, setJogo] = useState("basquete");
   const liberados = useSelector((state) => state.progresso.jogosLiberados);
@@ -53,7 +53,7 @@ export const Jogar = ({ setShow, setStep }) => {
           marginTop: '20px'
         }}
       >
-        <Button className="btn-pixel" onClick={() => setStep(0)}>Voltar</Button>
+        <Button className="btn-pixel" onClick={() => setShow(false)}>Voltar</Button>
         <Button className="btn-pixel" onClick={onSubmit}>Jogar</Button>
       </div>
 

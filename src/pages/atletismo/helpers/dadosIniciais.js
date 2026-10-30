@@ -1,5 +1,6 @@
 import {
   ATLETA_INICIO_X,
+  CHANCES_POR_JOGO,
   FASES_SALTO,
   GROUND_Y,
   PLAYER_H,
@@ -22,6 +23,7 @@ export function dadosIniciais() {
 
     faseIndex: 0,
     progresso: 0, // fases completas (alimenta dicas/informações e o quiz final)
+    chances: CHANCES_POR_JOGO, // saltos que ainda podem falhar na partida
     ultimoSalto: 0,
     bateuMetaAtual: false,
     melhorDistancia: 0,

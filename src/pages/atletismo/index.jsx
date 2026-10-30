@@ -44,6 +44,9 @@ const Atletismo = () => {
         {terminou && (
           <FimEducativo esporte="atletismo" vistas={edu.vistas} pontosDoJogo={jogo.progresso}>
             <TelaFimDeJogo
+              venceu={jogo.venceu}
+              fasesCompletas={jogo.progresso}
+              totalFases={jogo.totalFases}
               melhor={jogo.melhor}
               onJogarNovamente={jogo.startGame}
               onVoltar={jogo.voltarParaHome}
@@ -71,6 +74,8 @@ const Atletismo = () => {
                 vento={jogo.vento}
                 temVento={jogo.temVento}
                 potencia={jogo.potencia}
+                chances={jogo.chances}
+                totalChances={jogo.totalChances}
               />
             )}
             {jogo.gameState === FASES.START && (

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
+  CHANCES_POR_JOGO,
   FASES,
   FASES_SALTO,
   GRAVIDADE_VOO,
@@ -28,9 +29,10 @@ const CORES_FASE = ["#06D6A0", "#4CC9F0", "#FFC93C", "#F77F00", "#EF476F"];
 // Salto em Distância: correr no ritmo (potência) -> saltar na tábua sem
 // passar da linha (senão é FALTA do juiz) -> esticar as pernas no pouso ->
 // juiz mede a distância na caixa de areia de 10 m.
-// Errou ou queimou? Tenta de novo na mesma fase, sem punição na tela.
-// Ao completar a fase, o progresso avança e o sistema educacional mostra
-// a informação daquela fase; ao completar as 5, abre o fim com o quiz.
+// Errou ou queimou? Perde uma chance e tenta de novo na mesma fase; sem
+// chances, fim de jogo. Ao completar a fase, o progresso avança e o sistema
+// educacional mostra a informação daquela fase; ao terminar (5 fases ou sem
+// chances), abre o fim com o quiz.
 export function useAtletismo() {
   const navigate = useNavigate();
 
@@ -50,6 +52,7 @@ export function useAtletismo() {
   const [ultimo, setUltimo] = useState(0);
   const [melhor, setMelhor] = useState(0);
   const [vento, setVento] = useState(0);
+  const [chances, setChances] = useState(CHANCES_POR_JOGO);
 
   const dataRef = useRef(null);
   if (dataRef.current === null) dataRef.current = dadosIniciais();
@@ -62,6 +65,7 @@ export function useAtletismo() {
     setUltimo(d.ultimoSalto);
     setMelhor(d.melhorDistancia);
     setVento(d.vento);
+    setChances(d.chances);
   }, []);
 
   const resetGame = useCallback(() => {
@@ -93,6 +97,7 @@ export function useAtletismo() {
       d.torcida = "oh";
       d.pose = "triste";
       d.bateuMetaAtual = false;
+      d.chances -= 1;
       d.resultado = {
         falta: true,
         distancia: 0,
@@ -100,6 +105,7 @@ export function useAtletismo() {
         bateuMeta: false,
         perfeito: false,
         textoJuiz: motivo,
+        chancesRestantes: d.chances,
       };
       sincronizar(d);
     },
@@ -152,6 +158,7 @@ export function useAtletismo() {
       // a informação). É esse avanço que liga dicas, informações e quiz.
       d.bateuMetaAtual = bateuMeta;
       if (bateuMeta) d.progresso = d.faseIndex + 1;
+      else d.chances -= 1;
       d.ultimoSalto = distancia;
       d.melhorDistancia = Math.max(d.melhorDistancia, distancia);
       d.bandeiraJuiz = "branca";
@@ -170,7 +177,8 @@ export function useAtletismo() {
           ? d.qualidadeImpulso === "perfeito"
             ? "SALTO VÁLIDO! Impulso perfeito na tábua!"
             : "SALTO VÁLIDO! Você passou da meta!"
-          : "Salto válido, mas ficou faltando um pouquinho para a meta. Tente de novo!",
+          : "Salto válido, mas ficou faltando um pouquinho para a meta.",
+        chancesRestantes: d.chances,
       };
       sincronizar(d);
     },
@@ -180,7 +188,13 @@ export function useAtletismo() {
   const avancarAposResultado = useCallback(
     (d) => {
       if (!d.bateuMetaAtual) {
-        // Errou? Salta de novo na mesma fase, sem contador na tela.
+        // Sem chances: fim de jogo (o FimEducativo decide o quiz pelo progresso)
+        if (d.chances <= 0) {
+          sincronizar(d);
+          setGameState(FASES.GAMEOVER);
+          return;
+        }
+        // Ainda tem chance: salta de novo na mesma fase
         prepararTentativa(d);
         sincronizar(d);
         return;
@@ -384,6 +398,9 @@ export function useAtletismo() {
     vento,
     temVento: cfgAtual.temVento,
     potencia: displaySpeed,
+    chances,
+    totalChances: CHANCES_POR_JOGO,
+    venceu: gameState === FASES.WIN,
     acaoPrincipal,
     instrucao,
     rotuloBotao,

@@ -3,8 +3,12 @@ import { Confete } from "./Confete";
 // Placa do juiz depois de cada salto: bandeira, distância medida e meta.
 export const ResultadoSalto = ({ resultado }) => {
   if (!resultado) return null;
-  const { falta, distancia, meta, bateuMeta, perfeito, textoJuiz } = resultado;
+  const { falta, distancia, meta, bateuMeta, perfeito, textoJuiz, chancesRestantes } = resultado;
   const fmt = (m) => m.toFixed(2).replace(".", ",");
+  const avisoChances =
+    chancesRestantes > 0
+      ? ` • Tente de novo! ${chancesRestantes === 1 ? "Última chance!" : `Restam ${chancesRestantes} chances.`}`
+      : " • Acabaram as chances!";
 
   return (
     <div
@@ -27,12 +31,12 @@ export const ResultadoSalto = ({ resultado }) => {
         <p className="atl-resultado-meta">
           Meta da fase: {fmt(meta)}m
           {perfeito ? " • Impulso perfeito! ✨" : ""}
-          {bateuMeta ? " • Próxima fase liberada!" : " • Tente de novo!"}
+          {bateuMeta ? " • Próxima fase liberada!" : avisoChances}
         </p>
       )}
       {falta && (
         <p className="atl-resultado-meta">
-          Salto anulado! Não valeu a distância. Cuidado com a linha vermelha!
+          Salto anulado! Cuidado com a linha vermelha!{avisoChances}
         </p>
       )}
     </div>

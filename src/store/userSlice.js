@@ -1,20 +1,27 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = {
+// Sessão do jogador logado. O token vai no header Authorization de toda
+// chamada protegida (ver src/api/client.js).
+export const initialStateUser = {
   id: null,
   nome: "",
+  cargo: "",
+  token: null,
 };
 
 const userSlice = createSlice({
   name: "user",
-  initialState,
+  initialState: initialStateUser,
   reducers: {
-    setUser: (state, action) => {
-      state.id = action.payload.id;
-      state.nome = action.payload.nome;
+    // payload = resposta de /login ou /registro: { token, usuario }
+    setUser: (state, { payload: { token, usuario } }) => {
+      state.id = usuario.id;
+      state.nome = usuario.nome;
+      state.cargo = usuario.cargo;
+      state.token = token;
     },
 
-    resetUser: () => initialState,
+    resetUser: () => initialStateUser,
   },
 });
 

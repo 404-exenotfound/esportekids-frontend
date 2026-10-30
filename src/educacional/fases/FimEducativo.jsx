@@ -6,6 +6,8 @@ import { desbloquearJogo } from "../../store/progressoSlice";
 import { DICAS_FASES, MINIMO_PARA_LIBERAR, proximoJogo } from "./dicasFases";
 import { QuizDasDicas } from "./QuizDasDicas";
 import { BotaoLeitura } from "../components/BotaoLeitura";
+import { useMaterias } from "../../api/materias";
+import { useSalvarResultado } from "../../api/salvarResultado";
 import "../styles/educacional.css";
 
 // Fluxo do fim de cada jogo:
@@ -31,6 +33,12 @@ export const FimEducativo = ({ esporte, vistas, pontosDoJogo = 0, children }) =>
   const [tentativa, setTentativa] = useState(0); // muda a key para refazer o quiz do zero
   const [acertos, setAcertos] = useState(0);
 
+  // Cada quiz terminado vira uma partida no ranking (acertos * 10 pontos).
+  // O esporte é casado com a matéria do banco pelo nome.
+  const { data: materias } = useMaterias();
+  const salvarResultado = useSalvarResultado();
+  const materia = materias?.find((m) => m.nome === ESPORTES[esporte].nome);
+
   // Bom desempenho no minigame libera o próximo jogo (o quiz não bloqueia mais)
   useEffect(() => {
     if (passouNoJogo && proximo) dispatch(desbloquearJogo(proximo));
@@ -39,6 +47,9 @@ export const FimEducativo = ({ esporte, vistas, pontosDoJogo = 0, children }) =>
   const terminarQuiz = (n) => {
     setAcertos(n);
     setEtapa("resultado");
+    if (materia) {
+      salvarResultado.mutate({ materia_id: materia.id, acertos: n, total_perguntas: dicas.length });
+    }
   };
 
   const refazer = () => {
@@ -108,9 +119,6 @@ export const FimEducativo = ({ esporte, vistas, pontosDoJogo = 0, children }) =>
             <button type="button" className="edu-btn edu-btn-ok" onClick={() => setEtapa("quiz")}>
               Ir para o quiz ▶
             </button>
-            <button type="button" className="edu-btn" onClick={() => setEtapa("concluido")}>
-              Pular
-            </button>
           </div>
         </div>
       </div>
@@ -127,17 +135,29 @@ export const FimEducativo = ({ esporte, vistas, pontosDoJogo = 0, children }) =>
   }
 
   // ---------- 3) Resultado do quiz ----------
-  // O quiz é um reforço do que a criança aprendeu: quem chegou aqui já passou
-  // no minigame (e o próximo jogo já foi liberado), então não há bloqueio.
+  // Só segue em frente com a nota mínima (MINIMO_PARA_LIBERAR acertos):
+  // abaixo disso a criança revê as dicas e refaz o quiz para melhorar a nota.
+  const passouNoQuiz = acertos >= MINIMO_PARA_LIBERAR;
+
   return (
     <div className="edu-fase">
       <div className="edu-card edu-centro">
-        <p className="edu-titulo-pixel">🎉 QUIZ CONCLUÍDO!</p>
-        <p className="edu-emoji-grande">{acertos >= MINIMO_PARA_LIBERAR ? "🏆" : "📚"}</p>
+        <p className="edu-titulo-pixel">{passouNoQuiz ? "🎉 QUIZ CONCLUÍDO!" : "📚 QUASE LÁ!"}</p>
+        <p className="edu-emoji-grande">{passouNoQuiz ? "🏆" : "📚"}</p>
         <p className="edu-texto">
           Você acertou <strong>{acertos} de {dicas.length}</strong>.{" "}
-          {acertos === dicas.length ? "Perfeito!" : "Quer rever as dicas e tentar de novo?"}
+          {acertos === dicas.length
+            ? "Perfeito!"
+            : passouNoQuiz
+              ? "Quer rever as dicas e tentar de novo?"
+              : `Acerte pelo menos ${MINIMO_PARA_LIBERAR} para continuar. Reveja as dicas e tente de novo!`}
         </p>
+        {salvarResultado.isSuccess && (
+          <p className="edu-texto">🏅 <strong>+{salvarResultado.data.pontuacao} pontos</strong> no ranking!</p>
+        )}
+        {salvarResultado.isError && (
+          <p className="edu-texto">⚠️ Não deu para salvar seus pontos no ranking agora.</p>
+        )}
         <div className="edu-acoes edu-centro">
           {acertos < dicas.length && (
             <>
@@ -145,7 +165,9 @@ export const FimEducativo = ({ esporte, vistas, pontosDoJogo = 0, children }) =>
               <button type="button" className="edu-btn" onClick={refazer}>🔄 Tentar o quiz de novo</button>
             </>
           )}
-          <button type="button" className="edu-btn edu-btn-ok" onClick={() => setEtapa("concluido")}>Continuar ▶</button>
+          {passouNoQuiz && (
+            <button type="button" className="edu-btn edu-btn-ok" onClick={() => setEtapa("concluido")}>Continuar ▶</button>
+          )}
         </div>
       </div>
     </div>

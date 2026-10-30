@@ -10,12 +10,21 @@ export const Placar = ({
   vento,
   temVento,
   potencia,
+  chances,
+  totalChances,
 }) => (
   <div className="atl-hud">
     <div className="atl-caixa">
       <span className="atl-rotulo">FASE</span>
       <b>
         {fase}/{totalFases}
+      </b>
+    </div>
+    <div className="atl-caixa" aria-label={`${chances} de ${totalChances} chances`}>
+      <span className="atl-rotulo">CHANCES</span>
+      <b>
+        {"❤️".repeat(Math.max(0, chances))}
+        {"🖤".repeat(Math.max(0, totalChances - chances))}
       </b>
     </div>
     <div className="atl-caixa">

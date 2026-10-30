@@ -6,6 +6,9 @@ export const GROUND_Y = GAME_HEIGHT - 56; // linha dos pés: linha pontilhada, c
 export const PLAYER_W = 36; // sprite basquete: 12 células x 3px
 export const PLAYER_H = 60; // 15 blocos x 4px (altura original)
 export const TOTAL_FASES = 5;
+// Saltos que podem falhar (falta ou abaixo da meta) na partida inteira.
+// Acabou = fim de jogo; antes o jogo esperava a criança acertar para sempre.
+export const CHANCES_POR_JOGO = 3;
 
 // Fases do jogo (tela), na ordem em que acontecem — NÃO alterar:
 // o sistema educacional (dicas/quiz/FimEducativo) depende destes estados.

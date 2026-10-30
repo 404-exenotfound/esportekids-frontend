@@ -1,0 +1,128 @@
+/* ============================================================
+   Ranking — reaproveita .edu-pagina/.edu-card do educacional.css
+   ============================================================ */
+
+/* Minha posição */
+.ranking-resumo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 16px;
+}
+
+.ranking-destaque {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 130px;
+  padding: 12px;
+  background: #ffd166;
+  border: 4px solid #1f1f1f;
+  box-shadow: 4px 4px 0 #1f1f1f;
+}
+.ranking-destaque span { font-size: 40px; line-height: 1; }
+.ranking-destaque strong {
+  font-family: "Press Start 2P", monospace;
+  font-size: 22px;
+  margin-top: 10px;
+}
+.ranking-destaque small { font-size: 14px; margin-top: 6px; }
+
+.ranking-numeros {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+}
+.ranking-numeros div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 10px;
+  background: #fff;
+  border: 3px solid #1f1f1f;
+  text-align: center;
+}
+.ranking-numeros strong {
+  font-family: "Press Start 2P", monospace;
+  font-size: 16px;
+}
+.ranking-numeros span { font-size: 14px; margin-top: 6px; color: #333; }
+
+/* Top 10 */
+.ranking-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ranking-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 14px;
+  background: #fff;
+  border: 3px solid #1f1f1f;
+  box-shadow: 3px 3px 0 #1f1f1f;
+}
+.ranking-top1 { background: #ffe8a3; }
+.ranking-top2 { background: #e9ecef; }
+.ranking-top3 { background: #f6d2b5; }
+.ranking-eu { outline: 4px solid #e63946; outline-offset: -1px; }
+
+.ranking-posicao {
+  min-width: 48px;
+  text-align: center;
+  font-family: "Press Start 2P", monospace;
+  font-size: 14px;
+}
+.ranking-top1 .ranking-posicao,
+.ranking-top2 .ranking-posicao,
+.ranking-top3 .ranking-posicao { font-size: 30px; }
+
+.ranking-jogador {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.ranking-jogador strong {
+  font-size: var(--edu-texto);
+  overflow-wrap: anywhere;
+}
+.ranking-jogador span { font-size: 14px; color: #444; }
+
+.ranking-pontos {
+  font-family: "Press Start 2P", monospace;
+  font-size: 16px;
+  white-space: nowrap;
+}
+.ranking-pontos small { font-size: 9px; margin-left: 4px; }
+
+/* Últimas partidas */
+.ranking-historico {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.ranking-historico li {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 0;
+  border-bottom: 2px dashed #1f1f1f;
+  font-size: 15px;
+}
+.ranking-historico li:last-child { border-bottom: 0; }
+.ranking-historico strong { color: #2a9d8f; font-family: "Press Start 2P", monospace; font-size: 12px; }
+.ranking-historico small { color: #555; }
+
+@media (max-width: 600px) {
+  .ranking-historico li { grid-template-columns: 1fr auto; }
+  .ranking-pontos { font-size: 12px; }
+}
