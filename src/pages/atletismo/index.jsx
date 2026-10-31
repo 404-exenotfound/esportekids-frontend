@@ -7,10 +7,7 @@ import { BotaoAcao } from "./components/BotaoAcao";
 import { ResultadoSalto } from "./components/ResultadoSalto";
 import { FASES } from "./utils/constantes";
 import BotaoTelaCheia from "../../components/BotaoTelaCheia";
-<<<<<<< HEAD
 import { BotaoVoltar } from "../../educacional/components/BotaoVoltar";
-=======
->>>>>>> f460aaf4e4dab576071876676fe85ac88b2e707a
 import { useDicasDoJogo } from "../../educacional/fases/useDicasDoJogo";
 import { DicaToast } from "../../educacional/fases/DicaToast";
 import { FimEducativo } from "../../educacional/fases/FimEducativo";
@@ -35,12 +32,9 @@ const Atletismo = () => {
 
   return (
     <div className="atl-wrapper">
-<<<<<<< HEAD
       {/* Fixo no canto, à esquerda do TELA CHEIA; fica fora do palco para
           continuar visível também no relembrar dicas / quiz / fim de jogo */}
       <BotaoVoltar />
-=======
->>>>>>> f460aaf4e4dab576071876676fe85ac88b2e707a
       <div className="atl-card">
         {/* Faixa de título (mesmo padrão dos outros jogos) */}
         <div className="atl-titulo-barra">

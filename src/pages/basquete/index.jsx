@@ -2,10 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import EscalaProporcional from "../../components/EscalaProporcional";
 import BotaoTelaCheia from "../../components/BotaoTelaCheia";
-<<<<<<< HEAD
 import { BotaoVoltar } from "../../educacional/components/BotaoVoltar";
-=======
->>>>>>> f460aaf4e4dab576071876676fe85ac88b2e707a
 import useTelaCheia from "../../hooks/useTelaCheia";
 import { TelaIntro } from "./components/TelaIntro";
 import { TelaFimDeJogo } from "./components/TelaFimDeJogo";
@@ -884,12 +881,9 @@ export default function Basquete({ aoTerminar }) {
 
   return (
     <div className="bq-wrapper">
-<<<<<<< HEAD
       {/* Fixo no canto, à esquerda do TELA CHEIA; fica fora do palco para
           continuar visível também no relembrar dicas / quiz / fim de jogo */}
       <BotaoVoltar />
-=======
->>>>>>> f460aaf4e4dab576071876676fe85ac88b2e707a
       <div className="bq-card">
         {/* Cabeçalho do card (mesmo padrão dos outros jogos) */}
         <div className="bq-titulo-barra">

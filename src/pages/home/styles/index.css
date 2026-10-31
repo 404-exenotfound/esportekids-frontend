@@ -1,5 +1,3 @@
-
-
 .modal-pixel .modal-content {
   background: #f5f5dc;
   border: 6px solid #1f1f1f;
@@ -218,6 +216,46 @@
 
 .personagem-selecionado span {
   color: #e63946;
+}
+
+/* ============================================================
+   MODAL "JOGAR" — capas dos minijogos maiores
+   (só afeta .jogos-container, usado apenas em Jogar.jsx)
+   - Telas pequenas e médias: 3 capas por linha (cada capa fica bem maior).
+   - Telas grandes (>= 992px): o modal fica mais largo e as 5 capas
+     continuam numa linha só.
+   Para mudar o tamanho das capas: ajuste a largura do modal (900px abaixo)
+   ou o número de colunas (repeat(5, ...)).
+   ============================================================ */
+.jogos-container {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+/* Capa quadrada (a imagem original é 1:1): aparece inteira, sem cortar os lados */
+.jogos-container .personagem-imagem {
+  aspect-ratio: 1 / 1;
+  border-width: 5px;
+}
+
+.jogos-container .personagem span {
+  font-size: 10px;
+  min-height: 26px;
+}
+
+/* Cadeado dos jogos bloqueados acompanha o tamanho maior da capa */
+.jogos-container .personagem > [aria-hidden="true"] {
+  font-size: 40px !important;
+}
+
+@media (min-width: 992px) {
+  .modal-pixel .modal-dialog {
+    max-width: min(900px, calc(100vw - 32px));
+  }
+
+  .jogos-container {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
 }
 
 /* ============================================================

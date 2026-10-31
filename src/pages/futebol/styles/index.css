@@ -295,12 +295,8 @@
   display: flex;
   flex-direction: row;
   align-items: stretch;
-<<<<<<< HEAD
   justify-content: center;
   gap: 16px;
-=======
-  justify-content: space-between;
->>>>>>> f460aaf4e4dab576071876676fe85ac88b2e707a
   width: 100%;
   margin-top: 4px;
 }

@@ -1,0 +1,24 @@
+/* ============================================================
+   FUNDO das páginas APRENDER, ÁLBUM e RANKING (todas usam .edu-pagina)
+   Mesma imagem da arena e mesmo véu preto dos minijogos.
+   A imagem fica numa camada FIXA atrás do conteúdo (z-index -1): não
+   interfere no layout, não bloqueia cliques e não rola junto com a página.
+   - Para o véu ficar MAIS escuro: aumente o 0.6 (máx. 1).
+   - Para a imagem ficar MAIS visível: diminua o 0.6.
+   (Se quiser igual ao dos minijogos, copie para cá o valor do seu --fundo-veu.)
+   ============================================================ */
+.edu-pagina::before {
+  --fundo-veu: 0.6;
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: #000;
+  background-image:
+    linear-gradient(rgba(0, 0, 0, var(--fundo-veu)), rgba(0, 0, 0, var(--fundo-veu))),
+    url("../../assets/fundo-arena.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}

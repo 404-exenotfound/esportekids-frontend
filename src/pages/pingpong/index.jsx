@@ -6,10 +6,7 @@ import { TelaIntro } from "./components/TelaIntro";
 import { TelaFimDeJogo } from "./components/TelaFimDeJogo";
 import { GAME_HEIGHT, GAME_WIDTH } from "./utils/constantes";
 import BotaoTelaCheia from "../../components/BotaoTelaCheia";
-<<<<<<< HEAD
 import { BotaoVoltar } from "../../educacional/components/BotaoVoltar";
-=======
->>>>>>> f460aaf4e4dab576071876676fe85ac88b2e707a
 import { useDicasDoJogo } from "../../educacional/fases/useDicasDoJogo";
 import { DicaToast } from "../../educacional/fases/DicaToast";
 import { FimEducativo } from "../../educacional/fases/FimEducativo";
@@ -28,12 +25,9 @@ const PingPong = () => {
 
   return (
     <div className="pp-wrapper">
-<<<<<<< HEAD
       {/* Fixo no canto, à esquerda do TELA CHEIA; fica fora do palco para
           continuar visível também no relembrar dicas / quiz / fim de jogo */}
       <BotaoVoltar />
-=======
->>>>>>> f460aaf4e4dab576071876676fe85ac88b2e707a
       <div className="pp-card">
         <div className="pp-titulo-barra">
           <h1 className="pp-titulo">

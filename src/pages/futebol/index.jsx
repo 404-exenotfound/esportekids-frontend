@@ -3,10 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import EscalaProporcional from "../../components/EscalaProporcional";
 import BotaoTelaCheia from "../../components/BotaoTelaCheia";
-<<<<<<< HEAD
 import { BotaoVoltar } from "../../educacional/components/BotaoVoltar";
-=======
->>>>>>> f460aaf4e4dab576071876676fe85ac88b2e707a
 import useTelaCheia from "../../hooks/useTelaCheia";
 import { TelaIntro } from "./components/TelaIntro";
 import { TelaFimDeJogo } from "./components/TelaFimDeJogo";
@@ -901,12 +898,9 @@ const Futebol = () => {
 
   return (
     <div className="pc-wrapper">
-<<<<<<< HEAD
       {/* Fixo no canto, à esquerda do TELA CHEIA; fica fora do palco para
           continuar visível também no relembrar dicas / quiz / fim de jogo */}
       <BotaoVoltar />
-=======
->>>>>>> f460aaf4e4dab576071876676fe85ac88b2e707a
       <div className="pc-card">
         <div className="pc-titulo-barra">
           <h1 className="pc-titulo">

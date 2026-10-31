@@ -1,3 +1,4 @@
+@import "./fundo-paginas.css";
 /* ============================================================
    EsporteKids — telas educativas (Aprender e Álbum)
    Títulos em fonte pixel (identidade do jogo); TEXTOS em fonte
@@ -152,7 +153,6 @@
   text-align: left; color: #1f1f1f; font-family: system-ui, "Segoe UI", Roboto, sans-serif;
 }
 .edu-fase .edu-card { margin-bottom: 0; }
-<<<<<<< HEAD
 /* Modais do fim do jogo (dicas / quiz / resultado): centralizados no espaço
    abaixo da faixa vermelha. O card do jogo é uma coluna flex, então margin:auto
    centraliza na vertical e na horizontal; o padding vertical garante uma folga
@@ -165,8 +165,6 @@
   position: relative;
   top: -80px;
 }
-=======
->>>>>>> f460aaf4e4dab576071876676fe85ac88b2e707a
 .edu-nova { background: #e63946; color: #fff; font: 700 11px system-ui, sans-serif; padding: 2px 6px; margin-left: 4px; }
 .edu-aviso {
   background: #d8f7e0; border: 4px solid #1f1f1f; box-shadow: 5px 5px 0 #000;
@@ -238,4 +236,34 @@
   border: 3px solid #1f1f1f;
   box-shadow: 3px 3px 0 #1f1f1f;
   padding: 8px 12px;
+}
+
+/* ============================================================
+   FUNDO DAS PÁGINAS DOS MINIJOGOS (atrás de dicas, quiz, resultado e fim de jogo)
+   Imagem da arena com um "véu" creme por cima para ela ficar bem suave.
+   - Para a imagem ficar MAIS apagada: aumente o 0.78 (máx. 1 = sem imagem).
+   - Para ficar MAIS visível: diminua o 0.78 (ex.: 0.6).
+   O seletor com 2 classes garante que vale sobre o fundo creme de cada jogo.
+   ============================================================ */
+.bq-wrapper .bq-card,
+.atl-wrapper .atl-card,
+.pp-wrapper .pp-card,
+.bol-wrapper .bol-card,
+.pc-wrapper .pc-card {
+  --fundo-veu: 0.70;
+  background-color: #f5f5dc;
+  background-image:
+     linear-gradient(rgba(0, 0, 0, var(--fundo-veu)), rgba(0, 0, 0, var(--fundo-veu))),
+    url("../../assets/fundo-arena.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+/* A tela de fim de jogo tinha fundo creme sólido e escondia a imagem */
+.bq-wrapper .bq-tela,
+.atl-wrapper .atl-tela,
+.pp-wrapper .pp-tela,
+.bol-wrapper .bol-tela,
+.pc-wrapper .pc-tela {
+  background: transparent;
 }
