@@ -267,3 +267,13 @@
 .pc-wrapper .pc-tela {
   background: transparent;
 }
+
+/* Texto do fim de jogo em branco, com contorno para ler bem sobre a imagem */
+.bq-wrapper .bq-texto-fim,
+.atl-wrapper .atl-texto-fim,
+.pp-wrapper .pp-texto-fim,
+.bol-wrapper .bol-texto-fim,
+.pc-wrapper .pc-texto-fim {
+  color: #fff;
+  text-shadow: 2px 2px 0 #000;
+}
