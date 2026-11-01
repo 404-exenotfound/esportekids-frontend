@@ -30,9 +30,6 @@ export const CuriosidadeBanner = ({ esporte }) => {
         <button type="button" className="edu-btn" onClick={proxima}>
           Outra curiosidade ({indice + 1}/{total})
         </button>
-        <button type="button" className="edu-btn edu-btn-ok" onClick={() => mostrar(indice)}>
-          ✔ Li esta
-        </button>
       </div>
     </div>
   );
