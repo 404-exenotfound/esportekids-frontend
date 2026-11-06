@@ -10,6 +10,7 @@ import "../../educacional/styles/educacional.css";
 
 const Album = () => {
   const progresso = useSelector((s) => s.progresso);
+  const cargo = useSelector((s) => s.user.cargo);
   const dispatch = useDispatch();
   const liberados = progresso.jogosLiberados;
   const total = totalDeEstrelas(progresso);
@@ -62,9 +63,12 @@ const Album = () => {
         </div>
         <div className="edu-acoes">
           <Link to="/home" className="edu-btn edu-btn-ok">▶ Jogar</Link>
-          <button type="button" className="edu-btn" onClick={() => dispatch(liberarTodosOsJogos())}>
-            🔓 Liberar todos os jogos (modo apresentação)
-          </button>
+          {/* Só o usuário root pula as fases; os outros seguem a ordem normal */}
+          {cargo === "root" && (
+            <button type="button" className="edu-btn" onClick={() => dispatch(liberarTodosOsJogos())}>
+              🔓 Liberar todos os jogos (modo apresentação)
+            </button>
+          )}
         </div>
       </div>
 
