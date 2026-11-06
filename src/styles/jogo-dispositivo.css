@@ -1,0 +1,122 @@
+/* Layout dos minigames no celular e no tablet, igual para os 5 jogos.
+   Tudo aqui depende das classes is-celular / is-tablet (vindas do
+   useDispositivo no wrapper), então o desktop não muda nada.
+   Os jogos marcam seus elementos com as classes genéricas jogo-wrapper,
+   jogo-titulo-barra, jogo-stage, jogo-rodape e jogo-tela-cheia. */
+
+/* ---------- Aviso "gire o celular" ---------- */
+.jogo-aviso-girar {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 24px;
+  background: rgba(31, 31, 31, 0.95);
+  color: #ffd166;
+  font-family: "Press Start 2P", ui-monospace, monospace;
+  text-align: center;
+}
+.jogo-aviso-icone {
+  font-size: 56px;
+  animation: jogo-girar 1.8s ease-in-out infinite;
+}
+.jogo-aviso-titulo {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.8;
+  text-shadow: 2px 2px 0 #000;
+}
+.jogo-aviso-sub {
+  margin: 0;
+  font-size: 9px;
+  line-height: 1.8;
+  color: #f5f5dc;
+}
+.jogo-aviso-voltar {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  min-height: 48px;
+  padding: 8px 12px;
+  background: #e63946;
+  color: #fff;
+  border: 4px solid #1f1f1f;
+  border-radius: 0;
+  box-shadow: 4px 4px 0 #000;
+  font: 400 10px "Press Start 2P", monospace;
+  cursor: pointer;
+}
+@keyframes jogo-girar {
+  0%, 20% { transform: rotate(0deg); }
+  50%, 80% { transform: rotate(90deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* ---------- Celular deitado: o jogo ocupa a altura toda ---------- */
+.is-celular.is-paisagem.jogo-wrapper {
+  height: 100vh;
+  height: 100dvh;
+}
+.is-celular.is-paisagem .jogo-titulo-barra {
+  display: none;
+}
+.is-celular.is-paisagem .jogo-stage {
+  margin: 0 auto;
+  max-width: 100%;
+  border-width: 3px;
+  box-shadow: none;
+}
+.is-celular.is-paisagem .jogo-rodape {
+  min-height: 0;
+  padding: 3px 8px;
+  font-size: 7px;
+}
+.is-celular.is-paisagem .jogo-rodape p {
+  font-size: 7px;
+  line-height: 1.5;
+}
+/* VOLTAR e TELA CHEIA pequenos, um embaixo do outro, na sobra lateral */
+.is-celular.is-paisagem .edu-voltar,
+.is-celular.is-paisagem .jogo-tela-cheia {
+  top: 4px;
+  left: 4px;
+  padding: 6px 7px;
+  font-size: 7px;
+  border-width: 3px;
+  box-shadow: 2px 2px 0 #1f1f1f;
+}
+.is-celular.is-paisagem .jogo-tela-cheia {
+  top: 38px;
+}
+/* Em tela cheia o TELA CHEIA fica dentro do palco (regra de cada jogo) */
+.is-celular.is-paisagem .jogo-stage:fullscreen .jogo-tela-cheia,
+.is-celular.is-paisagem .jogo-stage:-webkit-full-screen .jogo-tela-cheia {
+  top: auto;
+  left: auto;
+}
+
+/* ---------- Tablet ---------- */
+.is-tablet.jogo-wrapper {
+  height: 100vh;
+  height: 100dvh;
+}
+.is-tablet .edu-voltar,
+.is-tablet .jogo-tela-cheia {
+  min-height: 48px;
+}
+/* Em pé: jogo na largura toda e instruções maiores embaixo */
+.is-tablet.is-retrato .jogo-stage {
+  flex: 0 0 auto;
+  width: calc(100% - 24px);
+  max-width: calc(100% - 24px);
+  margin: 16px auto 12px;
+}
+.is-tablet.is-retrato .jogo-rodape,
+.is-tablet.is-retrato .jogo-rodape p {
+  font-size: 12px;
+  line-height: 1.8;
+}

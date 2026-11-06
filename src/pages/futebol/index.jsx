@@ -5,6 +5,8 @@ import EscalaProporcional from "../../components/EscalaProporcional";
 import BotaoTelaCheia from "../../components/BotaoTelaCheia";
 import { BotaoVoltar } from "../../educacional/components/BotaoVoltar";
 import useTelaCheia from "../../hooks/useTelaCheia";
+import useDispositivo from "../../hooks/useDispositivo";
+import AvisoGirarCelular from "../../components/AvisoGirarCelular";
 import { TelaIntro } from "./components/TelaIntro";
 import { TelaFimDeJogo } from "./components/TelaFimDeJogo";
 import { TOTAL_RODADAS } from "./utils/constantes";
@@ -793,6 +795,14 @@ const Futebol = () => {
     alternarTelaCheia,
   } = useTelaCheia(fase === "fim");
 
+  // Celular em pé: o aviso de girar cobre a tela e o jogo fica pausado
+  const { classes: classesDispositivo, ehCelular, retrato } = useDispositivo();
+  const pausado = ehCelular && retrato && fase !== "fim";
+  const pausadoRef = useRef(pausado);
+  useEffect(() => {
+    pausadoRef.current = pausado;
+  }, [pausado]);
+
   const sync = useCallback(() => {
     const j = jogoRef.current;
     setHud({
@@ -852,7 +862,7 @@ const Futebol = () => {
     const loop = (agora) => {
       const dt = Math.min(0.05, (agora - ult) / 1000);
       ult = agora;
-      acc += dt;
+      acc = pausadoRef.current ? 0 : acc + dt;
       while (acc >= PASSO) {
         atualizar(j, PASSO, ev);
         acc -= PASSO;
@@ -897,12 +907,13 @@ const Futebol = () => {
   const mostrarFim = fase === "fim" && final;
 
   return (
-    <div className="pc-wrapper">
+    <div className={`pc-wrapper jogo-wrapper ${classesDispositivo}`}>
+      <AvisoGirarCelular ativo={!mostrarFim} />
       {/* Fixo no canto, à esquerda do TELA CHEIA; fica fora do palco para
           continuar visível também no relembrar dicas / quiz / fim de jogo */}
       <BotaoVoltar />
       <div className="pc-card">
-        <div className="pc-titulo-barra">
+        <div className="pc-titulo-barra jogo-titulo-barra">
           <h1 className="pc-titulo">
             PÊNALTI
           </h1>
@@ -922,7 +933,7 @@ const Futebol = () => {
 
         <div
           ref={telaCheiaRef}
-          className={`pc-stage${mostrarFim ? " pc-oculto" : ""}`}
+          className={`pc-stage jogo-stage${mostrarFim ? " pc-oculto" : ""}`}
         >
           {/* Dentro do palco (= elemento da tela cheia) para a dica aparecer também em tela cheia */}
           <DicaToast dica={edu.dicaVisivel} />
@@ -993,7 +1004,7 @@ const Futebol = () => {
         </div>
 
         {fase === "jogando" && (
-          <div className="pc-rodape">
+          <div className="pc-rodape jogo-rodape">
             <p className="pc-rodape-texto">TOQUE EM UM CANTO DO GOL PARA CHUTAR!</p>
           </div>
         )}

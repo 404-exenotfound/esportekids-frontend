@@ -5,7 +5,7 @@ export default function BotaoTelaCheia({ emTelaCheia, alternarTelaCheia, classe 
   return (
     <button
       type="button"
-      className={classe}
+      className={`${classe} jogo-tela-cheia`}
       onClick={alternarTelaCheia}
       // Evita que o botão segure o foco (teclas como ESPAÇO são usadas p/ jogar)
       onMouseDown={(e) => e.preventDefault()}
