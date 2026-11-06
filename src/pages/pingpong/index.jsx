@@ -25,7 +25,14 @@ const PingPong = () => {
     suportaTelaCheia,
     ref: telaCheiaRef,
     alternarTelaCheia,
+    entrarTelaCheiaNoCelular,
   } = useTelaCheia(jogo.mostrarFimDeJogo);
+
+  // No celular, Jogar já entra em tela cheia deitada (precisa ser no clique)
+  const jogar = () => {
+    entrarTelaCheiaNoCelular();
+    jogo.iniciarJogo();
+  };
 
   return (
     <div className={`pp-wrapper jogo-wrapper ${classesDispositivo}`}>
@@ -46,7 +53,7 @@ const PingPong = () => {
               pontos={jogo.pontos}
               estrelas={jogo.estrelas}
               emojiFinal={jogo.emojiFinal}
-              onJogarNovamente={jogo.iniciarJogo}
+              onJogarNovamente={jogar}
               onVoltar={jogo.voltarParaHome}
             />
           </FimEducativo>
@@ -84,7 +91,7 @@ const PingPong = () => {
               <div className="pp-combo">🔥 x{jogo.rally}</div>
             )}
 
-            {!jogo.emJogo && <TelaIntro onJogar={jogo.iniciarJogo} />}
+            {!jogo.emJogo && <TelaIntro onJogar={jogar} />}
 
             {jogo.mostrarBanner && (
               <BannerResultado

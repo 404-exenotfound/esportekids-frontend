@@ -32,7 +32,14 @@ const Atletismo = () => {
     suportaTelaCheia,
     ref: telaCheiaRef,
     alternarTelaCheia,
+    entrarTelaCheiaNoCelular,
   } = useTelaCheia(terminou);
+
+  // No celular, Jogar já entra em tela cheia deitada (precisa ser no clique)
+  const jogar = () => {
+    entrarTelaCheiaNoCelular();
+    jogo.startGame();
+  };
 
   return (
     <div className={`atl-wrapper jogo-wrapper ${classesDispositivo}`}>
@@ -55,7 +62,7 @@ const Atletismo = () => {
               fasesCompletas={jogo.progresso}
               totalFases={jogo.totalFases}
               melhor={jogo.melhor}
-              onJogarNovamente={jogo.startGame}
+              onJogarNovamente={jogar}
               onVoltar={jogo.voltarParaHome}
             />
           </FimEducativo>
@@ -86,7 +93,7 @@ const Atletismo = () => {
               />
             )}
             {jogo.gameState === FASES.START && (
-              <TelaIntro onJogar={jogo.startGame} />
+              <TelaIntro onJogar={jogar} />
             )}
             {jogo.gameState === FASES.PLAYING && jogo.etapa === "resultado" && (
               <ResultadoSalto resultado={jogo.resultado} />

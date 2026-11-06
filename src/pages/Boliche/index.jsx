@@ -714,6 +714,7 @@ const Boliche = () => {
     suportaTelaCheia,
     ref: telaCheiaRef,
     alternarTelaCheia,
+    entrarTelaCheiaNoCelular,
   } = useTelaCheia(fase === "fim");
 
   // Celular em pé: o aviso de girar cobre a tela e o jogo fica pausado
@@ -827,6 +828,12 @@ const Boliche = () => {
     setFase("jogando");
   };
 
+  // No celular, Jogar já entra em tela cheia deitada (precisa ser no clique)
+  const jogar = () => {
+    entrarTelaCheiaNoCelular();
+    iniciar();
+  };
+
   const mostrarFim = fase === "fim" && final;
 
   return (
@@ -848,7 +855,7 @@ const Boliche = () => {
               pontos={final.pontos}
               estrelas={final.estrelas}
               emojiFinal={emojiDoResultadoFinal(final.estrelas)}
-              onJogarNovamente={iniciar}
+              onJogarNovamente={jogar}
               onVoltar={() => navigate("/home?menu=jogar")}
             />
           </FimEducativo>
@@ -905,7 +912,7 @@ const Boliche = () => {
               </div>
             )}
 
-            {fase === "intro" && <TelaIntro onJogar={iniciar} />}
+            {fase === "intro" && <TelaIntro onJogar={jogar} />}
           </EscalaProporcional>
 
           {suportaTelaCheia && (

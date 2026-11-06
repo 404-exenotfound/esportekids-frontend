@@ -793,6 +793,7 @@ const Futebol = () => {
     suportaTelaCheia,
     ref: telaCheiaRef,
     alternarTelaCheia,
+    entrarTelaCheiaNoCelular,
   } = useTelaCheia(fase === "fim");
 
   // Celular em pé: o aviso de girar cobre a tela e o jogo fica pausado
@@ -904,6 +905,12 @@ const Futebol = () => {
     setFase("jogando");
   };
 
+  // No celular, Jogar já entra em tela cheia deitada (precisa ser no clique)
+  const jogar = () => {
+    entrarTelaCheiaNoCelular();
+    iniciar();
+  };
+
   const mostrarFim = fase === "fim" && final;
 
   return (
@@ -925,7 +932,7 @@ const Futebol = () => {
               placar={final.placar}
               estrelas={final.estrelas}
               emojiFinal={emojiDoResultadoFinal(final.placar)}
-              onJogarNovamente={iniciar}
+              onJogarNovamente={jogar}
               onVoltar={() => navigate("/home")}
             />
           </FimEducativo>
@@ -991,7 +998,7 @@ const Futebol = () => {
               </div>
             )}
 
-            {fase === "intro" && <TelaIntro onJogar={iniciar} />}
+            {fase === "intro" && <TelaIntro onJogar={jogar} />}
           </EscalaProporcional>
 
           {suportaTelaCheia && (

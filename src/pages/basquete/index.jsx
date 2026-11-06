@@ -764,6 +764,7 @@ export default function Basquete({ aoTerminar }) {
     suportaTelaCheia,
     ref: telaCheiaRef,
     alternarTelaCheia,
+    entrarTelaCheiaNoCelular,
   } = useTelaCheia(fase === "fim");
 
   // Celular em pé: o aviso de girar cobre a tela e o jogo fica pausado
@@ -887,6 +888,12 @@ export default function Basquete({ aoTerminar }) {
   };
 
   const dist = hud.dist.toFixed(1).replace(".", ",");
+  // No celular, Jogar já entra em tela cheia deitada (precisa ser no clique)
+  const jogar = () => {
+    entrarTelaCheiaNoCelular();
+    iniciar();
+  };
+
   const mostrarFim = fase === "fim" && final;
 
   return (
@@ -910,7 +917,7 @@ export default function Basquete({ aoTerminar }) {
               pontos={final.pontos}
               estrelas={final.estrelas}
               emojiFinal={emojiDoResultadoFinal(final.acertos)}
-              onJogarNovamente={iniciar}
+              onJogarNovamente={jogar}
               onVoltar={() => navigate("/home")}
             />
           </FimEducativo>
@@ -969,7 +976,7 @@ export default function Basquete({ aoTerminar }) {
               </div>
             )}
 
-            {fase === "intro" && <TelaIntro onJogar={iniciar} />}
+            {fase === "intro" && <TelaIntro onJogar={jogar} />}
           </EscalaProporcional>
 
           {suportaTelaCheia && (
