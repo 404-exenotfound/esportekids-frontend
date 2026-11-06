@@ -4,6 +4,8 @@ import EscalaProporcional from "../../components/EscalaProporcional";
 import BotaoTelaCheia from "../../components/BotaoTelaCheia";
 import { BotaoVoltar } from "../../educacional/components/BotaoVoltar";
 import useTelaCheia from "../../hooks/useTelaCheia";
+import useDispositivo from "../../hooks/useDispositivo";
+import AvisoGirarCelular from "../../components/AvisoGirarCelular";
 import { TelaIntro } from "./components/TelaIntro";
 import { TelaFimDeJogo } from "./components/TelaFimDeJogo";
 import { emojiDoResultadoFinal } from "./helpers/emojiDoResultadoFinal";
@@ -764,6 +766,14 @@ export default function Basquete({ aoTerminar }) {
     alternarTelaCheia,
   } = useTelaCheia(fase === "fim");
 
+  // Celular em pé: o aviso de girar cobre a tela e o jogo fica pausado
+  const { classes: classesDispositivo, ehCelular, retrato } = useDispositivo();
+  const pausado = ehCelular && retrato && fase !== "fim";
+  const pausadoRef = useRef(pausado);
+  useEffect(() => {
+    pausadoRef.current = pausado;
+  }, [pausado]);
+
   const sync = useCallback(() => {
     const j = jogoRef.current;
     setHud({ pontos: j.pontos, acertos: j.acertos, bolas: j.bolas, seq: j.seq, dist: (j.aro.alvoX - ANCORA.x) / M });
@@ -815,7 +825,7 @@ export default function Basquete({ aoTerminar }) {
     const loop = (agora) => {
       const dt = Math.min(0.05, (agora - ult) / 1000);
       ult = agora;
-      acc += dt;
+      acc = pausadoRef.current ? 0 : acc + dt;
       while (acc >= PASSO) {
         atualizar(j, PASSO, ev);
         acc -= PASSO;
@@ -880,13 +890,14 @@ export default function Basquete({ aoTerminar }) {
   const mostrarFim = fase === "fim" && final;
 
   return (
-    <div className="bq-wrapper">
+    <div className={`bq-wrapper jogo-wrapper ${classesDispositivo}`}>
+      <AvisoGirarCelular ativo={!mostrarFim} />
       {/* Fixo no canto, à esquerda do TELA CHEIA; fica fora do palco para
           continuar visível também no relembrar dicas / quiz / fim de jogo */}
       <BotaoVoltar />
       <div className="bq-card">
         {/* Cabeçalho do card (mesmo padrão dos outros jogos) */}
-        <div className="bq-titulo-barra">
+        <div className="bq-titulo-barra jogo-titulo-barra">
           <h1 className="bq-titulo">
             LANCE <span>LIVRE</span>
           </h1>
@@ -909,7 +920,7 @@ export default function Basquete({ aoTerminar }) {
             para o loop de desenho continuar ligado ao mesmo canvas ao jogar de novo. */}
         <div
           ref={telaCheiaRef}
-          className={`bq-stage${mostrarFim ? " bq-oculto" : ""}`}
+          className={`bq-stage jogo-stage${mostrarFim ? " bq-oculto" : ""}`}
         >
           {/* Dentro do palco (= elemento da tela cheia) para a dica aparecer também em tela cheia */}
           <DicaToast dica={edu.dicaVisivel} />
@@ -971,7 +982,7 @@ export default function Basquete({ aoTerminar }) {
         </div>
 
         {fase === "jogando" && (
-          <div className="bq-rodape">
+          <div className="bq-rodape jogo-rodape">
             <p className="bq-rodape-texto">PUXE A BOLA PARA TRÁS, MIRE E SOLTE PARA ARREMESSAR!</p>
           </div>
         )}

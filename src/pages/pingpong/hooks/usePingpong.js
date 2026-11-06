@@ -694,8 +694,14 @@ const atualizarSaida = (d, dt) => {
 };
 
 /* ================= HOOK ================= */
-export function usePingpong() {
+export function usePingpong({ pausado = false } = {}) {
   const navigate = useNavigate();
+
+  // Celular em pé (aviso de girar na tela): o loop só redesenha
+  const pausadoRef = useRef(pausado);
+  useEffect(() => {
+    pausadoRef.current = pausado;
+  }, [pausado]);
 
   const [fase, setFase] = useState(FASES.INTRO);
   const [pontos, setPontos] = useState(0);
@@ -998,6 +1004,12 @@ export function usePingpong() {
       if (!last) last = timestamp;
       const dt = Math.min((timestamp - last) / 1000, 0.032);
       last = timestamp;
+
+      if (pausadoRef.current) {
+        drawScene(ctx, dataRef.current);
+        rafId = requestAnimationFrame(step);
+        return;
+      }
 
       const d = dataRef.current;
       const now = timestamp;

@@ -14,7 +14,7 @@ export const TelaIntro = ({ onJogar }) => {
   };
 
   return (
-    <div className="bol-overlay">
+    <div className="bol-overlay jogo-overlay">
       <div className="bol-emoji-grande">🎳</div>
 
       <p className="bol-overlay-titulo">PRONTO PARA JOGAR?</p>
