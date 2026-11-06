@@ -6,6 +6,7 @@ import { desbloquearJogo } from "../../store/progressoSlice";
 import { DICAS_FASES, MINIMO_PARA_LIBERAR, proximoJogo } from "./dicasFases";
 import { QuizDasDicas } from "./QuizDasDicas";
 import { Fogos } from "./Fogos";
+import { useAudioFinal } from "./useAudioFinal";
 import { BotaoLeitura } from "../components/BotaoLeitura";
 import { useMaterias } from "../../api/materias";
 import { useSalvarResultado } from "../../api/salvarResultado";
@@ -30,6 +31,45 @@ const BannerParabens = () => (
     <p className="edu-parabens-sub">Você completou todas as fases do EsporteKids!</p>
   </div>
 );
+
+// Revisão de todas as dicas, narrada pelo áudio de descricaoFinal no S3.
+// Fica num componente próprio para o áudio tocar só enquanto esta tela existe.
+const RevisaoDasDicas = ({ esporte, dicas, vistas, onIrParaQuiz }) => {
+  const audio = useAudioFinal(esporte);
+
+  return (
+    <div className="edu-fase">
+      <div className="edu-card">
+        <p className="edu-titulo-pixel">📖 RELEMBRE AS DICAS</p>
+        <p className="edu-texto">Leia com atenção: as perguntas do quiz vêm destas dicas!</p>
+        <ol className="edu-lista">
+          {dicas.map((d, i) => (
+            <li key={d.dica}>
+              {d.dica} {i >= vistas && <span className="edu-nova">NOVA</span>}
+            </li>
+          ))}
+        </ol>
+        <div className="edu-acoes">
+          {audio.disponivel ? (
+            <button
+              type="button"
+              className="edu-btn edu-btn-leitura"
+              onClick={audio.alternar}
+              aria-label={audio.tocando ? "Pausar a narração das dicas" : "Ouvir a narração das dicas"}
+            >
+              {audio.tocando ? "⏸ Pausar" : "▶ Ouvir"}
+            </button>
+          ) : (
+            <BotaoLeitura texto={dicas.map((d, i) => `Dica ${i + 1}. ${d.dica}`).join(" ")} />
+          )}
+          <button type="button" className="edu-btn edu-btn-ok" onClick={onIrParaQuiz}>
+            Ir para o quiz ▶
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 // Como o desempenho de cada minigame é chamado nos avisos (singular, plural).
 const UNIDADE_DO_JOGO = {
@@ -140,27 +180,7 @@ export const FimEducativo = ({ esporte, vistas, pontosDoJogo = 0, children }) =>
 
   // ---------- 1) Revisão das dicas ----------
   if (etapa === "revisao") {
-    return (
-      <div className="edu-fase">
-        <div className="edu-card">
-          <p className="edu-titulo-pixel">📖 RELEMBRE AS DICAS</p>
-          <p className="edu-texto">Leia com atenção: as perguntas do quiz vêm destas dicas!</p>
-          <ol className="edu-lista">
-            {dicas.map((d, i) => (
-              <li key={d.dica}>
-                {d.dica} {i >= vistas && <span className="edu-nova">NOVA</span>}
-              </li>
-            ))}
-          </ol>
-          <div className="edu-acoes">
-            <BotaoLeitura texto={dicas.map((d, i) => `Dica ${i + 1}. ${d.dica}`).join(" ")} />
-            <button type="button" className="edu-btn edu-btn-ok" onClick={() => setEtapa("quiz")}>
-              Ir para o quiz ▶
-            </button>
-          </div>
-        </div>
-      </div>
-    );
+    return <RevisaoDasDicas esporte={esporte} dicas={dicas} vistas={vistas} onIrParaQuiz={() => setEtapa("quiz")} />;
   }
 
   // ---------- 2) Quiz ----------
