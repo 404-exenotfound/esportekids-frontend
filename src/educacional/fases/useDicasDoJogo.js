@@ -1,14 +1,20 @@
 import { useCallback, useEffect, useState } from "react";
 import { DICAS_FASES, TOTAL_DICAS } from "./dicasFases";
+import { useAudioDaDica } from "./useAudioDaDica";
 
+// Tempo MÍNIMO da dica na tela. Se a narração for mais longa, a dica só some
+// quando o áudio terminar.
 const TEMPO_DICA_NA_TELA = 7000; // ms
 
 // Liga um jogo às dicas SEM mexer na lógica dele: basta passar o contador de
 // acertos que o jogo já expõe (cestas, gols, estrelas, pontos...). Cada vez que
-// ele SOBE, a próxima dica é liberada (até 5). Se ele cai (jogo reiniciado),
-// as dicas recomeçam.
+// ele SOBE, a próxima dica é liberada (até 5) e a narração dela toca. Se ele
+// cai (jogo reiniciado), as dicas recomeçam.
 export function useDicasDoJogo(esporte, acertos) {
-  const [estado, setEstado] = useState({ anterior: acertos, vistas: 0, visivel: false });
+  // "exibicao" conta cada vez que o aviso aparece: identifica a exibição atual
+  // para o timer e para o áudio.
+  const [estado, setEstado] = useState({ anterior: acertos, vistas: 0, visivel: false, exibicao: 0 });
+  const [minimoCumprido, setMinimoCumprido] = useState(0); // exibição que já cumpriu o tempo mínimo
 
   // Ajuste de estado durante a renderização (padrão recomendado pelo React
   // para reagir à mudança de um valor sem usar useEffect).
@@ -18,18 +24,22 @@ export function useDicasDoJogo(esporte, acertos) {
         anterior: acertos,
         vistas: Math.min(estado.vistas + 1, TOTAL_DICAS),
         visivel: true,
+        exibicao: estado.exibicao + 1,
       });
     } else {
-      setEstado({ anterior: acertos, vistas: 0, visivel: false });
+      setEstado({ ...estado, anterior: acertos, vistas: 0, visivel: false });
     }
   }
 
-  // Some sozinha depois de alguns segundos
   useEffect(() => {
     if (!estado.visivel) return undefined;
-    const t = setTimeout(() => setEstado((e) => ({ ...e, visivel: false })), TEMPO_DICA_NA_TELA);
+    const t = setTimeout(() => setMinimoCumprido(estado.exibicao), TEMPO_DICA_NA_TELA);
     return () => clearTimeout(t);
-  }, [estado.visivel, estado.vistas]);
+  }, [estado.visivel, estado.exibicao]);
+
+  const audio = useAudioDaDica(esporte, estado.visivel ? estado.vistas : 0, estado.exibicao);
+  const terminou = minimoCumprido === estado.exibicao && audio.terminou;
+  const naTela = estado.visivel && estado.vistas > 0 && !terminou;
 
   const reiniciar = useCallback(
     () => setEstado((e) => ({ ...e, vistas: 0, visivel: false })),
@@ -37,10 +47,9 @@ export function useDicasDoJogo(esporte, acertos) {
   );
 
   const dicas = DICAS_FASES[esporte];
-  const dicaVisivel =
-    estado.visivel && estado.vistas > 0
-      ? { numero: estado.vistas, total: TOTAL_DICAS, texto: dicas[estado.vistas - 1].dica }
-      : null;
+  const dicaVisivel = naTela
+    ? { numero: estado.vistas, total: TOTAL_DICAS, texto: dicas[estado.vistas - 1].dica }
+    : null;
 
   return { vistas: estado.vistas, dicaVisivel, reiniciar };
 }
