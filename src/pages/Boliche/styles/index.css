@@ -384,13 +384,21 @@
   display: flex;
   flex-direction: column;
 }
-.bol-palco:fullscreen,
-.bol-palco:-webkit-full-screen {
+.bol-stage:fullscreen,
+.bol-stage:-webkit-full-screen {
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
+  max-width: 100vw;
+  max-height: 100vh;
+  max-height: 100dvh;
   margin: 0;
-  background: var(--creme);
+  border: 0;
+  box-shadow: none;
+  border-radius: 0;
+  display: block;
   overflow: hidden;
+  background: #000;
 }
 
 /* Botão TELA CHEIA (mesmo estilo pixel do VOLTAR) */
@@ -418,8 +426,8 @@
   outline: 4px solid var(--amarelo);
   outline-offset: 2px;
 }
-.bol-palco:fullscreen .bol-tela-cheia,
-.bol-palco:-webkit-full-screen .bol-tela-cheia {
+.bol-stage:fullscreen .bol-tela-cheia,
+.bol-stage:-webkit-full-screen .bol-tela-cheia {
   position: absolute;
   top: auto;
   left: auto;
