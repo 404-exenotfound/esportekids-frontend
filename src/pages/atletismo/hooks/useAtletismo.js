@@ -33,8 +33,14 @@ const CORES_FASE = ["#06D6A0", "#4CC9F0", "#FFC93C", "#F77F00", "#EF476F"];
 // chances, fim de jogo. Ao completar a fase, o progresso avança e o sistema
 // educacional mostra a informação daquela fase; ao terminar (5 fases ou sem
 // chances), abre o fim com o quiz.
-export function useAtletismo() {
+export function useAtletismo({ pausado = false } = {}) {
   const navigate = useNavigate();
+
+  // Celular em pé (aviso de girar na tela): o loop só redesenha
+  const pausadoRef = useRef(pausado);
+  useEffect(() => {
+    pausadoRef.current = pausado;
+  }, [pausado]);
 
   const canvasRef = useRef(null);
   const rafRef = useRef(null);
@@ -274,6 +280,12 @@ export function useAtletismo() {
       const dtMs = Math.min(time - lastTimeRef.current, 40);
       const dt = dtMs / 1000;
       lastTimeRef.current = time;
+
+      if (pausadoRef.current) {
+        desenharCena(ctx, dataRef.current);
+        rafRef.current = requestAnimationFrame(step);
+        return;
+      }
 
       const d = dataRef.current;
       d.tempoTotal += dtMs;

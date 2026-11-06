@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import useDispositivo from "./useDispositivo";
 
 // Tela cheia via Fullscreen API com fallback webkit (Safari).
 // Retorna o estado, se o navegador suporta, a ref do container do jogo e a
@@ -6,9 +7,12 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 // "terminou": quando vira true (fim do minigame) e a tela está cheia, sai da
 // tela cheia sozinho. Sem isso, o quiz/fim de jogo (que ficam fora do palco)
 // ficavam escondidos atrás da tela cheia e o jogo parecia travado.
+// No celular, ao entrar também trava a tela deitada (Android/Chrome); onde o
+// navegador não deixa (iPhone, Firefox...) o aviso "gire o celular" cobre.
 export default function useTelaCheia(terminou = false) {
   const [emTelaCheia, setEmTelaCheia] = useState(false);
   const ref = useRef(null);
+  const { ehCelular } = useDispositivo();
 
   const suportaTelaCheia = useMemo(() => {
     const el = typeof document !== "undefined" ? document.documentElement : null;
@@ -22,16 +26,30 @@ export default function useTelaCheia(terminou = false) {
   const entrar = useCallback(() => {
     const el = ref.current;
     if (!el) return;
+    let pedido;
     if (typeof el.requestFullscreen === "function") {
-      el.requestFullscreen();
+      pedido = el.requestFullscreen();
     } else if (typeof el.webkitRequestFullscreen === "function") {
-      el.webkitRequestFullscreen();
+      pedido = el.webkitRequestFullscreen(); // webkit não devolve promise
+    } else {
+      return;
     }
-  }, []);
+    // Recusas (sem suporte, sem gesto do usuário) são esperadas: só ignora
+    Promise.resolve(pedido)
+      .then(() => {
+        if (ehCelular) return window.screen.orientation?.lock?.("landscape");
+      })
+      .catch(() => {});
+  }, [ehCelular]);
+
+  // Celular: o botão Jogar já entra em tela cheia (e trava deitado)
+  const entrarNoCelular = useCallback(() => {
+    if (ehCelular) entrar();
+  }, [ehCelular, entrar]);
 
   const sair = useCallback(() => {
     if (typeof document.exitFullscreen === "function") {
-      document.exitFullscreen();
+      document.exitFullscreen().catch(() => {});
     } else if (typeof document.webkitExitFullscreen === "function") {
       document.webkitExitFullscreen();
     }
@@ -48,9 +66,15 @@ export default function useTelaCheia(terminou = false) {
   // Mantém o estado sincronizado com a entrada/saída real (incl. tecla ESC)
   useEffect(() => {
     const atualizar = () => {
-      setEmTelaCheia(
-        Boolean(document.fullscreenElement || document.webkitFullscreenElement)
-      );
+      const cheia = Boolean(document.fullscreenElement || document.webkitFullscreenElement);
+      setEmTelaCheia(cheia);
+      if (!cheia) {
+        try {
+          window.screen.orientation?.unlock?.();
+        } catch {
+          // sem trava ativa / sem suporte
+        }
+      }
     };
     document.addEventListener("fullscreenchange", atualizar);
     document.addEventListener("webkitfullscreenchange", atualizar);
@@ -78,5 +102,11 @@ export default function useTelaCheia(terminou = false) {
     return () => window.removeEventListener("keydown", aoTeclar);
   }, [alternar]);
 
-  return { emTelaCheia, suportaTelaCheia, ref, alternarTelaCheia: alternar };
+  return {
+    emTelaCheia,
+    suportaTelaCheia,
+    ref,
+    alternarTelaCheia: alternar,
+    entrarTelaCheiaNoCelular: entrarNoCelular,
+  };
 }

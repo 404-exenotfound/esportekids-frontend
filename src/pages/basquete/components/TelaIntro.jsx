@@ -15,7 +15,7 @@ export const TelaIntro = ({ onJogar }) => {
   };
 
   return (
-    <div className="bq-overlay">
+    <div className="bq-overlay jogo-overlay">
       <div className="bq-emoji-grande">🏀</div>
 
       <p className="bq-overlay-titulo">VAMOS JOGAR BASQUETE?</p>

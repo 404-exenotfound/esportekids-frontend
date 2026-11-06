@@ -5,6 +5,8 @@ import EscalaProporcional from "../../components/EscalaProporcional";
 import BotaoTelaCheia from "../../components/BotaoTelaCheia";
 import { BotaoVoltar } from "../../educacional/components/BotaoVoltar";
 import useTelaCheia from "../../hooks/useTelaCheia";
+import useDispositivo from "../../hooks/useDispositivo";
+import AvisoGirarCelular from "../../components/AvisoGirarCelular";
 import { TelaIntro } from "./components/TelaIntro";
 import { TelaFimDeJogo } from "./components/TelaFimDeJogo";
 import { criarPinos } from "./helpers/criarPinos";
@@ -712,7 +714,16 @@ const Boliche = () => {
     suportaTelaCheia,
     ref: telaCheiaRef,
     alternarTelaCheia,
+    entrarTelaCheiaNoCelular,
   } = useTelaCheia(fase === "fim");
+
+  // Celular em pé: o aviso de girar cobre a tela e o jogo fica pausado
+  const { classes: classesDispositivo, ehCelular, retrato } = useDispositivo();
+  const pausado = ehCelular && retrato && fase !== "fim";
+  const pausadoRef = useRef(pausado);
+  useEffect(() => {
+    pausadoRef.current = pausado;
+  }, [pausado]);
 
   const sync = useCallback(() => {
     const d = dRef.current;
@@ -773,8 +784,10 @@ const Boliche = () => {
       if (!ultimo) ultimo = tempo;
       const dt = Math.min(tempo - ultimo, 40);
       ultimo = tempo;
-      if (faseRef.current === "jogando") atualizar(d, dt, ev);
-      atualizarVizinha(d, dt);
+      if (!pausadoRef.current) {
+        if (faseRef.current === "jogando") atualizar(d, dt, ev);
+        atualizarVizinha(d, dt);
+      }
       desenhar(c, d, fundo);
       raf = requestAnimationFrame(loop);
     };
@@ -815,15 +828,22 @@ const Boliche = () => {
     setFase("jogando");
   };
 
+  // No celular, Jogar já entra em tela cheia deitada (precisa ser no clique)
+  const jogar = () => {
+    entrarTelaCheiaNoCelular();
+    iniciar();
+  };
+
   const mostrarFim = fase === "fim" && final;
 
   return (
-    <div className="bol-wrapper">
+    <div className={`bol-wrapper jogo-wrapper ${classesDispositivo}`}>
+      <AvisoGirarCelular ativo={!mostrarFim} />
       {/* Fixo no canto, à esquerda do TELA CHEIA; fica fora do palco para
           continuar visível também no relembrar dicas / quiz / fim de jogo */}
       <BotaoVoltar />
       <div className="bol-card">
-        <div className="bol-titulo-barra">
+        <div className="bol-titulo-barra jogo-titulo-barra">
           <h1 className="bol-titulo">
             STRIKER
           </h1>
@@ -835,13 +855,13 @@ const Boliche = () => {
               pontos={final.pontos}
               estrelas={final.estrelas}
               emojiFinal={emojiDoResultadoFinal(final.estrelas)}
-              onJogarNovamente={iniciar}
+              onJogarNovamente={jogar}
               onVoltar={() => navigate("/home?menu=jogar")}
             />
           </FimEducativo>
         )}
 
-        <div ref={telaCheiaRef} className={`bol-stage${mostrarFim ? " bol-oculto" : ""}`}>
+        <div ref={telaCheiaRef} className={`bol-stage jogo-stage${mostrarFim ? " bol-oculto" : ""}`}>
           {/* Dentro do palco (= elemento da tela cheia) para a dica aparecer também em tela cheia */}
           <DicaToast dica={edu.dicaVisivel} />
 
@@ -892,7 +912,7 @@ const Boliche = () => {
               </div>
             )}
 
-            {fase === "intro" && <TelaIntro onJogar={iniciar} />}
+            {fase === "intro" && <TelaIntro onJogar={jogar} />}
           </EscalaProporcional>
 
           {suportaTelaCheia && (
@@ -905,7 +925,7 @@ const Boliche = () => {
         </div>
 
         {fase === "jogando" && (
-          <div className="bol-rodape">
+          <div className="bol-rodape jogo-rodape">
             <p className="bol-rodape-texto">{DICAS[hud.etapa] ?? ""}</p>
           </div>
         )}

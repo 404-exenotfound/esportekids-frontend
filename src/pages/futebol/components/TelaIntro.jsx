@@ -15,7 +15,7 @@ export const TelaIntro = ({ onJogar }) => {
   };
 
   return (
-    <div className="pc-overlay">
+    <div className="pc-overlay jogo-overlay">
       <div className="pc-emoji-grande">🥅⚽</div>
 
       <p className="pc-overlay-titulo">VAMOS BATER PÊNALTI?</p>

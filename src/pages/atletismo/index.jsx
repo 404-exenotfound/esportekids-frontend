@@ -12,12 +12,16 @@ import { useDicasDoJogo } from "../../educacional/fases/useDicasDoJogo";
 import { DicaToast } from "../../educacional/fases/DicaToast";
 import { FimEducativo } from "../../educacional/fases/FimEducativo";
 import useTelaCheia from "../../hooks/useTelaCheia";
+import useDispositivo from "../../hooks/useDispositivo";
+import AvisoGirarCelular from "../../components/AvisoGirarCelular";
 import "./styles/index.css";
 
 // Mesma estrutura dos outros minigames (Pênalti, Basquete, Ping-Pong, Boliche):
 // wrapper > card > faixa de título > palco (canvas + HUD dentro) > rodapé.
 const Atletismo = () => {
-  const jogo = useAtletismo();
+  // Celular em pé: o aviso de girar cobre a tela e o jogo fica pausado
+  const { classes: classesDispositivo, ehCelular, retrato } = useDispositivo();
+  const jogo = useAtletismo({ pausado: ehCelular && retrato });
   // NÃO ALTERAR a chave "atletismo": é ela que liga este jogo às
   // informações, às dicas e ao quiz já cadastrados no sistema.
   // Cada fase completa avança o progresso = nova informação exibida (igual ao original).
@@ -28,16 +32,24 @@ const Atletismo = () => {
     suportaTelaCheia,
     ref: telaCheiaRef,
     alternarTelaCheia,
+    entrarTelaCheiaNoCelular,
   } = useTelaCheia(terminou);
 
+  // No celular, Jogar já entra em tela cheia deitada (precisa ser no clique)
+  const jogar = () => {
+    entrarTelaCheiaNoCelular();
+    jogo.startGame();
+  };
+
   return (
-    <div className="atl-wrapper">
+    <div className={`atl-wrapper jogo-wrapper ${classesDispositivo}`}>
+      <AvisoGirarCelular ativo={!terminou} />
       {/* Fixo no canto, à esquerda do TELA CHEIA; fica fora do palco para
           continuar visível também no relembrar dicas / quiz / fim de jogo */}
       <BotaoVoltar />
       <div className="atl-card">
         {/* Faixa de título (mesmo padrão dos outros jogos) */}
-        <div className="atl-titulo-barra">
+        <div className="atl-titulo-barra jogo-titulo-barra">
           <h1 className="atl-titulo">
             SALTO EM <span>DISTÂNCIA</span>
           </h1>
@@ -50,7 +62,7 @@ const Atletismo = () => {
               fasesCompletas={jogo.progresso}
               totalFases={jogo.totalFases}
               melhor={jogo.melhor}
-              onJogarNovamente={jogo.startGame}
+              onJogarNovamente={jogar}
               onVoltar={jogo.voltarParaHome}
             />
           </FimEducativo>
@@ -60,7 +72,7 @@ const Atletismo = () => {
             como nos outros minigames. É ele o elemento da tela cheia. */}
         <div
           ref={telaCheiaRef}
-          className={`atl-stage${terminou ? " atl-oculto" : ""}`}
+          className={`atl-stage jogo-stage${terminou ? " atl-oculto" : ""}`}
         >
           {/* Dentro do palco (= elemento da tela cheia) para a dica aparecer também em tela cheia */}
           <DicaToast dica={edu.dicaVisivel} />
@@ -81,7 +93,7 @@ const Atletismo = () => {
               />
             )}
             {jogo.gameState === FASES.START && (
-              <TelaIntro onJogar={jogo.startGame} />
+              <TelaIntro onJogar={jogar} />
             )}
             {jogo.gameState === FASES.PLAYING && jogo.etapa === "resultado" && (
               <ResultadoSalto resultado={jogo.resultado} />
@@ -106,7 +118,7 @@ const Atletismo = () => {
         </div>
 
         {jogo.gameState === FASES.PLAYING && (
-          <div className="atl-rodape">
+          <div className="atl-rodape jogo-rodape">
             <p className="atl-rodape-texto">{jogo.instrucao}</p>
           </div>
         )}

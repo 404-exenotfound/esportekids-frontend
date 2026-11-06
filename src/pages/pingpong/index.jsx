@@ -11,25 +11,37 @@ import { useDicasDoJogo } from "../../educacional/fases/useDicasDoJogo";
 import { DicaToast } from "../../educacional/fases/DicaToast";
 import { FimEducativo } from "../../educacional/fases/FimEducativo";
 import useTelaCheia from "../../hooks/useTelaCheia";
+import useDispositivo from "../../hooks/useDispositivo";
+import AvisoGirarCelular from "../../components/AvisoGirarCelular";
 import "./styles/index.css";
 
 const PingPong = () => {
-  const { canvasRef, ...jogo } = usePingpong();
+  // Celular em pé: o aviso de girar cobre a tela e o jogo fica pausado
+  const { classes: classesDispositivo, ehCelular, retrato } = useDispositivo();
+  const { canvasRef, ...jogo } = usePingpong({ pausado: ehCelular && retrato });
   const edu = useDicasDoJogo("pingpong", jogo.pontos);
   const {
     emTelaCheia,
     suportaTelaCheia,
     ref: telaCheiaRef,
     alternarTelaCheia,
+    entrarTelaCheiaNoCelular,
   } = useTelaCheia(jogo.mostrarFimDeJogo);
 
+  // No celular, Jogar já entra em tela cheia deitada (precisa ser no clique)
+  const jogar = () => {
+    entrarTelaCheiaNoCelular();
+    jogo.iniciarJogo();
+  };
+
   return (
-    <div className="pp-wrapper">
+    <div className={`pp-wrapper jogo-wrapper ${classesDispositivo}`}>
+      <AvisoGirarCelular ativo={!jogo.mostrarFimDeJogo} />
       {/* Fixo no canto, à esquerda do TELA CHEIA; fica fora do palco para
           continuar visível também no relembrar dicas / quiz / fim de jogo */}
       <BotaoVoltar />
       <div className="pp-card">
-        <div className="pp-titulo-barra">
+        <div className="pp-titulo-barra jogo-titulo-barra">
           <h1 className="pp-titulo">
             PING-<span>PONG</span>
           </h1>
@@ -41,7 +53,7 @@ const PingPong = () => {
               pontos={jogo.pontos}
               estrelas={jogo.estrelas}
               emojiFinal={jogo.emojiFinal}
-              onJogarNovamente={jogo.iniciarJogo}
+              onJogarNovamente={jogar}
               onVoltar={jogo.voltarParaHome}
             />
           </FimEducativo>
@@ -53,7 +65,7 @@ const PingPong = () => {
             desenhando num canvas "fantasma" e a tela ficava preta). */}
         <div
           ref={telaCheiaRef}
-          className={`pp-stage${jogo.mostrarFimDeJogo ? " pp-oculto" : ""}`}
+          className={`pp-stage jogo-stage${jogo.mostrarFimDeJogo ? " pp-oculto" : ""}`}
         >
           <DicaToast dica={edu.dicaVisivel} />
 
@@ -79,7 +91,7 @@ const PingPong = () => {
               <div className="pp-combo">🔥 x{jogo.rally}</div>
             )}
 
-            {!jogo.emJogo && <TelaIntro onJogar={jogo.iniciarJogo} />}
+            {!jogo.emJogo && <TelaIntro onJogar={jogar} />}
 
             {jogo.mostrarBanner && (
               <BannerResultado
@@ -99,7 +111,7 @@ const PingPong = () => {
           )}
         </div>
 
-        {jogo.emJogo && <p className="pp-rodape">{jogo.mensagemRodape}</p>}
+        {jogo.emJogo && <p className="pp-rodape jogo-rodape">{jogo.mensagemRodape}</p>}
       </div>
     </div>
   );
