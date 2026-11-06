@@ -904,7 +904,7 @@ const Futebol = () => {
       <div className="pc-card">
         <div className="pc-titulo-barra">
           <h1 className="pc-titulo">
-            PÊNALTI <span>CAMPEÃO</span>
+            PÊNALTI
           </h1>
         </div>
 

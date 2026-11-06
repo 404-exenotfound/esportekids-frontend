@@ -31,7 +31,7 @@ const PingPong = () => {
       <div className="pp-card">
         <div className="pp-titulo-barra">
           <h1 className="pp-titulo">
-            PING-PONG <span>CAMPEÃO</span>
+            PING-<span>PONG</span>
           </h1>
         </div>
 

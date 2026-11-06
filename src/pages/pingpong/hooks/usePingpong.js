@@ -64,11 +64,35 @@ const CHANCE_IA_JOGAR_LONGE = 0.75;
 
 const TRAJETORIA = {
   INDO_PARA_AI: "indo_para_ai",
-  QUICOU_AI: "quicou_ai",
   INDO_PARA_JOGADOR: "indo_para_jogador",
-  QUICOU_JOGADOR: "quicou_jogador",
   SERVE: "serve",
 };
+
+// ---- Janela de contato com a raquete -------------------------------------
+// A bola voa de um lado ao outro (progress 0 → 1). A raquete só alcança a bola
+// perto do fim do voo: entre JANELA_CONTATO_INICIO e JANELA_CONTATO_FIM. Se a
+// bola não estiver ao alcance nessa janela, ela PASSA pela raquete e segue o
+// caminho dela para fora da mesa (como na vida real), em vez de "voltar".
+const JANELA_CONTATO_INICIO = 0.93;
+const JANELA_CONTATO_FIM = 1.07;
+
+// ---- Direção da rebatida (arrastar o mouse / setas) -----------------------
+// A direção vem da velocidade lateral da raquete nos instantes antes do toque:
+// arrastou para a direita → a bola vai para a direita; para a esquerda → esquerda.
+const HISTORICO_RAQUETE_MS = 130; // janela usada para medir o arrasto
+const ZONA_MORTA_DIRECAO = 0.35; // abaixo disso (tremida do mouse) a bola vai reta
+const VELOCIDADE_DIRECAO_MAXIMA = 2.0; // arrasto que já vale a direção máxima
+const ALCANCE_LATERAL_DIRECAO = 1.1; // quanto da mesa a bola cruza com direção máxima
+const LIMITE_ALVO_DA_BOLA = 0.86; // a bola sempre cai dentro da mesa
+
+// ---- Bola saindo da mesa depois de um erro --------------------------------
+const GRAVIDADE_BOLA = 900; // px/s²
+const ALTURA_BOLA_NA_RAQUETE = 26; // altura da bola na linha da raquete (px)
+const ALTURA_CHAO = -50; // o chão fica abaixo do tampo da mesa (px)
+const VELOCIDADE_SAIDA_JOGADOR = 0.95; // fração da velocidade do voo (vai p/ a câmera)
+const VELOCIDADE_SAIDA_IA = 0.55; // (vai para o fundo da quadra)
+const TEMPO_ATE_RESULTADO_SAIDA = 0.32; // s vendo a bola sair antes do banner
+const TEMPO_MAXIMO_SAIDA = 1.2; // s até a bola sumir de vez
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const lerp = (a, b, t) => a + (b - a) * t;
@@ -146,6 +170,14 @@ const criarBola = () => ({
   visible: true,
   canBeHit: false,
   bounceCount: 0,
+  // Bola que passou da raquete e está saindo da mesa
+  saindo: false,
+  quemErrou: null,
+  resolvido: false,
+  saidaTempo: 0,
+  saidaVz: 0,
+  alt: ALTURA_BOLA_NA_RAQUETE,
+  vAlt: 0,
 });
 
 /* ================= ESTADO INICIAL ================= */
@@ -154,6 +186,8 @@ const criarEstadoInicial = () => ({
   playerX: 0,
   aiX: 0,
   targetX: 0,
+  historicoRaquete: [],
+  tempoRaquete: 0,
   pointerActive: false,
   keys: { left: false, right: false },
   ball: criarBola(),
@@ -452,20 +486,23 @@ function drawBall(ctx, d) {
   const b = d.ball;
   if (!b.visible) return;
 
-  const z = clamp(b.z, 0, 1);
+  // Bola saindo da mesa: segue a reta do voo (z fora de 0..1) e cai até o chão
+  const z = b.saindo ? b.z : clamp(b.z, 0, 1);
   const baseX = screenX(b.x, z);
   const baseY = screenY(z);
-  const arc = Math.sin(Math.PI * clamp(b.progress, 0, 1));
-  const height = 26 + arc * 48;
+  const arc = b.saindo ? 0 : Math.sin(Math.PI * clamp(b.progress, 0, 1));
+  const height = b.saindo ? b.alt : 26 + arc * 48;
   const x = baseX;
   const y = baseY - height;
 
+  const naMesa = !b.saindo || (b.z >= 0 && b.z <= 1 && Math.abs(b.x) <= 1);
   const shadowW = 9 + arc * 10;
   const shadowH = 3 + arc * 3;
   ctx.save();
   ctx.globalAlpha = 0.24 + (1 - arc) * 0.25;
   ctx.fillStyle = "#06140f";
-  ctx.fillRect(x - shadowW / 2, baseY - shadowH / 2, shadowW, shadowH);
+  // Fora da mesa a sombra fica no chão, mais abaixo
+  ctx.fillRect(x - shadowW / 2, (naMesa ? baseY : baseY - ALTURA_CHAO) - shadowH / 2, shadowW, shadowH);
   ctx.restore();
 
   for (let i = 0; i < b.trail.length; i += 1) {
@@ -535,7 +572,7 @@ function drawParticles(ctx, d) {
   }
 }
 
-function spawnImpactParticles(d, xNorm, colors = PAL.impacto, count = 8, offsetY = -18) {
+function spawnImpactParticles(d, xNorm, colors = PAL.impacto, count = 8, offsetY = -18, viesX = 0) {
   const paleta = Array.isArray(colors) ? colors : [colors];
   const cx = screenX(xNorm, PLAYER_SIDE);
   const cy = screenY(PLAYER_SIDE) + offsetY;
@@ -545,7 +582,7 @@ function spawnImpactParticles(d, xNorm, colors = PAL.impacto, count = 8, offsetY
     d.particulas.push({
       x: cx,
       y: cy,
-      vx: (Math.random() - 0.5) * (forte ? 170 : 90),
+      vx: (Math.random() - 0.5) * (forte ? 170 : 90) + viesX * 110,
       vy: -30 - Math.random() * (forte ? 150 : 80),
       life: (forte ? 350 : 280) + Math.random() * (forte ? 400 : 160),
       maxLife: forte ? 700 : 440,
@@ -582,10 +619,79 @@ function drawScene(ctx, d) {
 
   if (d.fase === FASES.SERVINDO || d.flashRestante > 0) drawServeIndicator(ctx, d);
 
-  if (d.fase === FASES.JOGANDO && d.ball.canBeHit) {
-    textPixel(ctx, "ALINHE A RAQUETE COM A BOLA", 400, 382, 7, PAL.branco);
+  if (d.fase === FASES.JOGANDO && d.ball.trajectory === TRAJETORIA.INDO_PARA_JOGADOR && !d.ball.saindo) {
+    textPixel(ctx, "ALINHE A RAQUETE E ARRASTE PARA O LADO QUE QUER JOGAR", 400, 382, 7, PAL.branco);
   }
 }
+
+/* ================= DIREÇÃO DA REBATIDA ================= */
+// Velocidade lateral da raquete (unidades da mesa por segundo) medida nos
+// últimos HISTORICO_RAQUETE_MS: é o "arrasto" do jogador na hora do toque.
+const velocidadeDaRaquete = (d) => {
+  const h = d.historicoRaquete;
+  if (h.length < 2) return 0;
+  const primeiro = h[0];
+  const ultimo = h[h.length - 1];
+  const span = (ultimo.t - primeiro.t) / 1000;
+  if (span < 0.03) return 0;
+  return (ultimo.x - primeiro.x) / span;
+};
+
+// -1 (esquerda) … 0 (reta) … +1 (direita)
+const intencaoDeDirecao = (d) => {
+  const v = velocidadeDaRaquete(d);
+  if (Math.abs(v) < ZONA_MORTA_DIRECAO) return 0;
+  return clamp(
+    (v - Math.sign(v) * ZONA_MORTA_DIRECAO) / (VELOCIDADE_DIRECAO_MAXIMA - ZONA_MORTA_DIRECAO),
+    -1,
+    1
+  );
+};
+
+/* ================= BOLA SAINDO DA MESA ================= */
+// A bola passou da raquete sem ser rebatida: continua no mesmo sentido (z segue
+// além da ponta da mesa, x segue o desvio lateral), cai por gravidade, quica no
+// chão e perde velocidade até sumir.
+const iniciarSaida = (d, quem) => {
+  const b = d.ball;
+  const vzDoVoo = (PLAYER_SIDE - AI_SIDE) / Math.max(0.72, b.flightTime);
+  b.saindo = true;
+  b.quemErrou = quem;
+  b.resolvido = false;
+  b.saidaTempo = 0;
+  b.saidaVz = vzDoVoo * (quem === "jogador" ? VELOCIDADE_SAIDA_JOGADOR : VELOCIDADE_SAIDA_IA);
+  b.alt = ALTURA_BOLA_NA_RAQUETE;
+  b.vAlt = 40;
+  b.canBeHit = false;
+};
+
+const atualizarSaida = (d, dt) => {
+  const b = d.ball;
+  if (!b.saindo || !b.visible) return;
+
+  b.saidaTempo += dt;
+  // direction > 0 vai para o fundo (z diminui); direction < 0 vem para o jogador (z aumenta)
+  b.z -= b.direction * b.saidaVz * dt;
+  b.x += b.vx * dt;
+
+  b.vAlt -= GRAVIDADE_BOLA * dt;
+  b.alt += b.vAlt * dt;
+  if (b.alt <= ALTURA_CHAO) {
+    b.alt = ALTURA_CHAO;
+    b.vAlt = Math.abs(b.vAlt) > 90 ? -b.vAlt * 0.5 : 0;
+  }
+  if (b.alt === ALTURA_CHAO) {
+    const atrito = Math.max(0, 1 - 2.2 * dt);
+    b.saidaVz *= atrito;
+    b.vx *= atrito;
+  }
+
+  b.trail.push({ x: screenX(b.x, b.z), y: screenY(b.z) - b.alt });
+  if (b.trail.length > 6) b.trail.shift();
+
+  const y = screenY(b.z) - b.alt;
+  if (b.saidaTempo > TEMPO_MAXIMO_SAIDA || y > GAME_HEIGHT + 20) b.visible = false;
+};
 
 /* ================= HOOK ================= */
 export function usePingpong() {
@@ -698,6 +804,16 @@ export function usePingpong() {
         if (d.keys.right) d.playerX += PLAYER_SPEED * dt;
       }
       d.playerX = clamp(d.playerX, -0.88, 0.88);
+
+      // Guarda o caminho recente da raquete para saber para onde ela "arrastou"
+      d.tempoRaquete += dt * 1000;
+      d.historicoRaquete.push({ t: d.tempoRaquete, x: d.playerX });
+      while (
+        d.historicoRaquete.length > 1 &&
+        d.tempoRaquete - d.historicoRaquete[0].t > HISTORICO_RAQUETE_MS
+      ) {
+        d.historicoRaquete.shift();
+      }
     };
 
     // Decide na hora da rebatida se a IA vai errar a bola que está indo
@@ -710,8 +826,7 @@ export function usePingpong() {
     };
 
     const moverIa = (d, dt) => {
-      const indoParaIa =
-        d.ball.trajectory === TRAJETORIA.INDO_PARA_AI || d.ball.trajectory === TRAJETORIA.QUICOU_AI;
+      const indoParaIa = d.ball.trajectory === TRAJETORIA.INDO_PARA_AI;
       let alvo = indoParaIa ? d.ball.x : d.ball.x * 0.45;
       // Quando vai errar, a IA "lê" a bola errado e chega atrasada
       if (indoParaIa && d.iaVaiErrar) alvo = d.ball.x - Math.sign(d.ball.x || 1) * 0.6;
@@ -749,88 +864,55 @@ export function usePingpong() {
 
       d.fase = ganhou ? FASES.PONTO : FASES.ERRO;
       d.resultadoRestante = TEMPO_RESULTADO;
-      d.ball.visible = false;
+      // A bola que passou da raquete continua saindo da mesa durante o banner
+      if (!d.ball.saindo) d.ball.visible = false;
       d.ball.canBeHit = false;
       setFase(d.fase);
     };
 
-    const quicarNoLadoAi = (d) => {
-      d.ball.trajectory = TRAJETORIA.QUICOU_AI;
-      d.ball.bounceCount += 1;
-      d.ball.progress = 0;
-      d.ball.flightTime = Math.max(0.74, d.ball.flightTime * 0.96);
-      d.ball.x = clamp(d.ball.x, -0.9, 0.9);
-      d.ball.canBeHit = true;
-      d.ball.direction = -1;
-      d.ball.z = AI_SIDE;
-      d.ball.progress = 0;
-    };
-
-    const quicarNoLadoJogador = (d) => {
-      d.ball.trajectory = TRAJETORIA.QUICOU_JOGADOR;
-      d.ball.bounceCount += 1;
-      d.ball.progress = 0;
-      d.ball.flightTime = Math.max(0.74, d.ball.flightTime * 0.96);
-      d.ball.x = clamp(d.ball.x, -0.9, 0.9);
-      d.ball.canBeHit = true;
-      d.ball.direction = 1;
-      d.ball.z = PLAYER_SIDE;
-      d.ball.progress = 0;
-    };
-
     const rebaterJogador = (d, now) => {
-      if (!d.ball.canBeHit || d.ball.trajectory !== TRAJETORIA.QUICOU_JOGADOR) return;
-      if (d.lastHitSide === "player" && now - d.lastHitTime < 130) return;
+      const b = d.ball;
 
-      const distancia = Math.abs(d.ball.x - d.playerX);
-      if (distancia > PLAYER_HIT_TOLERANCE) {
-        resolverResultado(d, false);
-        return;
-      }
+      // Onde a bola bateu na raquete + para que lado o jogador arrastou
+      const offset = clamp((b.x - d.playerX) / PLAYER_HIT_TOLERANCE, -1, 1);
+      const intencao = intencaoDeDirecao(d);
+      const tempo = Math.max(0.76, b.flightTime * 0.94);
 
-      const offset = clamp((d.ball.x - d.playerX) / PLAYER_HIT_TOLERANCE, -1, 1);
-      const direcaoLateral = offset * 0.75;
-      const tempo = Math.max(0.76, d.ball.flightTime * 0.94);
-      d.ball.vx = limitarVxPelaMesa(
-        d.ball.x,
-        clamp(d.ball.vx * 0.5 + direcaoLateral, -1.2, 1.2),
-        tempo
+      // Ponto da mesa (lado da IA) para onde a bola vai: obedece o arrasto
+      const saidaX = clamp(b.x, -0.9, 0.9);
+      const alvoX = clamp(
+        saidaX + intencao * ALCANCE_LATERAL_DIRECAO + offset * 0.25,
+        -LIMITE_ALVO_DA_BOLA,
+        LIMITE_ALVO_DA_BOLA
       );
-      d.ball.spin = clamp(d.ball.spin * 0.35 + offset * 0.18, -0.34, 0.34);
-      d.ball.flightTime = tempo;
+      b.vx = limitarVxPelaMesa(saidaX, (alvoX - saidaX) / tempo, tempo);
+      b.spin = clamp(b.spin * 0.35 + offset * 0.18, -0.34, 0.34);
+      b.flightTime = tempo;
       d.ultimoImpacto = 180;
       d.impactoX = d.playerX;
       d.rally += 1;
       setRally(d.rally);
       tocarToque();
-      spawnImpactParticles(d, d.playerX, "#ffe082");
+      spawnImpactParticles(d, d.playerX, "#ffe082", 8, -18, intencao);
 
-      d.ball.direction = 1;
-      d.ball.trajectory = TRAJETORIA.INDO_PARA_AI;
-      d.ball.canBeHit = false;
-      d.ball.progress = 0;
-      d.ball.z = PLAYER_SIDE + 0.01;
-      d.ball.x = clamp(d.ball.x, -0.9, 0.9);
-      d.ball.trail = [];
+      b.direction = 1;
+      b.trajectory = TRAJETORIA.INDO_PARA_AI;
+      b.canBeHit = false;
+      b.progress = 0;
+      b.z = PLAYER_SIDE;
+      b.x = saidaX;
+      b.trail = [];
       d.lastHitSide = "player";
       d.lastHitTime = now;
-      sortearErroIa(d, Math.abs(offset));
+      // Quanto mais aberta a bola, mais difícil para a IA
+      sortearErroIa(d, clamp(Math.abs(alvoX - saidaX) / ALCANCE_LATERAL_DIRECAO, 0, 1));
     };
 
-    const rebaterIa = (d, now) => {
-      if (!d.ball.canBeHit || d.ball.trajectory !== TRAJETORIA.QUICOU_AI) return;
-      if (d.lastHitSide === "ai" && now - d.lastHitTime < 130) return;
-
-      const distancia = Math.abs(d.ball.x - d.aiX);
-      const tolerancia = AI_HIT_TOLERANCE + Math.max(0, 0.035 - d.pontos * 0.004);
-      if (distancia > tolerancia) {
-        resolverResultado(d, true);
-        return;
-      }
-
-      const offset = clamp((d.ball.x - d.aiX) / tolerancia, -1, 1);
-      d.ball.spin = clamp(d.ball.spin * 0.3 + offset * 0.08, -0.2, 0.2);
-      d.ball.flightTime = Math.max(0.82, d.ball.flightTime * 0.99);
+    const rebaterIa = (d, now, tolerancia) => {
+      const b = d.ball;
+      const offset = clamp((b.x - d.aiX) / tolerancia, -1, 1);
+      b.spin = clamp(b.spin * 0.3 + offset * 0.08, -0.2, 0.2);
+      b.flightTime = Math.max(0.82, b.flightTime * 0.99);
 
       // Mira longe do jogador (na maioria das vezes), para ele ter que se
       // mexer. vx é calculado para a bola chegar perto desse ponto.
@@ -838,11 +920,11 @@ export function usePingpong() {
       const alvoX = Math.random() < CHANCE_IA_JOGAR_LONGE
         ? -ladoDoJogador * (0.25 + Math.random() * 0.5)
         : Math.random() * 1.2 - 0.6;
-      const saidaX = clamp(d.ball.x, -0.9, 0.9);
-      d.ball.vx = limitarVxPelaMesa(
+      const saidaX = clamp(b.x, -0.9, 0.9);
+      b.vx = limitarVxPelaMesa(
         saidaX,
-        clamp((alvoX - saidaX) / (d.ball.flightTime + 0.12), -1.8, 1.8),
-        d.ball.flightTime
+        clamp((alvoX - saidaX) / (b.flightTime + 0.12), -1.8, 1.8),
+        b.flightTime
       );
       d.ultimoImpacto = 140;
       d.impactoX = d.aiX;
@@ -850,48 +932,66 @@ export function usePingpong() {
       setRally(d.rally);
       tocarToque();
 
-      d.ball.direction = -1;
-      d.ball.trajectory = TRAJETORIA.INDO_PARA_JOGADOR;
-      d.ball.canBeHit = false;
-      d.ball.progress = 0;
-      d.ball.z = AI_SIDE - 0.01;
-      d.ball.x = saidaX;
-      d.ball.trail = [];
+      b.direction = -1;
+      b.trajectory = TRAJETORIA.INDO_PARA_JOGADOR;
+      b.canBeHit = false;
+      b.progress = 0;
+      b.z = AI_SIDE;
+      b.x = saidaX;
+      b.trail = [];
       d.lastHitSide = "ai";
       d.lastHitTime = now;
     };
 
+    // A bola voa de um lado ao outro. O progresso passa de 1 na janela de
+    // contato: se ninguém rebate, ela segue em frente (z fora da mesa).
     const atualizarBola = (d, dt) => {
       const b = d.ball;
       if (!b.visible) return;
-
-      const tempo = Math.max(0.72, b.flightTime);
-      b.progress += dt / tempo;
-      const p = clamp(b.progress, 0, 1);
-
-      b.z = b.direction > 0 ? lerp(PLAYER_SIDE, AI_SIDE, p) : lerp(AI_SIDE, PLAYER_SIDE, p);
-
-      b.x += b.vx * dt;
-      b.x = clamp(b.x, -0.92, 0.92);
-
-      const arc = Math.sin(Math.PI * p);
-      b.trail.push({ x: screenX(b.x, b.z), y: screenY(b.z) - (25 + arc * 48) });
-      if (b.trail.length > 6) b.trail.shift();
-
-      if (b.progress < 1) return;
-
-      if (b.direction > 0) {
-        b.z = AI_SIDE;
-        b.progress = 0;
-        b.x = clamp(b.x, -0.9, 0.9);
-        quicarNoLadoAi(d);
+      if (b.saindo) {
+        atualizarSaida(d, dt);
         return;
       }
 
-      b.z = PLAYER_SIDE;
-      b.progress = 0;
-      b.x = clamp(b.x, -0.9, 0.9);
-      quicarNoLadoJogador(d);
+      const tempo = Math.max(0.72, b.flightTime);
+      b.progress += dt / tempo;
+      const p = b.progress;
+
+      // lerp não limita: com p > 1 a bola continua além da raquete
+      b.z = b.direction > 0 ? lerp(PLAYER_SIDE, AI_SIDE, p) : lerp(AI_SIDE, PLAYER_SIDE, p);
+
+      b.x += b.vx * dt;
+      b.x = clamp(b.x, -0.95, 0.95);
+
+      const arc = Math.sin(Math.PI * clamp(p, 0, 1));
+      b.trail.push({ x: screenX(b.x, b.z), y: screenY(b.z) - (25 + arc * 48) });
+      if (b.trail.length > 6) b.trail.shift();
+    };
+
+    // Raquete alcançou a bola? Rebate. Passou da janela? A bola sai da mesa.
+    const resolverContato = (d, now) => {
+      const b = d.ball;
+      if (b.saindo) {
+        // Se a bola já saiu da tela (some antes do tempo), não espera mais: o
+        // contador da saída para quando ela fica invisível e travaria o jogo.
+        if (!b.resolvido && (b.saidaTempo >= TEMPO_ATE_RESULTADO_SAIDA || !b.visible)) {
+          b.resolvido = true;
+          resolverResultado(d, b.quemErrou === "ia");
+        }
+        return;
+      }
+
+      b.canBeHit = b.progress >= JANELA_CONTATO_INICIO;
+      if (!b.canBeHit) return;
+
+      if (b.trajectory === TRAJETORIA.INDO_PARA_JOGADOR) {
+        if (Math.abs(b.x - d.playerX) <= PLAYER_HIT_TOLERANCE) rebaterJogador(d, now);
+        else if (b.progress > JANELA_CONTATO_FIM) iniciarSaida(d, "jogador");
+      } else if (b.trajectory === TRAJETORIA.INDO_PARA_AI) {
+        const tolerancia = AI_HIT_TOLERANCE + Math.max(0, 0.035 - d.pontos * 0.004);
+        if (!d.iaVaiErrar && Math.abs(b.x - d.aiX) <= tolerancia) rebaterIa(d, now, tolerancia);
+        else if (b.progress > JANELA_CONTATO_FIM) iniciarSaida(d, "ia");
+      }
     };
 
     const step = (timestamp) => {
@@ -952,23 +1052,10 @@ export function usePingpong() {
         moverJogador(d, dt);
         moverIa(d, dt);
         atualizarBola(d, dt);
-
-        if (d.ball.canBeHit) {
-          if (d.ball.trajectory === TRAJETORIA.QUICOU_JOGADOR) {
-            const distancia = Math.abs(d.ball.x - d.playerX);
-            if (distancia <= PLAYER_HIT_TOLERANCE) rebaterJogador(d, now);
-            else if (d.ball.progress > 0.58) resolverResultado(d, false);
-          } else if (d.ball.trajectory === TRAJETORIA.QUICOU_AI) {
-            // Mesma tolerância de rebaterIa: antes o alcance aqui era maior
-            // e a IA "errava" sozinha ao chegar no canto (bug do canto).
-            const distancia = Math.abs(d.ball.x - d.aiX);
-            const tolerancia = AI_HIT_TOLERANCE + Math.max(0, 0.035 - d.pontos * 0.004);
-            if (!d.iaVaiErrar && distancia <= tolerancia) rebaterIa(d, now);
-            else if (d.ball.progress > 0.6) resolverResultado(d, true);
-          }
-        }
+        resolverContato(d, now);
       } else if (d.fase === FASES.PONTO || d.fase === FASES.ERRO) {
         d.resultadoRestante -= dt * 1000;
+        atualizarSaida(d, dt);
         if (d.resultadoRestante <= 0) {
           if (d.tentativa >= TOTAL_TENTATIVAS) {
             d.fase = FASES.FIM_DE_JOGO;

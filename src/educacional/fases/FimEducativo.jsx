@@ -5,10 +5,40 @@ import { ESPORTES } from "../data/esportes";
 import { desbloquearJogo } from "../../store/progressoSlice";
 import { DICAS_FASES, MINIMO_PARA_LIBERAR, proximoJogo } from "./dicasFases";
 import { QuizDasDicas } from "./QuizDasDicas";
+import { Fogos } from "./Fogos";
 import { BotaoLeitura } from "../components/BotaoLeitura";
 import { useMaterias } from "../../api/materias";
 import { useSalvarResultado } from "../../api/salvarResultado";
 import "../styles/educacional.css";
+
+// Banner de comemoração (última fase concluída). As letras do título pulam em
+// onda e mudam de cor com a paleta do site; os fogos de artifício ficam em <Fogos />.
+const CORES_PARABENS = ["#e63946", "#ffd166", "#60a5fa", "#06d6a0", "#ff8fab", "#ffffff"];
+const BannerParabens = () => (
+  <div className="edu-fase edu-aviso edu-parabens" role="status">
+    <p className="edu-parabens-titulo" aria-label="PARABÉNS!">
+      {"PARABÉNS!".split("").map((letra, i) => (
+        <span
+          key={i}
+          aria-hidden="true"
+          style={{ color: CORES_PARABENS[i % CORES_PARABENS.length], animationDelay: `${i * 0.09}s` }}
+        >
+          {letra}
+        </span>
+      ))}
+    </p>
+    <p className="edu-parabens-sub">Você completou todas as fases do EsporteKids!</p>
+  </div>
+);
+
+// Como o desempenho de cada minigame é chamado nos avisos (singular, plural).
+const UNIDADE_DO_JOGO = {
+  basquete: ["cesta", "cestas"],
+  futebol: ["gol", "gols"],
+  atletismo: ["meta", "metas"],
+  pingpong: ["ponto", "pontos"],
+  boliche: ["strike", "strikes"],
+};
 
 // Fluxo do fim de cada jogo:
 //   1) DESEMPENHO NO MINIGAME: com MINIMO_PARA_LIBERAR pontos ou mais a criança
@@ -28,6 +58,7 @@ export const FimEducativo = ({ esporte, vistas, pontosDoJogo = 0, children }) =>
   const proximo = proximoJogo(esporte);
   const jaLiberado = proximo === null || liberados.includes(proximo);
   const passouNoJogo = pontosDoJogo >= MINIMO_PARA_LIBERAR;
+  const [unidadeSing, unidadePlural] = UNIDADE_DO_JOGO[esporte] ?? ["ponto", "pontos"];
 
   // Sem pontos suficientes no minigame, o quiz nem aparece (etapa "bloqueado")
   const [etapa, setEtapa] = useState(passouNoJogo ? "revisao" : "bloqueado"); // bloqueado | revisao | quiz | resultado | concluido
@@ -62,10 +93,10 @@ export const FimEducativo = ({ esporte, vistas, pontosDoJogo = 0, children }) =>
         <div className="edu-fase edu-aviso edu-aviso-bloqueado">
           <p>
             🔒 <strong>Quiz bloqueado!</strong> Você fez <strong>{pontosDoJogo}</strong>{" "}
-            {pontosDoJogo === 1 ? "ponto" : "pontos"} no minigame.
+            {pontosDoJogo === 1 ? unidadeSing : unidadePlural} no minigame.
           </p>
           <p>
-            Faça pelo menos <strong>{MINIMO_PARA_LIBERAR} pontos</strong> para fazer o quiz
+            Faça pelo menos <strong>{MINIMO_PARA_LIBERAR} {unidadePlural}</strong> para fazer o quiz
             {proximo ? ` e liberar o ${ESPORTES[proximo].nome}` : ""}. Clique em{" "}
             <strong>JOGAR NOVAMENTE</strong> e tente outra vez! 💪
           </p>
@@ -77,10 +108,19 @@ export const FimEducativo = ({ esporte, vistas, pontosDoJogo = 0, children }) =>
 
   if (etapa === "concluido") {
     const liberou = jaLiberado;
+    // Terminou a última fase: festa com fogos de artifício
+    if (proximo === null && liberou) {
+      return (
+        <>
+          <Fogos />
+          <BannerParabens />
+          {children}
+        </>
+      );
+    }
     return (
       <>
         <div className="edu-fase edu-aviso">
-          {proximo === null && liberou && <p>🏆 <strong>Você completou todas as fases do EsporteKids!</strong></p>}
           {proximo !== null && liberou && (
             <>
               <p>🎉 <strong>{ESPORTES[proximo].nome} liberado!</strong> Você já pode jogar a próxima fase.</p>
@@ -90,7 +130,7 @@ export const FimEducativo = ({ esporte, vistas, pontosDoJogo = 0, children }) =>
             </>
           )}
           {proximo !== null && !liberou && (
-            <p>🔒 Para liberar o <strong>{ESPORTES[proximo].nome}</strong>, jogue de novo e faça pelo menos {MINIMO_PARA_LIBERAR} pontos no minigame.</p>
+            <p>🔒 Para liberar o <strong>{ESPORTES[proximo].nome}</strong>, jogue de novo e faça pelo menos {MINIMO_PARA_LIBERAR} {unidadePlural} no minigame.</p>
           )}
         </div>
         {children}

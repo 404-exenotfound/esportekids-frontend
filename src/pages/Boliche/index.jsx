@@ -40,6 +40,11 @@ import { DicaToast } from "../../educacional/fases/DicaToast";
 import { FimEducativo } from "../../educacional/fases/FimEducativo";
 import "./styles/index.css";
 
+// Desempenho para liberar o quiz (igual aos outros minigames: gol, cesta...):
+// cada STRIKE (10 pinos na 1ª bola da rodada) conta como 1 ACERTO. O quiz só
+// abre com MINIMO_PARA_LIBERAR acertos (3 strikes) das 5 rodadas — a pontuação
+// total (strike = 20, spare = 15...) continua só para o placar e as estrelas.
+
 /* ================= UTILITÁRIOS ================= */
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const rect = (c, x, y, w, h, cor) => {
@@ -472,6 +477,7 @@ function novoJogo() {
     rodada: 1,
     bolaDaRodada: 1,
     pontos: 0,
+    acertos: 0, // strikes feitos: é o que libera o quiz
     derrubadosNaRodada: 0,
     derrubadosNestaBola: 0,
     fecharRodada: false,
@@ -553,6 +559,11 @@ function contabilizarJogada(d, ev) {
 
   d.pontos += resultado.pontos;
   d.fecharRodada = resultado.fecharRodada;
+
+  // Cada strike é um acerto
+  if (resultado.tipo === "strike") {
+    d.acertos += 1;
+  }
 
   if (resultado.tipo === "strike" || resultado.tipo === "spare") {
     ev.som("strike");
@@ -681,7 +692,7 @@ const Boliche = () => {
   const [fase, setFase] = useState("intro"); // intro | jogando | fim
   const [somLigado, setSomLigado] = useState(true);
   const [hud, setHud] = useState({
-    rodada: 1, bolaDaRodada: 1, pontos: 0, pinosEmPe: TOTAL_PINOS, etapa: ETAPAS.MIRA,
+    rodada: 1, bolaDaRodada: 1, pontos: 0, acertos: 0, pinosEmPe: TOTAL_PINOS, etapa: ETAPAS.MIRA,
   });
   const [aviso, setAviso] = useState(null);
   const [final, setFinal] = useState(null);
@@ -695,7 +706,7 @@ const Boliche = () => {
   somRef.current = tocar;
 
   const navigate = useNavigate();
-  const edu = useDicasDoJogo("boliche", hud.pontos);
+  const edu = useDicasDoJogo("boliche", hud.acertos);
   const {
     emTelaCheia,
     suportaTelaCheia,
@@ -706,7 +717,7 @@ const Boliche = () => {
   const sync = useCallback(() => {
     const d = dRef.current;
     setHud({
-      rodada: d.rodada, bolaDaRodada: d.bolaDaRodada, pontos: d.pontos,
+      rodada: d.rodada, bolaDaRodada: d.bolaDaRodada, pontos: d.pontos, acertos: d.acertos,
       pinosEmPe: d.pinos.filter((p) => !p.caido).length, etapa: d.etapa,
     });
   }, []);
@@ -735,7 +746,7 @@ const Boliche = () => {
       },
       fim: (d) => {
         const estrelas = calcularEstrelas(d.pontos);
-        setFinal({ pontos: d.pontos, estrelas });
+        setFinal({ pontos: d.pontos, acertos: d.acertos, estrelas });
         setFase("fim");
         somRef.current("strike");
       },
@@ -814,12 +825,12 @@ const Boliche = () => {
       <div className="bol-card">
         <div className="bol-titulo-barra">
           <h1 className="bol-titulo">
-            BOLICHE <span>CAMPEÃO</span>
+            STRIKER
           </h1>
         </div>
 
         {mostrarFim && (
-          <FimEducativo esporte="boliche" vistas={edu.vistas} pontosDoJogo={final.pontos}>
+          <FimEducativo esporte="boliche" vistas={edu.vistas} pontosDoJogo={final.acertos}>
             <TelaFimDeJogo
               pontos={final.pontos}
               estrelas={final.estrelas}

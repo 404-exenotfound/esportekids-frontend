@@ -40,9 +40,14 @@ export const TEMPO_MAXIMO_ROLANDO = 6000; // ms de segurança para encerrar a bo
 export const MIRA_VELOCIDADE = 2.6; // px por frame
 export const MIRA_MARGEM = 14; // o quanto a mira passa da pista (dá pra errar!)
 export const FORCA_VELOCIDADE = 0.021; // por frame
-export const FORCA_MINIMA = 0.28;
-export const VELOCIDADE_BASE = 7.5;
-export const VELOCIDADE_EXTRA = 7.5; // força cheia = BASE + EXTRA
+// Velocidade da bola = BASE + força * EXTRA (força de 0 a 1 da barra).
+// Força cheia = 3 + 12 = 15 (igual a antes). Força mínima = 3: bola bem
+// devagar, que ainda chega aos pinos (o atrito 0,997/quadro deixa ~1000 px
+// de alcance) mas só derruba alguns. Antes o mínimo era 7,5+0,28*7,5 ≈ 9,6,
+// quase 2/3 da velocidade máxima.
+export const FORCA_MINIMA = 0; // sem piso extra: a barra vazia = bola devagar
+export const VELOCIDADE_BASE = 3;
+export const VELOCIDADE_EXTRA = 12; // força cheia = BASE + EXTRA
 
 // --- Regras da partida -------------------------------------------------------
 export const TOTAL_PINOS = 10;

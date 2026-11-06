@@ -888,7 +888,7 @@ export default function Basquete({ aoTerminar }) {
         {/* Cabeçalho do card (mesmo padrão dos outros jogos) */}
         <div className="bq-titulo-barra">
           <h1 className="bq-titulo">
-            BASQUETE <span>CAMPEÃO</span>
+            LANCE <span>LIVRE</span>
           </h1>
         </div>
 
